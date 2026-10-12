@@ -1,0 +1,29 @@
+# Data model (draft v1)
+
+Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enum: `TMDB, ANILIST, OPEN_LIBRARY, IGDB, DEEZER, LETTERBOXD, LASTFM, STEAM, GOODREADS`.
+
+| Table | Key columns | Notes |
+|---|---|---|
+| `users` | id, email (unique), password_hash, created_at | identity |
+| `profiles` | id, user_id (unique FK), slug (unique), display_name, bio, avatar_key, theme_id, created_at | 1:1 with user |
+| `media_items` | id, category, canonical_provider, external_id, title, year, image_url, adult, metadata_json, fetched_at | unique (category, canonical_provider, external_id); snapshot (BR-04) |
+| `media_external_ids` | media_item_id, provider, external_id | maps Steam/Letterboxd ids to the canonical item |
+| `highlight_lists` | id, profile_id, category (nullable = "Favoritos de tudo") | unique (profile_id, category) |
+| `highlights` | id, list_id, media_item_id, position, note | unique (list_id, media_item_id) (BR-07) |
+| `linked_accounts` | id, profile_id, provider, username, status, last_synced_at, last_error | unique (profile_id, provider) |
+| `synced_entries` | id, linked_account_id, media_item_id, activity_type, occurred_at | recent activity from providers |
+| `now_entries` | id, profile_id, category, media_item_id, source (AUTO/MANUAL), hidden | one per (profile, category) (BR-06) |
+| `sync_runs` | id, linked_account_id, started_at, finished_at, status, items_count, error | observability |
+| `products` | id, sku, name, type (THEME/PACK), price_cents, active, stripe_price_ref | seeded by Flyway |
+| `themes` | id, product_id (nullable = free), name, tokens_json | `profiles.theme_id` |
+| `orders` | id, user_id, product_id, amount_cents, status, stripe_session_id, paid_at | financial record kept on account deletion, anonymized |
+| `entitlements` | id, user_id, product_id, granted_at, order_id | drives BR-02 and BR-05 |
+| `stripe_events` | event_id (PK), type, processed_at | webhook idempotency (BR-09) |
+| `room_items` | id, code, category_binding, asset_ref | prototype catalog (seed) |
+| `room_layouts` | id, profile_id, layout_json | prototype only |
+
+Notes
+- Free plan limits derive from `entitlements` (pack owned → 12, else 4).
+- Account deletion cascades to profile, highlights, linked accounts, entries; `orders` rows are anonymized (user_id nulled).
+- Deleting a profile doesn't delete shared `media_items` (they are a global cache).
+- Entities: 16 tables (requirement from the professor: ≥ 3).

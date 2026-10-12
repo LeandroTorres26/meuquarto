@@ -1,0 +1,3 @@
+`meuquarto.tokens.css` is the consumer-ready export of every token in `tokens.json` as CSS custom properties: colors and shadows per theme, spacing, radii, resting angles (`--tilt-max`, `--tilt-min`, `--tilt-mobile-scale`), font families and the type scale (`--type-<style>-size`, `-line`, `-weight`, `-tracking`, `-family`).
+
+Load it once, then pick a theme with `data-theme="noite"`, `"dia"`, `"locadora"` or `"estufa"` on `html` or on any wrapper. `noite` is the default and the fallback. A new premium theme adds one more `[data-theme="<id>"]` block with the color tokens it changes. Components never read a hex value; they only use these variables. `tokens.json` stays the source of truth, so regenerate this file when it changes.
