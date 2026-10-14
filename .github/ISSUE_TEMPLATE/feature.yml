@@ -1,0 +1,36 @@
+name: Feature / task
+description: A unit of work from the backlog
+labels: ["type: feature"]
+body:
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What this delivers and why.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What to build. Reference requirements (FR-xx), rules (BR-xx), screens (Sxx) and ADRs.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checklist that must be true for the PR to merge.
+      value: |
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: out
+    attributes:
+      label: Out of scope
+  - type: textarea
+    id: refs
+    attributes:
+      label: References
+      description: Docs, design files, epic issue.
