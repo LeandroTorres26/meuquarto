@@ -4,6 +4,17 @@ spring:
   threads:
     virtual:
       enabled: true
+  # Connection comes from the environment (compose sets these); tests use Testcontainers instead.
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/meuquarto}
+    username: ${DB_USER:meuquarto}
+    password: ${DB_PASSWORD:}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate # schema changes only through Flyway
+  flyway:
+    locations: classpath:db/migration
 
 server:
   port: 8080
