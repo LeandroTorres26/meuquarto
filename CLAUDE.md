@@ -15,6 +15,7 @@ Link-in-bio for media taste: a public profile at `/{slug}` showing highlights of
 | Visual design: prototypes of every screen | `docs/design/telas/` (start with its `README.md`) |
 | Design system: tokens, components, rules | `docs/design-system/` (start with its `README.md`) |
 | Scope, milestones, epics | `docs/backlog.md` |
+| Threats and security controls | `docs/security.md` |
 
 The GitHub issue being worked on is the spec for the task. If an issue conflicts with these docs, stop and ask.
 
@@ -25,6 +26,17 @@ The GitHub issue being worked on is the spec for the task. If an issue conflicts
 - `infra/`: Docker Compose (caddy, web, api, postgres, minio), deploy scripts.
 - Payments: Stripe Checkout (Pix + card), one-time purchases, entitlement granted only by a verified webhook.
 - Object storage: S3-compatible (R2 or MinIO).
+
+## Security (every issue)
+
+Security is a requirement of every issue, not a later phase. Read `docs/security.md` before working on auth, endpoints, uploads, integrations, payments, infra or CI. Non-negotiable:
+
+- Never commit secrets. `.env` is ignored; add new variable names to `.env.example` without values. If a secret ever lands in git, stop and tell the owner (it must be rotated, not just deleted).
+- Every endpoint is private by default; the owner of any data comes from the session, never from the request. Each new endpoint gets an authorization test (anonymous and other-user cases).
+- Validate every input (Bean Validation, size limits); no string-built SQL; no user-provided URLs fetched; usernames sent to providers are validated and URL-encoded.
+- No raw HTML from users or providers in the UI; no secrets in the frontend bundle; no passwords, tokens or cookies in logs.
+- New dependencies: well-maintained, pinned versions; mention them in the PR.
+- If something in the issue would weaken security, stop and ask instead of working around it.
 
 ## Backend conventions
 
