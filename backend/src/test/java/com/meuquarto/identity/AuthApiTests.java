@@ -1,7 +1,6 @@
 package com.meuquarto.identity;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
@@ -9,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.meuquarto.support.RealCsrf;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
@@ -136,7 +136,7 @@ class AuthApiTests {
         Cookie session = signUp("leandro@example.com", PASSWORD, "leandro")
                 .andReturn().getResponse().getCookie("SESSION");
 
-        mvc.perform(post("/api/auth/logout").cookie(session).with(csrf())).andExpect(status().isNoContent());
+        mvc.perform(post("/api/auth/logout").cookie(session).with(RealCsrf.token(mvc))).andExpect(status().isNoContent());
         mvc.perform(get("/api/auth/me").cookie(session)).andExpect(status().isUnauthorized());
     }
 
@@ -145,13 +145,20 @@ class AuthApiTests {
         mvc.perform(get("/api/auth/me")).andExpect(status().isUnauthorized());
     }
 
+    @Test
+    void anonymousRequestsToProtectedRoutesOpenNoSession() throws Exception {
+        mvc.perform(get("/api/auth/me")).andExpect(status().isUnauthorized()).andExpect(cookie().doesNotExist("SESSION"));
+        mvc.perform(get("/api/anything")).andExpect(status().isUnauthorized()).andExpect(cookie().doesNotExist("SESSION"));
+        assertThat(jdbc.queryForObject("select count(*) from spring_session", Integer.class)).isZero();
+    }
+
     private org.springframework.test.web.servlet.ResultActions signUp(String email, String password, String slug) throws Exception {
-        return mvc.perform(post("/api/auth/signup").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+        return mvc.perform(post("/api/auth/signup").with(RealCsrf.token(mvc)).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"%s\",\"password\":\"%s\",\"slug\":\"%s\"}".formatted(email, password, slug)));
     }
 
-    private MockHttpServletRequestBuilder loginRequest(String email, String password) {
-        return post("/api/auth/login").with(csrf()).contentType(MediaType.APPLICATION_JSON)
+    private MockHttpServletRequestBuilder loginRequest(String email, String password) throws Exception {
+        return post("/api/auth/login").with(RealCsrf.token(mvc)).contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\":\"%s\",\"password\":\"%s\"}".formatted(email, password));
     }
 

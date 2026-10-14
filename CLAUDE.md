@@ -49,6 +49,7 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 - Every business rule (BR-xx in `docs/requirements.md`) lives in `domain`, is unit-tested without Spring in a test named after it, and is referenced in a comment only where the code would otherwise be unclear.
 - Schema changes only through new Flyway migrations in `backend/src/main/resources/db/migration` (`V<n>__snake_case_description.sql`); never edit an applied migration. Hibernate only validates the schema (`ddl-auto: validate`).
 - Integration tests that touch the database use `@Import(TestcontainersConfiguration.class)` (`com.meuquarto.support`); never H2 or mocks for persistence.
+- State-changing requests in tests use `.with(RealCsrf.token(mvc))` (`com.meuquarto.support`), the same cookie-to-header flow as the web app. Never spring-security-test's `csrf()`: it swaps the token repository inside the shared CsrfFilter and breaks later tests in the same context.
 - External APIs are never called while rendering a public profile; the profile reads local data (snapshot in `media_items`) and a cache.
 - External calls have timeouts, respect rate limits and fail per provider (one provider down never breaks the others). Tests mock providers; no test hits a real external API.
 - Secrets only from environment variables. Never commit keys; `.env.example` lists the names.

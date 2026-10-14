@@ -11,6 +11,7 @@ import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.context.SecurityContextRepository;
+import org.springframework.security.web.savedrequest.NullRequestCache;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
@@ -52,6 +53,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup", "/api/auth/login").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.spa())
+                // JSON API: never save requests in a session to redirect after login; that would open a
+                // session (and a spring_session row) for every anonymous request to a protected route.
+                .requestCache(cache -> cache.requestCache(new NullRequestCache()))
                 .securityContext(context -> context.securityContextRepository(contextRepository))
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")

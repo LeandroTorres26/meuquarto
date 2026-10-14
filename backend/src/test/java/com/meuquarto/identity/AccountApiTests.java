@@ -1,11 +1,11 @@
 package com.meuquarto.identity;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.meuquarto.support.RealCsrf;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
@@ -83,7 +83,7 @@ class AccountApiTests {
 
     @Test
     void anonymousAndCsrfLessRequestsAreRefused() throws Exception {
-        mvc.perform(MockMvcRequestBuilders.post("/api/account/delete").with(csrf())
+        mvc.perform(MockMvcRequestBuilders.post("/api/account/delete").with(RealCsrf.token(mvc))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"password\":\"x\"}"))
                 .andExpect(status().isUnauthorized());
         Cookie session = signUp("leandro@example.com", "leandro");
@@ -105,21 +105,21 @@ class AccountApiTests {
     }
 
     private Cookie signUp(String email, String slug) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.post("/api/auth/signup").with(csrf())
+        return mvc.perform(MockMvcRequestBuilders.post("/api/auth/signup").with(RealCsrf.token(mvc))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"%s\",\"password\":\"%s\",\"slug\":\"%s\"}".formatted(email, PASSWORD, slug)))
                 .andExpect(status().isCreated()).andReturn().getResponse().getCookie("SESSION");
     }
 
     private Cookie login(String email, String password) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.post("/api/auth/login").with(csrf())
+        return mvc.perform(MockMvcRequestBuilders.post("/api/auth/login").with(RealCsrf.token(mvc))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"email\":\"%s\",\"password\":\"%s\"}".formatted(email, password)))
                 .andExpect(status().isOk()).andReturn().getResponse().getCookie("SESSION");
     }
 
     private ResultActions post(Cookie session, String path, String json) throws Exception {
-        return mvc.perform(MockMvcRequestBuilders.post(path).cookie(session).with(csrf())
+        return mvc.perform(MockMvcRequestBuilders.post(path).cookie(session).with(RealCsrf.token(mvc))
                 .contentType(MediaType.APPLICATION_JSON).content(json));
     }
 
