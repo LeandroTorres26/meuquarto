@@ -40,9 +40,12 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 
 ## Backend conventions
 
-- Modular monolith, package by module: `com.meuquarto.<module>` with modules `identity`, `profile`, `media`, `billing`, `room`. A module exposes a small public API; it never reads another module's tables or repositories directly.
-- Integrations are the OO showcase: one class per platform implementing `CatalogProvider` or `ActivityProvider`, resolved by a registry. Adding a platform must not touch other modules.
-- Every business rule (BR-xx in `docs/requirements.md`) lives in the domain/service layer, has a unit test named after it, and is referenced in a comment only where the code would otherwise be unclear.
+- Modular monolith, package by module: `com.meuquarto.<module>` with modules `identity`, `profile`, `media`, `billing`, `room` (ADR 0001).
+- Inside each module, four light layers (ADR 0014): `api/` (controllers, request/response DTOs), `application/` (use cases, transactions, authorization), `domain/` (entities, value objects, business rules), `infra/` (repositories, external clients). Dependencies point inward: `api` → `application` → `domain`; `domain` imports nothing from the other three.
+- Controllers are thin: validate, call one application service, map the result. No business rules in controllers or repositories.
+- Between modules, call only the other module's `application` services and DTOs; never its `domain` entities, repositories, tables or `infra`.
+- Integrations are the OO showcase: one class per platform implementing `CatalogProvider` or `ActivityProvider` (in `media/infra`), resolved by a registry. Adding a platform must not touch other modules.
+- Every business rule (BR-xx in `docs/requirements.md`) lives in `domain`, is unit-tested without Spring in a test named after it, and is referenced in a comment only where the code would otherwise be unclear.
 - Schema changes only through new Flyway migrations; never edit an applied migration.
 - External APIs are never called while rendering a public profile; the profile reads local data (snapshot in `media_items`) and a cache.
 - External calls have timeouts, respect rate limits and fail per provider (one provider down never breaks the others). Tests mock providers; no test hits a real external API.
