@@ -1,7 +1,9 @@
-<!-- @dsCard group="Profile" height=230 subtitle="Agora block, one item per category" -->
-<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"><style>body{margin:0;padding:16px;background:var(--surface-100);font-family:var(--font-sans);color:var(--ink)}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}</style></head><body>
-<div style="display:grid;gap:12px;max-width:420px">
-<div class="mq-now"><div class="mq-now__thumb" role="img" aria-label="Capa"></div><div><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Assistindo · via Letterboxd</p><p class="mq-now__title">Título do filme</p><p class="mq-now__status">Sincronizado há 2 horas</p></div></div>
-<div class="mq-now"><div class="mq-now__thumb" role="img" aria-label="Capa"></div><div><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Ouvindo · via Last.fm</p><p class="mq-now__title">Nome da faixa</p><p class="mq-now__status" style="color:var(--danger)">Erro ao sincronizar. Tente de novo.</p></div></div>
-</div>
-</body></html>
+<!-- @dsCard group="Profile" height=460 subtitle="Agora rows: synced, pinned, error, empty, loading; list and card" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"><style>body{margin:0;padding:24px;background:var(--surface-100);font-family:var(--font-sans);color:var(--ink)}ul{list-style:none;margin:0;padding:0;max-width:380px}li{padding:12px 0;border-bottom:1px solid var(--border)}li:first-child{border-top:1px solid var(--border)}h2{font:600 14px/20px var(--font-sans);color:var(--ink-muted);margin:0 0 8px}</style></head><body><div id="root"></div><script>
+const e=React.createElement,M=window.Meuquarto,N=M.NowCard;
+const cover="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 2 3'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%231b1f4b'/%3E%3Cstop offset='1' stop-color='%23f08a5d'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='2' height='3' fill='url(%23g)'/%3E%3Ccircle cx='1.3' cy='1' r='.3' fill='%23ffd166'/%3E%3C/svg%3E";
+const rows=[{verb:'Assistindo',title:'Perfect Days',status:'Letterboxd, há 2 dias',cover},{verb:'Lendo',title:'Torto Arado',status:'Escolhido por você',cover},{verb:'Ouvindo',title:'Clube da Esquina',status:'O Last.fm não respondeu. Tentamos de novo em 20 min.',cover,square:true,state:'error'},{verb:'Jogando',state:'empty',title:'Nada por aqui agora'},{verb:'',state:'loading'}];
+ReactDOM.createRoot(document.getElementById('root')).render(e('div',{style:{display:'flex',gap:'48px',flexWrap:'wrap'}},
+ e('div',null,e('h2',null,'Na lista do perfil'),e('ul',null,rows.map((r,i)=>e('li',{key:i},e(N,r))))),
+ e('div',{style:{maxWidth:'320px'}},e('h2',null,'Sozinho (card)'),e(N,Object.assign({card:true},rows[0])))));
+</script></body></html>

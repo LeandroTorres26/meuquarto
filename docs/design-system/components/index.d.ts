@@ -30,6 +30,64 @@ declare namespace Meuquarto {
   interface HighlightSlotProps { category: Category; onClick?: () => void; label?: string }
   interface CategoryTagProps { category: Category; count?: number | string }
 
+  interface ButtonProps {
+    variant?: 'primary' | 'secondary' | 'ghost' | 'danger';
+    size?: 'md' | 'sm';
+    /** Icon name from Meuquarto.Icon. */
+    icon?: string;
+    /** Icon only; then aria-label is required. */
+    iconOnly?: boolean;
+    'aria-label'?: string;
+    /** Keeps the width, shows a spinner, blocks clicks and sets aria-busy. */
+    loading?: boolean;
+    /** Use the label to say why ("Aguarde 15 min"). */
+    disabled?: boolean;
+    /** Renders a link instead of a button. */
+    href?: string;
+    type?: 'button' | 'submit';
+    onClick?: () => void;
+    className?: string;
+    /** Force a state for documentation. */
+    state?: 'hover' | 'focus';
+    children?: any;
+  }
+  interface NowCardProps {
+    /** Assistindo, Lendo, Ouvindo, Jogando. */
+    verb: string;
+    title?: string;
+    /** Source and time, or the error text when state is 'error'. */
+    status?: string;
+    cover?: string;
+    /** Square cover (music). */
+    square?: boolean;
+    /** Show the accent lamp (synced or pinned). Default true. */
+    lamp?: boolean;
+    /** Standalone box; inside a list keep it false. */
+    card?: boolean;
+    state?: 'default' | 'empty' | 'loading' | 'error';
+  }
+  interface ToastProps {
+    tone?: 'success' | 'error';
+    /** Bold status word. Defaults to "Pronto." or "Erro.". */
+    title?: string;
+    /** Error toasts stay until closed. */
+    onClose?: () => void;
+    children?: any;
+  }
+  interface LimitUpsellProps {
+    used?: number;
+    limit?: number;
+    title?: string;
+    /** One sentence on what the pack gives. */
+    children?: any;
+    href?: string;
+    cta?: string;
+  }
+
+  const Button: (props: ButtonProps) => JSX.Element;
+  const NowCard: (props: NowCardProps) => JSX.Element;
+  const Toast: (props: ToastProps) => JSX.Element;
+  const LimitUpsell: (props: LimitUpsellProps) => JSX.Element;
   const HighlightCard: (props: HighlightCardProps) => JSX.Element;
   const HighlightSlot: (props: HighlightSlotProps) => JSX.Element;
   const HighlightGrid: (props: { children?: any }) => JSX.Element;

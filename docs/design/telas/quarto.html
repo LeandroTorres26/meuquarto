@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>O quarto de Leandro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<!-- Protótipo em CSS 3D. Tecnologia final a decidir; manter o mesmo conteúdo, a mesma câmera e os mesmos controles.
+     Prototype URL params (not in the app): ?modo=toque|mouse forces an input model, ?objeto=<grupo> starts selected,
+     ?hover=<grupo> fakes a hover, ?dica=1 replays the first-visit hint. Groups: parede, mural, estante, vitrola, tv. -->
+<div class="page room" id="room">
+  <div class="room-stage" id="stage" aria-label="Quarto em 3D">
+    <div class="room-anchor" id="anchor"><div class="room-world" id="world"></div></div>
+    <div class="room-anchor room-anchor--flat" id="anchor2"><div id="pins"></div></div>
+  </div>
+  <p class="room-hint" id="hint" role="status" hidden>Toque em um objeto ou use os atalhos abaixo. Arraste para girar, use dois dedos para mover e aproximar.</p>
+
+  <div class="room-bar">
+    <a href="perfil.html" class="mq-btn mq-btn--secondary mq-btn--sm"><svg class="icon" aria-hidden="true"><use href="icons.svg#arrow-left"/></svg>Voltar ao perfil</a>
+    <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm mq-btn--icon" aria-label="Compartilhar o quarto"><svg class="icon" aria-hidden="true"><use href="icons.svg#share-2"/></svg></button>
+  </div>
+
+  <div class="room-tools" role="toolbar" aria-label="Câmera e luz">
+    <button type="button" class="mq-btn mq-btn--icon" aria-label="Girar para a esquerda" data-act="rotL"><svg class="icon" aria-hidden="true"><use href="icons.svg#rotate-ccw"/></svg></button>
+    <button type="button" class="mq-btn mq-btn--icon" aria-label="Girar para a direita" data-act="rotR"><svg class="icon" aria-hidden="true"><use href="icons.svg#rotate-cw"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" class="mq-btn mq-btn--icon" aria-label="Aproximar" data-act="in"><svg class="icon" aria-hidden="true"><use href="icons.svg#zoom-in"/></svg></button>
+    <button type="button" class="mq-btn mq-btn--icon" aria-label="Afastar" data-act="out"><svg class="icon" aria-hidden="true"><use href="icons.svg#zoom-out"/></svg></button>
+    <button type="button" class="mq-btn mq-btn--icon" aria-label="Centralizar o quarto" data-act="center"><svg class="icon" aria-hidden="true"><use href="icons.svg#scan"/></svg></button>
+    <span class="sep" aria-hidden="true"></span>
+    <button type="button" class="mq-btn mq-btn--icon" aria-label="Abajur" aria-pressed="true" data-act="lamp" id="lamp"><svg class="icon" aria-hidden="true"><use href="icons.svg#lightbulb"/></svg></button>
+  </div>
+
+  <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm room-expand" id="expand" data-act="expand" aria-controls="sheet" aria-expanded="false" hidden><svg class="icon" aria-hidden="true"><use href="icons.svg#panel-right-open"/></svg><span>Mostrar painel</span></button>
+  <section class="room-info" id="sheet" aria-labelledby="room-h">
+    <button type="button" class="ib room-collapse" id="collapse" data-act="collapse" aria-controls="sheet" aria-expanded="true" aria-label="Recolher painel"><svg class="icon" aria-hidden="true"><use href="icons.svg#panel-right-close"/></svg></button>
+    <div class="room-grab" aria-hidden="true"></div>
+    <div class="room-head">
+      <h1 id="room-h" class="t-h2">O quarto de Leandro</h1>
+    </div>
+    <div aria-live="polite" class="stack" id="detail"></div>
+    <div class="chips room-chips" role="group" aria-label="Objetos do quarto" id="chips"></div>
+    <a href="cadastro.html" class="mq-btn mq-btn--primary self-start room-cta">Crie o seu quarto</a>
+  </section>
+</div>
+
+<script src="item.js"></script>
+<script>
+(function () {
+  var C = function (n) { return 'covers/c' + String(n).padStart(2, '0') + '.svg'; };
+  var groups = {
+    parede: { label: 'Pôsteres', title: 'Pôsteres na parede', sub: 'Filmes e séries', at: [-168, 250, -20], items: ['perfect-days', 'paris-texas', 'twin-peaks', 'cidade-de-deus'] },
+    mural: { label: 'Mural', title: 'Mural', sub: 'Animes', at: [-40, 230, -190], items: ['frieren', 'cowboy-bebop', 'mob-psycho-100'] },
+    estante: { label: 'Estante', title: 'Estante', sub: 'Livros e mangás', at: [-150, 186, -170], items: ['torto-arado', 'grande-sertao-veredas', 'vagabond', 'oyasumi-punpun'] },
+    vitrola: { label: 'Vitrola', title: 'Vitrola e discos', sub: 'Música', at: [-150, 128, 0], items: ['clube-da-esquina', 'elis-e-tom', 'sobrevivendo-no-inferno'] },
+    tv: { label: 'TV', title: 'TV e console', sub: 'Games', at: [150, 168, -165], items: ['outer-wilds', 'hollow-knight', 'celeste'] }
+  };
+  var keys = Object.keys(groups);
+  var q = new URLSearchParams(location.search);
+
+  /* camera limits: yaw as before; pitch only a few degrees around 28 (never under the floor nor over the cut walls);
+     zoom shared by the buttons, the wheel and the pinch */
+  var LIM = { yaw: [-88, -2], pitch: [22, 34], zoom: [0.6, 3.5] };
+  var PITCH0 = 28, PITCH_R = 6;
+  /* fs, cx, cy: fitted scale and center of the free area; they ease like the rest of the camera when the panel changes size */
+  var cam = { yaw: -45, pitch: PITCH0, zoom: 1, px: 0, py: 0, fs: 0.5, cx: 0, cy: 0 }, tgt = Object.assign({}, cam);
+  var st = { sel: null, hover: q.get('hover'), focus: null, lamp: true, touch: false, hint: false, collapsed: false };
+  try { st.collapsed = localStorage.getItem('mq-quarto-painel') === 'recolhido'; } catch (_) {}
+  if (q.get('painel')) st.collapsed = q.get('painel') === 'recolhido';
+  var clamp = function (v, r) { return Math.max(r[0], Math.min(r[1], v)); };
+  /* soft limit: the tilt eases into 22-34 degrees instead of stopping dead */
+  var softPitch = function (raw) { return PITCH0 + PITCH_R * Math.tanh((raw - PITCH0) / PITCH_R); };
+  var rawPitch = PITCH0;
+
+  var $ = function (id) { return document.getElementById(id); };
+  var room = $('room'), stage = $('stage'), anchor = $('anchor'), anchor2 = $('anchor2'), world = $('world'), pins = $('pins'), sheet = $('sheet');
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)'), noHover = matchMedia('(hover: none)');
+
+  /* ---------- scene ---------- */
+  function boxes() {
+    var out = [], dim = st.lamp ? 0 : 0.3;
+    function shade(a) { var v = Math.min(0.85, a + dim); return v > 0 ? 'box-shadow:inset 0 0 0 9999px hsl(240 33% 5% / ' + v.toFixed(2) + ');' : ''; }
+    function B(x0, x1, y0, y1, z0, z1, c, o) {
+      o = o || {};
+      var W = x1 - x0, H = y1 - y0, D = z1 - z0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, cz = (z0 + z1) / 2;
+      var defs = [['front', W, H, 'translateZ(' + D / 2 + 'px)', .06], ['back', W, H, 'rotateY(180deg) translateZ(' + D / 2 + 'px)', .3], ['right', D, H, 'rotateY(90deg) translateZ(' + W / 2 + 'px)', .18], ['left', D, H, 'rotateY(-90deg) translateZ(' + W / 2 + 'px)', .12], ['top', W, D, 'rotateX(90deg) translateZ(' + H / 2 + 'px)', 0]];
+      var f = '';
+      defs.forEach(function (d) {
+        if (o.only && o.only.indexOf(d[0]) < 0) return;
+        var t = (o.tex && o.tex[d[0]]) || {};
+        f += '<div class="fc" style="left:' + (-d[1] / 2) + 'px;top:' + (-d[2] / 2) + 'px;width:' + d[1] + 'px;height:' + d[2] + 'px;transform:' + d[3] + ';background:' + (t.bg || c) + ';' + (t.css || '') + shade(o.flat ? 0 : d[4]) + '">' + (t.img ? '<img src="' + t.img + '" alt="" draggable="false">' : '') + '</div>';
+      });
+      out.push('<div class="bx"' + (o.g ? ' data-g="' + o.g + '"' : '') + ' style="transform:translate3d(' + cx + 'px,' + (-cy) + 'px,' + cz + 'px)">' + f + '</div>');
+    }
+    var wall = 'hsl(28 77% 78%)', navy = 'hsl(228 48% 28%)', wood = 'hsl(28 52% 56%)', woodDark = 'hsl(24 40% 39%)', dark = 'hsl(235 21% 21%)', cream = 'hsl(40 59% 86%)';
+    B(-212, 200, -16, 0, -212, 200, 'hsl(31 62% 68%)', { tex: { top: { bg: 'repeating-linear-gradient(90deg,hsl(18 83% 65%) 0 38px,hsl(17 64% 57%) 38px 40px)' } } });
+    B(-200, 200, 0, 260, -212, -200, wall); B(-212, -200, 0, 260, -212, 200, wall);
+    B(-224, 206, 260, 286, -226, -194, navy); B(-226, -194, 260, 286, -226, 206, navy);
+    B(-200, 200, 0, 10, -200, -197, 'hsl(25 69% 69%)', { only: ['front', 'top'] }); B(-200, -197, 0, 10, -197, 200, 'hsl(25 69% 69%)', { only: ['right', 'top'] });
+    B(40, 150, 100, 210, -200, -195, 'hsl(7 66% 53%)');
+    B(50, 140, 110, 200, -195, -194, 'hsl(42 100% 70%)', { only: ['front'], flat: true, tex: { front: { bg: st.lamp ? 'repeating-linear-gradient(180deg,hsl(42 100% 70%) 0 8px,hsl(36 87% 62%) 8px 10px)' : 'radial-gradient(circle at 70% 30%,hsl(40 91% 91%) 0 6px,transparent 7px),linear-gradient(hsl(225 40% 18%),hsl(213 30% 32%))' } } });
+    B(34, 156, 96, 102, -200, -186, 'hsl(7 66% 53%)');
+    [[150, 222, -170, -122, 1, 'hsl(187 64% 29%)'], [160, 232, -96, -48, 9, 'hsl(7 66% 53%)'], [150, 222, 22, 70, 7, 'hsl(187 64% 29%)'], [160, 232, 98, 146, 4, navy]].forEach(function (p) {
+      B(-200, -196, p[0], p[1], p[2], p[3], p[5], { g: 'parede', only: ['right', 'top', 'front'], tex: { right: { img: C(p[4]), css: 'border:3px solid ' + p[5] + ';' } } });
+    });
+    B(-92, 12, 130, 212, -200, -195, 'hsl(27 38% 53%)', { g: 'mural', tex: { front: { css: 'border:4px solid hsl(26 30% 32%);' } } });
+    [[-82, -54, 150, 190, 12], [-48, -20, 144, 184, 7], [-14, 4, 156, 196, 10]].forEach(function (p) { B(p[0], p[1], p[2], p[3], -195, -193, cream, { g: 'mural', only: ['front'], tex: { front: { img: C(p[4]) } } }); });
+    B(-190, -110, 0, 170, -198, -194, woodDark, { g: 'estante' }); B(-190, -184, 0, 170, -194, -160, wood, { g: 'estante' }); B(-116, -110, 0, 170, -194, -160, wood, { g: 'estante' });
+    [0, 56, 112].forEach(function (y) { B(-184, -116, y, y + 6, -194, -160, wood, { g: 'estante' }); });
+    B(-192, -108, 164, 170, -198, -158, wood, { g: 'estante' });
+    var bx = -182;
+    [[9, 40, 'hsl(124 46% 70%)'], [8, 36, 'hsl(27 87% 67%)'], [10, 42, 'hsl(214 35% 37%)'], [7, 34, 'hsl(42 34% 89%)'], [9, 38, 'hsl(12 76% 61%)'], [8, 40, 'hsl(153 40% 30%)'], [9, 36, 'hsl(44 89% 61%)']].forEach(function (b) { B(bx, bx + b[0], 6, 6 + b[1], -190, -166, b[2], { g: 'estante' }); bx += b[0] + 1; });
+    bx = -182; ['hsl(266 100% 81%)', 'hsl(266 100% 81%)', 'hsl(266 100% 81%)', 'hsl(266 100% 81%)', 'hsl(334 100% 75%)', 'hsl(334 100% 75%)', 'hsl(198 78% 64%)', 'hsl(198 78% 64%)'].forEach(function (c) { B(bx, bx + 7, 62, 92, -188, -168, c, { g: 'estante' }); bx += 8; });
+    bx = -182; [[10, 40, 'hsl(215 50% 23%)'], [9, 44, 'hsl(355 78% 56%)'], [8, 38, 'hsl(40 91% 91%)']].forEach(function (b) { B(bx, bx + b[0], 118, 118 + b[1], -190, -166, b[2], { g: 'estante' }); bx += b[0] + 1; });
+    B(-150, -120, 118, 124, -190, -166, 'hsl(144 47% 66%)', { g: 'estante' }); B(-148, -122, 124, 130, -188, -168, 'hsl(17 100% 68%)', { g: 'estante' });
+    B(30, 190, 64, 72, -198, -138, navy, { g: 'tv' });
+    B(130, 186, 0, 64, -194, -144, 'hsl(42 100% 70%)', { g: 'tv', tex: { front: { bg: 'linear-gradient(hsl(42 100% 70%) 0 46%,hsl(40 62% 49%) 46% 50%,hsl(42 100% 70%) 50%)' } } });
+    B(34, 40, 0, 64, -150, -144, dark, { g: 'tv' }); B(34, 40, 0, 64, -196, -190, dark, { g: 'tv' });
+    B(118, 180, 72, 120, -188, -148, cream, { g: 'tv', tex: { front: { img: C(3), css: 'border:7px solid ' + cream + ';border-radius:10px;' } } });
+    B(136, 138, 120, 146, -170, -168, 'hsl(220 10% 64%)', { g: 'tv' }); B(158, 160, 120, 140, -170, -168, 'hsl(220 10% 64%)', { g: 'tv' });
+    B(50, 98, 72, 84, -186, -160, 'hsl(240 7% 86%)', { g: 'tv', tex: { top: { bg: 'linear-gradient(90deg,hsl(240 7% 86%) 0 60%,hsl(7 66% 53%) 60% 70%,hsl(240 7% 86%) 70%)' } } });
+    B(58, 84, 72, 76, -150, -140, 'hsl(226 10% 75%)', { g: 'tv' });
+    B(-198, -110, 74, 80, -62, 92, 'hsl(34 61% 77%)', { g: 'vitrola' });
+    [[-196, -58], [-116, -58], [-196, 86], [-116, 86]].forEach(function (p) { B(p[0], p[0] + 4, 0, 74, p[1], p[1] + 4, dark, { g: 'vitrola' }); });
+    B(-182, -124, 80, 92, -44, 20, woodDark, { g: 'vitrola' });
+    B(-174, -132, 92, 94, -36, 6, 'hsl(240 13% 5%)', { g: 'vitrola', only: ['top'], flat: true, tex: { top: { bg: 'radial-gradient(circle,var(--brand) 0 14%,hsl(240 13% 5%) 15% 18%,transparent 18%),repeating-radial-gradient(circle,hsl(240 9% 10%) 0 2px,hsl(240 13% 5%) 2px 4px)', css: 'border-radius:50%;' } } });
+    B(-130, -127, 94, 98, -30, 4, 'hsl(240 7% 86%)', { g: 'vitrola' });
+    B(-190, -150, 80, 84, 40, 84, 'hsl(240 13% 5%)', { g: 'vitrola', tex: { top: { img: C(11) } } });
+    var spk = 'radial-gradient(circle at 50% 28%,hsl(240 7% 86%) 0 8px,hsl(235 21% 21%) 8px 12px,transparent 12px),radial-gradient(circle at 50% 66%,hsl(240 7% 86%) 0 11px,hsl(235 21% 21%) 11px 15px,transparent 15px),hsl(226 8% 32%)';
+    B(-194, -160, 0, 112, -112, -82, 'hsl(226 8% 32%)', { g: 'vitrola', tex: { right: { bg: spk } } }); B(-194, -160, 0, 112, 104, 134, 'hsl(226 8% 32%)', { g: 'vitrola', tex: { right: { bg: spk } } });
+    B(-150, -80, 0, 34, 132, 182, wood, { g: 'vitrola' });
+    [[76, 140, 6], [70, 152, 4], [62, 164, 11]].forEach(function (s) { B(-146, -84, 20, s[0], s[1], s[1] + 3, cream, { g: 'vitrola', only: ['front', 'top'], tex: { front: { img: C(s[2]) } } }); });
+    B(-10, 130, 0, 1, -40, 100, 'hsl(198 78% 64%)', { only: ['top'], flat: true, tex: { top: { bg: 'repeating-radial-gradient(circle,hsl(198 78% 64%) 0 14px,hsl(42 32% 92%) 14px 22px)', css: 'border-radius:50%;' } } });
+    B(40, 80, 44, 52, 10, 50, 'hsl(144 47% 66%)', { tex: { top: { css: 'border-radius:50%;' } } });
+    [[44, 14], [72, 14], [44, 42], [72, 42]].forEach(function (p) { B(p[0], p[0] + 4, 0, 44, p[1], p[1] + 4, dark); });
+    if (st.lamp) B(-150, 110, 1, 2, -200, 80, 'transparent', { only: ['top'], flat: true, tex: { top: { bg: 'radial-gradient(ellipse at 50% 40%,hsl(40 100% 68% / .5),hsl(40 100% 68% / 0) 65%)' } } });
+    B(-44, -12, 0, 4, -134, -102, dark); B(-30, -26, 4, 196, -120, -116, dark);
+    B(-52, -4, 188, 216, -142, -94, st.lamp ? 'hsl(43 100% 83%)' : 'hsl(41 22% 68%)', { flat: st.lamp });
+    B(150, 180, 0, 26, 120, 150, 'hsl(17 56% 51%)'); B(144, 186, 26, 76, 114, 156, 'hsl(153 39% 41%)'); B(152, 178, 76, 96, 122, 148, 'hsl(152 41% 52%)');
+    return out.join('');
+  }
+  function buildWorld() { world.innerHTML = boxes(); applyLit(); }
+  function buildPins() {
+    pins.innerHTML = keys.map(function (k) {
+      return '<div class="pin-anchor" data-pin="' + k + '"><button type="button" class="room-pin" data-k="' + k + '" aria-pressed="false"><span class="room-pin__label">' + groups[k].label + '</span><span class="room-pin__dot" aria-hidden="true"></span></button></div>';
+    }).join('');
+  }
+
+  /* ---------- camera ---------- */
+  /* the room's projected bounds at scale 1, over every yaw and pitch the camera allows, so the fit never breathes while rotating */
+  var BOX = (function () {
+    var b = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 };
+    for (var yaw = LIM.yaw[0]; yaw <= LIM.yaw[1]; yaw += 2) [LIM.pitch[0], PITCH0, LIM.pitch[1]].forEach(function (pitch) {
+      [-226, 206].forEach(function (x) { [-16, 286].forEach(function (y) { [-226, 206].forEach(function (z) {
+        var p = project([x, y, z], 1, { yaw: yaw, pitch: pitch });
+        b.x0 = Math.min(b.x0, p.x); b.x1 = Math.max(b.x1, p.x); b.y0 = Math.min(b.y0, p.y); b.y1 = Math.max(b.y1, p.y);
+      }); }); });
+    });
+    b.cx = (b.x0 + b.x1) / 2; b.cy = (b.y0 + b.y1) / 2; b.w = b.x1 - b.x0; b.h = b.y1 - b.y0;
+    return b;
+  })();
+  /* the panel goes to the side on wide mouse screens and on landscape windows (mouse or touch); otherwise it is a bottom sheet */
+  function isSide() { var land = innerWidth >= 600 && innerWidth > innerHeight * 1.2; return st.touch ? land : (innerWidth >= 1024 || land); }
+  /* free area: below the top bar, and above the sheet and tools (bottom layout) or left of the panel (side layout) */
+  function freeArea() {
+    var bar = document.querySelector('.room-bar').getBoundingClientRect(), tools = document.querySelector('.room-tools').getBoundingClientRect(), sh = sheet.getBoundingClientRect();
+    if (st.collapsed) { var ex = $('expand').getBoundingClientRect(); sh = { left: innerWidth + 8, top: ex.top }; }
+    var side = room.classList.contains('room--side');
+    var x0 = 8, x1 = side ? sh.left - 16 : innerWidth - 8, y0 = (st.touch && !side ? tools.bottom : bar.bottom) + 8, y1 = (side || st.touch ? (side ? tools.top : sh.top) : Math.min(sh.top, tools.top)) - 12;
+    var w = Math.max(120, x1 - x0), h = Math.max(120, y1 - y0);
+    free = { w: w, h: h };
+    return { fs: Math.min(w / BOX.w, h / BOX.h), cx: (x0 + x1) / 2, cy: y0 + h / 2 };
+  }
+  var free = { w: 600, h: 400 };
+  /* pan limit: a room smaller than the free area stays inside it; a larger one always covers it. Never off screen. */
+  function clampPan(o) {
+    var s = (o.fs || tgt.fs) * (o.zoom || tgt.zoom), mx = Math.abs(free.w - s * BOX.w) / 2 + 24, my = Math.abs(free.h - s * BOX.h) / 2 + 24;
+    o.px = clamp(o.px, [-mx, mx]); o.py = clamp(o.py, [-my, my]);
+    return o;
+  }
+  function relayout(jump) {
+    var wasSide = room.classList.contains('room--side');
+    room.classList.toggle('room--side', isSide());
+    if (wasSide !== room.classList.contains('room--side') && $('expand')) { var sd = !wasSide; $('expand').querySelector('use').setAttribute('href', 'icons.svg#' + (sd ? 'panel-right-open' : 'chevron-up')); $('collapse').querySelector('use').setAttribute('href', 'icons.svg#' + (sd ? 'panel-right-close' : 'chevron-down')); }
+    sheetSize();
+    var a = freeArea();
+    if (jump) { Object.assign(cam, a); Object.assign(tgt, a); applyCamera(); } else moveTo(a);
+  }
+  function project(at, s, c) {
+    var ya = c.yaw * Math.PI / 180, xa = -c.pitch * Math.PI / 180, x = at[0], y = -at[1] + 130, z = at[2];
+    var x1 = x * Math.cos(ya) + z * Math.sin(ya), z1 = -x * Math.sin(ya) + z * Math.cos(ya);
+    return { x: x1 * s, y: (y * Math.cos(xa) - z1 * Math.sin(xa)) * s };
+  }
+  function applyCamera() {
+    var s = cam.fs * cam.zoom;
+    /* zoom keeps the room's center on the center of the free area */
+    anchor.style.left = anchor2.style.left = (cam.cx - s * BOX.cx).toFixed(1) + 'px';
+    anchor.style.top = anchor2.style.top = (cam.cy - s * BOX.cy).toFixed(1) + 'px';
+    world.style.transform = 'scale(' + s.toFixed(4) + ') rotateX(' + (-cam.pitch).toFixed(2) + 'deg) rotateY(' + cam.yaw.toFixed(2) + 'deg) translateY(130px)';
+    anchor.style.translate = anchor2.style.translate = cam.px.toFixed(1) + 'px ' + cam.py.toFixed(1) + 'px';
+    keys.forEach(function (k) {
+      var p = project(groups[k].at, s, cam), el = pins.querySelector('[data-pin="' + k + '"]');
+      if (el) el.style.transform = 'translate(' + p.x.toFixed(1) + 'px,' + p.y.toFixed(1) + 'px) translate(-50%,-100%)';
+    });
+  }
+  /* smooth interpolation toward the target; with reduced motion the camera jumps */
+  var raf = 0;
+  function step() {
+    raf = 0; var moving = false;
+    Object.keys(tgt).forEach(function (k) {
+      var d = tgt[k] - cam[k];
+      if (Math.abs(d) > (k === 'zoom' || k === 'fs' ? 0.0005 : 0.05)) { cam[k] += d * 0.18; moving = true; } else cam[k] = tgt[k];
+    });
+    applyCamera();
+    if (moving) raf = requestAnimationFrame(step);
+  }
+  function moveTo(o) {
+    Object.assign(tgt, o);
+    tgt.zoom = clamp(tgt.zoom, LIM.zoom); tgt.yaw = clamp(tgt.yaw, LIM.yaw); clampPan(tgt);
+    if (reduce.matches) { Object.assign(cam, tgt); applyCamera(); } else if (!raf) raf = requestAnimationFrame(step);
+  }
+  /* touch: pan and zoom so the selected object sits in the visible area above the sheet */
+  function frameObject(k) {
+    requestAnimationFrame(function () {
+      relayout();
+      var z = 1.6, s = tgt.fs * z, p = project(groups[k].at, s, { yaw: tgt.yaw, pitch: tgt.pitch });
+      var ox = tgt.cx - s * BOX.cx, oy = tgt.cy - s * BOX.cy;
+      var side = room.classList.contains('room--side'), sh = sheet.getBoundingClientRect(), tl = document.querySelector('.room-tools').getBoundingClientRect();
+      var top = (side ? 72 : tl.bottom + 8), bottom = (side ? tl.top : sh.top) - 12, midX = side ? (sh.left - 8) / 2 : innerWidth / 2;
+      moveTo({ zoom: z, px: midX - (ox + p.x), py: top + (bottom - top) * 0.25 - (oy + p.y) });
+    });
+  }
+  function homeCamera() { moveTo({ zoom: 1, px: 0, py: 0 }); }
+
+  /* ---------- selection, hover, focus ---------- */
+  var last = null, pushed = false;
+  function itemId() { return new URLSearchParams(location.search).get('item'); }
+  function groupOf(id) { return keys.filter(function (k) { return groups[k].items.indexOf(id) >= 0; })[0] || null; }
+
+  function applyLit() {
+    var lit = {}; [st.sel, st.hover, st.focus].forEach(function (k) { if (k) lit[k] = true; });
+    world.querySelectorAll('.bx[data-g]').forEach(function (b) { b.classList.toggle('is-lit', !!lit[b.getAttribute('data-g')]); });
+    pins.querySelectorAll('.room-pin').forEach(function (b) {
+      var k = b.getAttribute('data-k');
+      b.classList.toggle('is-shown', !!lit[k] || st.hint);
+      b.setAttribute('aria-pressed', String(st.sel === k));
+    });
+    room.classList.toggle('has-sel', !!st.sel);
+  }
+  function renderPanel() {
+    $('chips').innerHTML = keys.map(function (k) { return '<button type="button" class="chip" data-k="' + k + '" aria-pressed="' + (st.sel === k) + '">' + groups[k].label + '</button>'; }).join('');
+    var g = st.sel && groups[st.sel], id = itemId();
+    $('detail').innerHTML = !g ? '' : id
+      ? '<button type="button" class="mq-btn mq-btn--ghost mq-btn--sm self-start" data-back><svg class="icon" aria-hidden="true"><use href="icons.svg#arrow-left"/></svg>' + g.label + '</button><div class="detail-wrap">' + MQItem.render(id, { hid: 'room-item-h', back: 'Voltar para ' + g.label }) + '</div>'
+      : '<div class="pair-2"><h2 class="t-h3">' + g.title + '</h2><p class="t-sm">' + g.sub + '</p></div><ul class="list">' + g.items.map(function (i) { var it = MQItem.get(i); return '<li><button type="button" class="room-item" data-item="' + i + '"><img class="thumb' + (it.cat === 'music' ? ' thumb--sq' : '') + '" src="' + it.cover + '" alt=""><span class="grow pair"><span class="t-poster">' + it.title.replace(/&/g, '&amp;') + '</span><span class="t-cap">' + it.year + '</span></span></button></li>'; }).join('') + '</ul>';
+    $('lamp').setAttribute('aria-pressed', String(st.lamp));
+    sheetSize();
+  }
+  function select(k) {
+    if (itemId()) history.replaceState(null, '', location.pathname);
+    pushed = false; st.sel = k; if (st.collapsed) setCollapsed(false); renderPanel(); applyLit();
+    if (st.touch) frameObject(k);
+  }
+  function clearSel() {
+    if (!st.sel) return;
+    st.sel = null;
+    if (itemId()) history.replaceState(null, '', location.pathname);
+    renderPanel(); applyLit(); homeCamera();
+  }
+  /* collapse: the panel becomes one small button; focus moves to the control that remains */
+  function setCollapsed(v, moveFocus) {
+    st.collapsed = v;
+    room.classList.toggle('is-collapsed', v);
+    var ex = $('expand'), co = $('collapse'), side = room.classList.contains('room--side');
+    ex.hidden = !v; ex.setAttribute('aria-expanded', 'false'); co.setAttribute('aria-expanded', 'true');
+    ex.querySelector('use').setAttribute('href', 'icons.svg#' + (side ? 'panel-right-open' : 'chevron-up'));
+    co.querySelector('use').setAttribute('href', 'icons.svg#' + (side ? 'panel-right-close' : 'chevron-down'));
+    ex.querySelector('span').textContent = st.touch ? 'Atalhos' : 'Mostrar painel';
+    co.setAttribute('aria-label', st.touch ? 'Recolher atalhos' : 'Recolher painel');
+    try { localStorage.setItem('mq-quarto-painel', v ? 'recolhido' : 'aberto'); } catch (_) {}
+    /* closing the panel also closes what it was showing: the selection and its label go away */
+    if (v) { st.hint = false; clearSel(); applyLit(); }
+    relayout();
+    if (moveFocus) (v ? ex : co).focus();
+  }
+  function setHover(k) { if (st.hover !== k) { st.hover = k; applyLit(); } }
+
+  /* ---------- input model ---------- */
+  function setMode() {
+    var m = q.get('modo');
+    st.touch = m === 'toque' || (m !== 'mouse' && noHover.matches);
+    room.classList.toggle('room--touch', st.touch);
+    /* the how-to is not in the panel: it describes the scene for screen readers (and, on touch, shows in the first-visit hint) */
+    stage.setAttribute('aria-label', st.touch
+      ? 'Quarto em 3D. Arraste para girar, use dois dedos para mover e aproximar. Toque num objeto ou num atalho abaixo.'
+      : 'Quarto em 3D. Arraste para girar e inclinar; para mover, arraste com o botão direito ou com Espaço apertado; a roda aproxima. Clique num objeto para ver o que tem ali.');
+    applyCamera();
+  }
+  function sheetSize() { room.style.setProperty('--sheet-h', room.classList.contains('room--side') || st.collapsed ? '0px' : (room.getBoundingClientRect().bottom - sheet.getBoundingClientRect().top) + 'px'); }
+
+  /* ---------- pointer: drag rotates (and tilts with a mouse), pinch zooms, a tap selects ---------- */
+  var ptrs = {}, drag = null, pinch = null, spaceDown = false;
+  function centroid() { var p = Object.keys(ptrs).map(function (k) { return ptrs[k]; }); return { x: (p[0].x + p[1].x) / 2, y: (p[0].y + p[1].y) / 2 }; }
+  /* Space held over the room turns a left drag into a pan, like in Figma */
+  addEventListener('keydown', function (e) { if (e.code === 'Space' && !(e.target.closest && e.target.closest('button, a, input, textarea')) && !st.touch) { spaceDown = true; room.classList.add('is-pan-ready'); e.preventDefault(); } });
+  addEventListener('keyup', function (e) { if (e.code === 'Space') { spaceDown = false; room.classList.remove('is-pan-ready'); } });
+  stage.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  stage.addEventListener('dragstart', function (e) { e.preventDefault(); });   /* no native image drag out of the scene */
+  function groupAt(x, y) {
+    var el = document.elementFromPoint(x, y), b = el && el.closest('.bx[data-g], .room-pin');
+    return b ? (b.getAttribute('data-g') || b.getAttribute('data-k')) : null;
+  }
+  function dist() { var p = Object.keys(ptrs).map(function (k) { return ptrs[k]; }); return Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y); }
+  stage.addEventListener('pointerdown', function (e) {
+    if (e.target.closest('button')) return;
+    ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
+    var n = Object.keys(ptrs).length;
+    /* right or middle button, or Space / Shift with the left one: pan; otherwise rotate (and tilt) */
+    var pan = e.pointerType === 'mouse' && (e.button === 1 || e.button === 2 || spaceDown || e.shiftKey);
+    if (n === 1) { drag = { x: e.clientX, y: e.clientY, yaw: cam.yaw, raw: rawPitch, px: cam.px, py: cam.py, pan: pan, moved: false }; if (pan) { e.preventDefault(); room.classList.add('is-panning'); } }
+    /* two fingers: pinch zooms and moving them together pans */
+    if (n === 2) { var c0 = centroid(); pinch = { d: dist(), zoom: tgt.zoom, x: c0.x, y: c0.y, px: tgt.px, py: tgt.py }; drag = null; }
+    stage.setPointerCapture(e.pointerId);
+  });
+  stage.addEventListener('pointermove', function (e) {
+    if (!ptrs[e.pointerId]) { if (e.pointerType === 'mouse' && !st.touch) setHover(groupAt(e.clientX, e.clientY)); return; }
+    ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
+    if (pinch && Object.keys(ptrs).length === 2) { var c1 = centroid(); moveTo({ zoom: pinch.zoom * dist() / pinch.d, px: pinch.px + c1.x - pinch.x, py: pinch.py + c1.y - pinch.y }); return; }
+    if (!drag) return;
+    var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    if (Math.abs(dx) + Math.abs(dy) > 5) drag.moved = true;
+    if (drag.pan) { var o = clampPan({ px: drag.px + dx, py: drag.py + dy }); cam.px = tgt.px = o.px; cam.py = tgt.py = o.py; applyCamera(); return; }
+    cam.yaw = tgt.yaw = clamp(drag.yaw + dx * 0.35, LIM.yaw);
+    if (!st.touch) { rawPitch = drag.raw + dy * 0.12; cam.pitch = tgt.pitch = softPitch(rawPitch); }   /* no tilt on touch: vertical drag belongs to the sheet */
+    applyCamera();
+  });
+  function up(e) {
+    if (!ptrs[e.pointerId]) return;
+    delete ptrs[e.pointerId];
+    room.classList.remove('is-panning');
+    if (drag && !drag.moved && !drag.pan && e.type === 'pointerup') {
+      var k = groupAt(e.clientX, e.clientY);
+      if (k) select(k); else if (st.touch) clearSel();
+    }
+    if (drag && !drag.pan) rawPitch = PITCH0 + PITCH_R * Math.atanh(Math.max(-0.999, Math.min(0.999, (cam.pitch - PITCH0) / PITCH_R)));   /* next drag starts where the tilt eased to */
+    if (!Object.keys(ptrs).length) { drag = null; pinch = null; }
+  }
+  stage.addEventListener('pointerup', up);
+  stage.addEventListener('pointercancel', up);
+  stage.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse' && !ptrs[e.pointerId]) setHover(null); });
+  /* wheel and trackpad pinch (ctrlKey) zoom only over the scene, and the page never scrolls */
+  stage.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    if (e.shiftKey) { moveTo({ px: tgt.px - (e.deltaX || e.deltaY), py: tgt.py }); return; }   /* Shift + wheel pans sideways */
+    moveTo({ zoom: tgt.zoom * Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)) });
+  }, { passive: false });
+
+  /* labels are buttons: Tab reaches each object, and focus shows label and glow like hover */
+  pins.addEventListener('focusin', function (e) { var b = e.target.closest('[data-k]'); if (b) { st.focus = b.getAttribute('data-k'); applyLit(); } });
+  pins.addEventListener('focusout', function () { st.focus = null; applyLit(); });
+
+  /* touch sheet: dragging the handle or the title down clears the selection */
+  var sdrag = null;
+  sheet.addEventListener('pointerdown', function (e) {
+    if (!st.touch || !st.sel || !e.target.closest('.room-grab, .room-head')) return;
+    sdrag = { y: e.clientY, dy: 0 }; sheet.classList.add('is-dragging'); sheet.setPointerCapture(e.pointerId);
+  });
+  sheet.addEventListener('pointermove', function (e) { if (!sdrag) return; sdrag.dy = Math.max(0, e.clientY - sdrag.y); sheet.style.translate = '0 ' + sdrag.dy + 'px'; });
+  function sheetUp() { if (!sdrag) return; sheet.classList.remove('is-dragging'); sheet.style.translate = ''; if (sdrag.dy > 72) clearSel(); sdrag = null; }
+  sheet.addEventListener('pointerup', sheetUp); sheet.addEventListener('pointercancel', sheetUp);
+
+  /* ---------- clicks: pins, chips, tools, items (S17 in the panel) ---------- */
+  function closeItem() { if (pushed) { history.back(); return; } history.replaceState(null, '', location.pathname); renderPanel(); }
+  addEventListener('popstate', function (e) {
+    pushed = !!(e.state && e.state.item); var g = groupOf(itemId()); if (g) st.sel = g; renderPanel(); applyLit();
+    var b = !itemId() && last && document.querySelector('[data-item="' + last + '"]'); if (b) b.focus();
+  });
+  addEventListener('keydown', function (e) { if (e.key === 'Escape') { if (itemId()) closeItem(); else if (st.sel && st.touch) clearSel(); } });
+  document.addEventListener('click', function (e) {
+    var it = e.target.closest('[data-item]');
+    if (it) { history.pushState({ item: true }, '', '?item=' + it.getAttribute('data-item')); pushed = true; last = it.getAttribute('data-item'); renderPanel(); var h = $('room-item-h'); h.tabIndex = -1; h.focus(); return; }
+    if (e.target.closest('[data-back], [data-close]')) { closeItem(); return; }
+    var k = e.target.closest('[data-k]'); if (k) { select(k.getAttribute('data-k')); return; }
+    var a = e.target.closest('[data-act]'); if (!a) return;
+    var act = a.getAttribute('data-act');
+    if (act === 'rotL') moveTo({ yaw: tgt.yaw + 15 });
+    if (act === 'rotR') moveTo({ yaw: tgt.yaw - 15 });
+    if (act === 'in') moveTo({ zoom: tgt.zoom * 1.25 });
+    if (act === 'out') moveTo({ zoom: tgt.zoom / 1.25 });
+    if (act === 'collapse') { setCollapsed(true, true); return; }
+    if (act === 'expand') { setCollapsed(false, true); return; }
+    if (act === 'center') moveTo({ zoom: 1, px: 0, py: 0, yaw: -45, pitch: PITCH0 });
+    if (act === 'lamp') { st.lamp = !st.lamp; buildWorld(); renderPanel(); }
+  });
+
+  /* first touch visit: every label for ~2s with the hint, then they fade and never return */
+  function firstHint() {
+    var seen = false;
+    try { seen = localStorage.getItem('mq-quarto-dica') === '1'; } catch (_) {}
+    var force = /^(1|fixa)$/.test(q.get('dica') || '');
+    if (!st.touch || q.get('dica') === '0' || (seen && !force)) return;
+    var hint = $('hint'); hint.hidden = false; st.hint = true; applyLit();
+    setTimeout(function () {
+      st.hint = false; applyLit(); hint.classList.add('is-gone');
+      setTimeout(function () { hint.hidden = true; }, 450);
+      try { localStorage.setItem('mq-quarto-dica', '1'); } catch (_) {}
+    }, q.get('dica') === 'fixa' ? 1e9 : 2000);
+  }
+
+  buildPins(); setMode(); buildWorld(); renderPanel();
+  var start = groupOf(itemId()) || (groups[q.get('objeto')] ? q.get('objeto') : null);
+  if (start) select(start);
+  relayout(true); setCollapsed(st.collapsed); relayout(true); firstHint();
+  noHover.addEventListener('change', function () { setMode(); renderPanel(); relayout(); });
+  addEventListener('resize', function () { relayout(true); });
+  /* the panel changes height with the selection: the room eases into the new free area */
+  new ResizeObserver(function () { relayout(); }).observe(sheet);
+})();
+</script>
+</body>
+</html>

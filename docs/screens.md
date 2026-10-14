@@ -21,6 +21,7 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S14 | Account | `/painel/conta` | yes | Change password, delete account (confirmation) |
 | S15 | Terms / Privacy | `/termos` `/privacidade` | no | Legal text |
 | S16 | 404 / profile not found | | no | |
+| S17 | Item details | modal in S4/S5, `?item={mediaItemId}` | no | Opened by clicking any highlight or "Agora" card. Cover, title, year, category sticker, personal note, origin ("assistido em 3 out. no Letterboxd" when synced), external links ("Ver no Letterboxd", "Ver no TMDB"...). Centered dialog from 600px, bottom sheet on mobile. URL param makes it shareable; back button and Esc close it. In S5 it is the existing info panel. |
 
 Cross-cutting components: cookie banner, toasts, empty states (no highlights yet), limit-reached upsell, loading skeletons, error states for failed sync.
 
@@ -29,7 +30,7 @@ Cross-cutting components: cookie banner, toasts, empty states (no highlights yet
 2. **Pin a highlight:** S7 → S8 search → select → appears in list → add note → reorder. At limit → upsell → S11.
 3. **Link and sync:** S9 → choose provider → enter username → validation → first sync → status → "Agora" fills (S10 to adjust).
 4. **Buy a theme:** S11 → preview → Stripe Checkout (Pix/card) → S12 → webhook grants → theme selectable in S6.
-5. **Visitor:** shared link (Open Graph preview) → S4 → "Ver quarto" → S5 → back → "Create yours" CTA → S2.
+5. **Visitor:** shared link (Open Graph preview) → S4 → click a highlight → S17 → external link or close → "Ver quarto" → S5 → back → "Create yours" CTA → S2.
 6. **Delete account:** S14 → confirmation with password → S1.
 
 ## Design inputs

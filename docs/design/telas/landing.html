@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>meuquarto: seu gosto num quarto só</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <span class="wordmark">meuquarto</span>
+      <nav class="actions" aria-label="Conta">
+        <a href="entrar.html" class="mq-btn mq-btn--ghost mq-btn--sm">Entrar</a>
+        <a href="cadastro.html" class="mq-btn mq-btn--primary mq-btn--sm">Crie o seu</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap sections">
+    <section class="grid" style="padding-top: var(--page-top); align-items: center;" aria-labelledby="hero-h">
+      <div class="span-all d-span-6 stack" style="gap: var(--l3);">
+        <div class="stack">
+          <h1 id="hero-h" class="t-display-xl">Seu gosto num quarto só</h1>
+          <p class="t-hand">filmes, animes, livros, games e música</p>
+        </div>
+        <p class="t-lead measure-s">Um link para a bio com o que você assiste, lê, joga e ouve. Conecte o Letterboxd, o AniList, o Last.fm e o Steam, e o perfil se atualiza sozinho.</p>
+        <div class="stack-tight" style="display: flex; flex-direction: column; gap: var(--l1);">
+          <div class="actions">
+            <a href="cadastro.html" class="mq-btn mq-btn--primary">Crie o seu</a>
+            <a href="perfil.html" class="mq-btn mq-btn--secondary">Ver um perfil de exemplo</a>
+          </div>
+          <p class="t-sm">Grátis. Seu endereço fica meuquarto.com.br/seunome.</p>
+        </div>
+      </div>
+      <ul class="shelf span-all d-span-6" aria-label="Exemplos de destaques" style="padding-top: var(--space-4);">
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:0.883"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c01.svg" alt="" width="200" height="300"><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span><span class="mq-tape" aria-hidden="true"></span><p class="mq-slip">assisti 3 vezes</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Perfect Days</h3><p class="mq-item__sub">2023</p></div></div></article></li>
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.426"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-spine" aria-hidden="true"></span><img class="mq-art" src="covers/c07.svg" alt="" width="200" height="300"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Cowboy Bebop</h3><p class="mq-item__sub">1998</p></div></div></article></li>
+        <li><article class="mq-item mq-item--book mq-item--volume" style="--tilt-f:-0.996"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c10.svg" alt="" width="200" height="300"><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Torto Arado</h3><p class="mq-item__sub">2019</p></div></div></article></li>
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.88"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-record" aria-hidden="true"></span><img class="mq-art" src="covers/c11.svg" alt="" width="300" height="300"><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Clube da Esquina</h3><p class="mq-item__sub">1972</p></div></div></article></li>
+      </ul>
+    </section>
+
+    <section class="stack" style="gap: var(--l3);" aria-labelledby="como-h">
+      <h2 id="como-h" class="t-h2">Como funciona</h2>
+      <ol class="grid" style="list-style: none; padding: 0; row-gap: var(--l3);">
+        <li class="span-all t-span-4 d-span-4 step"><span class="step__n" aria-hidden="true">1</span><h3 class="t-h3">Escolha seu endereço</h3><p class="t-sm">meuquarto.com.br/seunome vira o link da sua bio.</p></li>
+        <li class="span-all t-span-4 d-span-4 step"><span class="step__n" aria-hidden="true">2</span><h3 class="t-h3">Conecte suas contas</h3><p class="t-sm">O que você registra no Letterboxd, AniList, Last.fm e Steam aparece no bloco Agora.</p></li>
+        <li class="span-all t-span-4 d-span-4 step"><span class="step__n" aria-hidden="true">3</span><h3 class="t-h3">Fixe seus favoritos</h3><p class="t-sm">Busque qualquer obra e fixe na parede, com uma nota sua.</p></li>
+      </ol>
+    </section>
+
+    <section class="grid" aria-labelledby="int-h">
+      <div class="span-all d-span-5 pair-2">
+        <h2 id="int-h" class="t-h2">Usa o que você já usa</h2>
+        <p class="t-body muted measure-s">Seu histórico continua onde está; o meuquarto só mostra. Séries e qualquer outra obra você busca e fixa à mão.</p>
+      </div>
+      <ul class="list span-all d-span-6" style="grid-column-end: -1;">
+        <li><span class="grow t-h3">Letterboxd</span><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span></li>
+        <li><span class="grow t-h3">AniList</span><span class="row"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-copy"/></svg>Mangá</span></span></li>
+        <li><span class="grow t-h3">Goodreads</span><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span></li>
+        <li><span class="grow t-h3">Steam</span><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span></li>
+        <li><span class="grow t-h3">Last.fm</span><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span></li>
+      </ul>
+    </section>
+
+    <section class="region" aria-labelledby="q-h" style="flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--l2);">
+      <div class="pair-2 measure">
+        <h2 id="q-h" class="t-h2">Seu perfil também é um quarto</h2>
+        <p class="t-body muted">Os destaques viram objetos em 3D: pôsteres na parede, livros na estante, discos na vitrola, o game na TV.</p>
+      </div>
+      <a href="quarto.html" class="mq-btn mq-btn--secondary">Ver um quarto</a>
+    </section>
+
+    <section class="stack" style="gap: var(--l3);" aria-labelledby="plano-h">
+      <div class="pair-2">
+        <h2 id="plano-h" class="t-h2">Grátis, com extras se quiser</h2>
+        <p class="t-body muted">Compra única, com Pix ou cartão. Nada de assinatura.</p>
+      </div>
+      <div class="grid" style="row-gap: var(--grid-gap, var(--col-gap));">
+        <div class="span-all t-span-4 d-span-6 region region--line">
+          <h3 class="t-h3">Grátis</h3>
+          <p class="t-sm">Perfil completo, todas as integrações, o quarto em 3D, 4 destaques por categoria e os temas Noite e Dia.</p>
+        </div>
+        <div class="span-all t-span-4 d-span-6 region region--tint">
+          <h3 class="t-h3">Pack de destaques e temas</h3>
+          <p class="t-sm" style="color: var(--ink);">Até 12 destaques por categoria e temas originais para o perfil e o quarto.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <div class="stack"><span class="wordmark">meuquarto</span><p class="t-cap"><a href="termos.html">Termos</a> e <a href="termos.html">privacidade</a></p></div>
+      <p class="t-cap">Filmes e séries: TMDB. Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB.</p>
+    </div>
+  </footer>
+
+  <div class="cookie region" role="region" aria-label="Aviso de cookies">
+    <p class="t-sm" style="color: var(--ink);">Usamos só os cookies necessários para manter você conectado. <a href="termos.html">Saiba mais</a></p>
+    <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start">Entendi</button>
+  </div>
+</div>
+</body>
+</html>

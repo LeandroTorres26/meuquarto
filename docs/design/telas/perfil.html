@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leandro no meuquarto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="cadastro.html" class="mq-btn mq-btn--ghost mq-btn--sm">Crie o seu</a>
+    </div>
+  </header>
+
+  <section class="profile-top">
+    <div class="wrap profile-top__in">
+      <header class="mq-profile">
+        <div class="mq-polaroid">
+          <span class="mq-tape" aria-hidden="true"></span>
+          <img class="mq-art" src="covers/c08.svg" alt="Foto de Leandro">
+          <p class="mq-polaroid__cap">eu, no quarto</p>
+        </div>
+        <div style="min-width: 0;">
+          <p class="mq-profile__slug">meuquarto.com.br/leandro</p>
+          <h1 class="mq-profile__name">Leandro</h1>
+          <p class="mq-profile__tagline">meu quarto, minhas regras</p>
+          <p class="mq-profile__bio">Dev de dia, cinéfilo de noite. Anime, mangá e jogos de qualquer época.</p>
+          <ul class="mq-profile__tags" aria-label="Destaques por categoria">
+            <li><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme<span class="mq-tag__count">12</span></span></li>
+            <li><span class="mq-tag mq-tag--series"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#tv"/></svg>Série<span class="mq-tag__count">8</span></span></li>
+            <li><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime<span class="mq-tag__count">24</span></span></li>
+            <li><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-copy"/></svg>Mangá<span class="mq-tag__count">5</span></span></li>
+            <li><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro<span class="mq-tag__count">31</span></span></li>
+            <li><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game<span class="mq-tag__count">17</span></span></li>
+            <li><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música<span class="mq-tag__count">40</span></span></li>
+          </ul>
+          <div class="mq-profile__actions">
+            <button type="button" class="mq-btn mq-btn--primary"><svg class="icon" aria-hidden="true"><use href="icons.svg#copy"/></svg>Copiar link</button>
+            <a href="quarto.html" class="mq-btn mq-btn--secondary"><svg class="icon" aria-hidden="true"><use href="icons.svg#door-open"/></svg>Ver quarto</a>
+            <button type="button" class="mq-btn mq-btn--secondary mq-btn--icon" aria-label="Compartilhar"><svg class="icon" aria-hidden="true"><use href="icons.svg#share-2"/></svg></button>
+          </div>
+        </div>
+      </header>
+
+      <aside class="now" aria-labelledby="agora-h">
+        <h2 id="agora-h" class="t-h3">Agora</h2>
+        <ul class="list">
+          <li class="mq-now"><img class="thumb" src="covers/c01.svg" alt=""><div class="grow"><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Assistindo</p><p class="mq-now__title"><a class="mq-now__link" href="?item=perfect-days">Perfect Days</a></p><p class="mq-now__status">Letterboxd, há 2 dias</p></div></li>
+          <li class="mq-now"><img class="thumb" src="covers/c12.svg" alt=""><div class="grow"><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Assistindo</p><p class="mq-now__title"><a class="mq-now__link" href="?item=frieren">Frieren</a></p><p class="mq-now__status">AniList, episódio 18 de 28</p></div></li>
+          <li class="mq-now"><img class="thumb" src="covers/c10.svg" alt=""><div class="grow"><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Lendo</p><p class="mq-now__title"><a class="mq-now__link" href="?item=torto-arado">Torto Arado</a></p><p class="mq-now__status">desde setembro</p></div></li>
+          <li class="mq-now"><img class="thumb thumb--sq" src="covers/c11.svg" alt=""><div class="grow"><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Ouvindo</p><p class="mq-now__title"><a class="mq-now__link" href="?item=clube-da-esquina">Clube da Esquina</a></p><p class="mq-now__status">Last.fm, tocando agora</p></div></li>
+          <li class="mq-now"><img class="thumb" src="covers/c03.svg" alt=""><div class="grow"><p class="mq-now__kicker"><span class="mq-now__lamp"></span>Jogando</p><p class="mq-now__title"><a class="mq-now__link" href="?item=outer-wilds">Outer Wilds</a></p><p class="mq-now__status">desde a semana passada</p></div></li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <main class="wrap sections" style="padding-top: var(--l4);">
+
+    <section aria-labelledby="fav-h">
+      <div class="sec-head sec-head--media"><h2 id="fav-h" class="t-h2">Favoritos de tudo</h2></div>
+      <ul class="shelf">
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:0.883"><a class="mq-item__link" href="?item=perfect-days" aria-label="Perfect Days, filme de 2023"><figure class="mq-item__cover"><img class="mq-art" src="covers/c01.svg" alt="" width="200" height="300"><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span><span class="mq-tape" aria-hidden="true"></span><p class="mq-slip">assisti 3 vezes</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Perfect Days</h3><p class="mq-item__sub">2023</p></div></a></article></li>
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.516"><a class="mq-item__link" href="?item=frieren" aria-label="Frieren, anime de 2023"><figure class="mq-item__cover"><span class="mq-spine" aria-hidden="true"></span><img class="mq-art" src="covers/c12.svg" alt="" width="200" height="300"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Frieren</h3><p class="mq-item__sub">2023</p></div></a></article></li>
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.88"><a class="mq-item__link" href="?item=clube-da-esquina" aria-label="Clube da Esquina, álbum de 1972"><figure class="mq-item__cover"><span class="mq-record" aria-hidden="true"></span><img class="mq-art" src="covers/c11.svg" alt="" width="300" height="300"><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span><span class="mq-pin" aria-hidden="true"></span><p class="mq-slip">repeat o mês todo</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Clube da Esquina</h3><p class="mq-item__sub">1972</p></div></a></article></li>
+        <li><article class="mq-item mq-item--game" style="--tilt-f:-0.844"><a class="mq-item__link" href="?item=outer-wilds" aria-label="Outer Wilds, game de 2019"><figure class="mq-item__cover"><span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c03.svg" alt="" width="200" height="300"><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Outer Wilds</h3><p class="mq-item__sub">2019</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="filmes-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="filmes-h" class="t-h2">Filmes</h2><p class="t-sm">12 na parede</p></div><a href="#" class="t-label">Ver todos</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.373"><a class="mq-item__link" href="?item=paris-texas" aria-label="Paris, Texas, 1984"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Paris, Texas</h3><p class="mq-item__sub">1984</p></div></a></article></li>
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.618"><a class="mq-item__link" href="?item=central-do-brasil" aria-label="Central do Brasil, 1998"><figure class="mq-item__cover"><img class="mq-art" src="covers/c02.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span><p class="mq-slip">chorei no final</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Central do Brasil</h3><p class="mq-item__sub">1998</p></div></a></article></li>
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.987"><a class="mq-item__link" href="?item=aftersun" aria-label="Aftersun, 2022"><figure class="mq-item__cover"><img class="mq-art" src="covers/c05.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Aftersun</h3><p class="mq-item__sub">2022</p></div></a></article></li>
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.682"><a class="mq-item__link" href="?item=cidade-de-deus" aria-label="Cidade de Deus, 2002"><figure class="mq-item__cover"><img class="mq-art" src="covers/c04.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Cidade de Deus</h3><p class="mq-item__sub">2002</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="series-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="series-h" class="t-h2">Séries</h2><p class="t-sm">8 na parede</p></div><a href="#" class="t-label">Ver todas</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.603"><a class="mq-item__link" href="?item=twin-peaks" aria-label="Twin Peaks, 1990"><figure class="mq-item__cover"><img class="mq-art" src="covers/c07.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Twin Peaks</h3><p class="mq-item__sub">1990</p></div></a></article></li>
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:0.592"><a class="mq-item__link" href="?item=sintonia" aria-label="Sintonia, 2019"><figure class="mq-item__cover"><img class="mq-art" src="covers/c03.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Sintonia</h3><p class="mq-item__sub">2019</p></div></a></article></li>
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:0.545"><a class="mq-item__link" href="?item=familia-soprano" aria-label="Família Soprano, 1999"><figure class="mq-item__cover"><img class="mq-art" src="covers/c06.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Família Soprano</h3><p class="mq-item__sub">1999</p></div></a></article></li>
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.833"><a class="mq-item__link" href="?item=fleabag" aria-label="Fleabag, 2016"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span><p class="mq-slip">temporada 2</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Fleabag</h3><p class="mq-item__sub">2016</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="anime-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="anime-h" class="t-h2">Animes</h2><p class="t-sm">24 na parede</p></div><a href="#" class="t-label">Ver todos</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.426"><a class="mq-item__link" href="?item=cowboy-bebop" aria-label="Cowboy Bebop, 1998"><figure class="mq-item__cover"><span class="mq-spine" aria-hidden="true"></span><img class="mq-art" src="covers/c07.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span><p class="mq-slip">see you space cowboy</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Cowboy Bebop</h3><p class="mq-item__sub">1998</p></div></a></article></li>
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:-0.381"><a class="mq-item__link" href="?item=mob-psycho-100" aria-label="Mob Psycho 100, 2016"><figure class="mq-item__cover"><span class="mq-spine" aria-hidden="true"></span><img class="mq-art" src="covers/c10.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Mob Psycho 100</h3><p class="mq-item__sub">2016</p></div></a></article></li>
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.657"><a class="mq-item__link" href="?item=neon-genesis-evangelion" aria-label="Neon Genesis Evangelion, 1995"><figure class="mq-item__cover"><span class="mq-spine" aria-hidden="true"></span><img class="mq-art" src="covers/c04.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Neon Genesis Evangelion</h3><p class="mq-item__sub">1995</p></div></a></article></li>
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.36"><a class="mq-item__link" href="?item=mushishi" aria-label="Mushishi, 2005"><figure class="mq-item__cover"><span class="mq-spine" aria-hidden="true"></span><img class="mq-art" src="covers/c05.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Mushishi</h3><p class="mq-item__sub">2005</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="manga-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="manga-h" class="t-h2">Mangás</h2><p class="t-sm">5 na estante</p></div><a href="#" class="t-label">Ver todos</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--manga mq-item--volume" style="--tilt-f:-0.597"><a class="mq-item__link" href="?item=vagabond" aria-label="Vagabond, volume 12"><figure class="mq-item__cover"><img class="mq-art" src="covers/c05.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Vagabond</h3><p class="mq-item__sub">vol. 12, 1998</p></div></a></article></li>
+        <li><article class="mq-item mq-item--manga mq-item--volume" style="--tilt-f:-0.491"><a class="mq-item__link" href="?item=oyasumi-punpun" aria-label="Oyasumi Punpun, volume 1"><figure class="mq-item__cover"><img class="mq-art" src="covers/c02.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Oyasumi Punpun</h3><p class="mq-item__sub">vol. 1, 2007</p></div></a></article></li>
+        <li><article class="mq-item mq-item--manga mq-item--volume" style="--tilt-f:-0.637"><a class="mq-item__link" href="?item=monster" aria-label="Monster, volume 3"><figure class="mq-item__cover"><img class="mq-art" src="covers/c03.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Monster</h3><p class="mq-item__sub">vol. 3, 1994</p></div></a></article></li>
+        <li><article class="mq-item mq-item--manga mq-item--volume" style="--tilt-f:0.691"><a class="mq-item__link" href="?item=yotsuba" aria-label="Yotsuba&amp;!, volume 5"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Yotsuba&amp;!</h3><p class="mq-item__sub">vol. 5, 2003</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="livros-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="livros-h" class="t-h2">Livros</h2><p class="t-sm">31 na estante</p></div><a href="#" class="t-label">Ver todos</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--book mq-item--volume" style="--tilt-f:-0.996"><a class="mq-item__link" href="?item=torto-arado" aria-label="Torto Arado, 2019"><figure class="mq-item__cover"><img class="mq-art" src="covers/c10.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Torto Arado</h3><p class="mq-item__sub">2019</p></div></a></article></li>
+        <li><article class="mq-item mq-item--book mq-item--volume" style="--tilt-f:-0.804"><a class="mq-item__link" href="?item=grande-sertao-veredas" aria-label="Grande Sertão: Veredas, 1956"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span><p class="mq-slip">nonada</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Grande Sertão: Veredas</h3><p class="mq-item__sub">1956</p></div></a></article></li>
+        <li><article class="mq-item mq-item--book mq-item--volume" style="--tilt-f:-0.953"><a class="mq-item__link" href="?item=dom-casmurro" aria-label="Dom Casmurro, 1899"><figure class="mq-item__cover"><img class="mq-art" src="covers/c06.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Dom Casmurro</h3><p class="mq-item__sub">1899</p></div></a></article></li>
+        <li><article class="mq-item mq-item--book mq-item--volume" style="--tilt-f:-0.533"><a class="mq-item__link" href="?item=a-hora-da-estrela" aria-label="A Hora da Estrela, 1977"><figure class="mq-item__cover"><img class="mq-art" src="covers/c12.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">A Hora da Estrela</h3><p class="mq-item__sub">1977</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="musica-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="musica-h" class="t-h2">Música</h2><p class="t-sm">40 na vitrola</p></div><a href="#" class="t-label">Ver todos</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:0.619"><a class="mq-item__link" href="?item=elis-e-tom" aria-label="Elis &amp; Tom, 1974"><figure class="mq-item__cover"><span class="mq-record" aria-hidden="true"></span><img class="mq-art" src="covers/c06.svg" alt="" width="300" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Elis &amp; Tom</h3><p class="mq-item__sub">1974</p></div></a></article></li>
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.532"><a class="mq-item__link" href="?item=sobrevivendo-no-inferno" aria-label="Sobrevivendo no Inferno, 1997"><figure class="mq-item__cover"><span class="mq-record" aria-hidden="true"></span><img class="mq-art" src="covers/c04.svg" alt="" width="300" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Sobrevivendo no Inferno</h3><p class="mq-item__sub">1997</p></div></a></article></li>
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.521"><a class="mq-item__link" href="?item=acabou-chorare" aria-label="Acabou Chorare, 1972"><figure class="mq-item__cover"><span class="mq-record" aria-hidden="true"></span><img class="mq-art" src="covers/c02.svg" alt="" width="300" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Acabou Chorare</h3><p class="mq-item__sub">1972</p></div></a></article></li>
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.832"><a class="mq-item__link" href="?item=da-lama-ao-caos" aria-label="Da Lama ao Caos, 1994"><figure class="mq-item__cover"><span class="mq-record" aria-hidden="true"></span><img class="mq-art" src="covers/c10.svg" alt="" width="300" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Da Lama ao Caos</h3><p class="mq-item__sub">1994</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="shelf-row" aria-labelledby="games-h">
+      <div class="sec-head sec-head--media"><div class="pair-2"><h2 id="games-h" class="t-h2">Games</h2><p class="t-sm">17 na TV</p></div><a href="#" class="t-label">Ver todos</a></div>
+      <ul class="shelf shelf--scroll">
+        <li><article class="mq-item mq-item--game" style="--tilt-f:-0.374"><a class="mq-item__link" href="?item=hollow-knight" aria-label="Hollow Knight, 2017"><figure class="mq-item__cover"><span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c05.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Hollow Knight</h3><p class="mq-item__sub">2017</p></div></a></article></li>
+        <li><article class="mq-item mq-item--game" style="--tilt-f:0.685"><a class="mq-item__link" href="?item=celeste" aria-label="Celeste, 2018"><figure class="mq-item__cover"><span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c01.svg" alt="" width="200" height="300"><span class="mq-tape" aria-hidden="true"></span><p class="mq-slip">todos os morangos</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Celeste</h3><p class="mq-item__sub">2018</p></div></a></article></li>
+        <li><article class="mq-item mq-item--game" style="--tilt-f:-0.518"><a class="mq-item__link" href="?item=disco-elysium" aria-label="Disco Elysium, 2019"><figure class="mq-item__cover"><span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c07.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Disco Elysium</h3><p class="mq-item__sub">2019</p></div></a></article></li>
+        <li><article class="mq-item mq-item--game" style="--tilt-f:-0.366"><a class="mq-item__link" href="?item=hades" aria-label="Hades, 2020"><figure class="mq-item__cover"><span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c12.svg" alt="" width="200" height="300"><span class="mq-pin" aria-hidden="true"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Hades</h3><p class="mq-item__sub">2020</p></div></a></article></li>
+      </ul>
+    </section>
+
+    <section class="region region--line" aria-labelledby="quarto-h" style="flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--l2);">
+      <div class="pair-2 measure-s">
+        <h2 id="quarto-h" class="t-h2">Entre no quarto</h2>
+        <p class="t-sm">Os mesmos destaques, em 3D: pôsteres na parede, livros na estante, discos na vitrola.</p>
+      </div>
+      <a href="quarto.html" class="mq-btn mq-btn--primary"><svg class="icon" aria-hidden="true"><use href="icons.svg#door-open"/></svg>Ver quarto</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <div class="stack">
+        <a href="landing.html" class="wordmark">meuquarto</a>
+        <p class="t-sm">Seu gosto num endereço só. <a href="cadastro.html">Crie o seu</a></p>
+      </div>
+      <div class="pair-2">
+        <p class="t-cap">Filmes e séries: TMDB. Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB. Anime e mangá: AniList. Livros: Open Library e Goodreads. Games: IGDB e Steam. Música: Deezer e Last.fm.</p>
+        <p class="t-cap"><a href="termos.html">Termos</a> e <a href="termos.html">privacidade</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- S17 Detalhes do item: filled by item.js from ?item=<id> -->
+  <dialog class="dialog dialog--fit" id="item-dlg" aria-labelledby="item-h"></dialog>
+</div>
+<script src="item.js"></script>
+<script src="item-dialog.js"></script>
+</body>
+</html>

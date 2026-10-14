@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fixar anime, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body data-estado-padrao="resultados">
+<div class="page">
+  <div aria-hidden="true">
+    <header class="topbar"><div class="wrap topbar__in"><span class="wordmark">meuquarto</span></div></header>
+    <div class="wrap pshell">
+      <nav class="pnav"><div class="pnav__group"><span class="tab">Perfil</span><span class="tab" aria-current="page">Destaques</span><span class="tab">Agora</span></div></nav>
+      <div class="pmain"><div class="page-head"><span class="t-h1">Destaques</span></div></div>
+    </div>
+  </div>
+  <div class="scrim" aria-hidden="true"></div>
+
+  <section class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg-h">
+    <div class="row row--between row--nowrap">
+      <h2 id="dlg-h" class="t-h2">Fixar anime</h2>
+      <button type="button" class="ib" aria-label="Fechar" style="color: var(--ink);"><svg class="icon" aria-hidden="true"><use href="icons.svg#x"/></svg></button>
+    </div>
+
+    <div class="field">
+      <label for="q" class="sr">Buscar anime</label>
+      <div style="position: relative;">
+        <svg class="icon" aria-hidden="true" style="position: absolute; left: 13px; top: 13px; width: 18px; height: 18px; color: var(--ink-muted);"><use href="icons.svg#search"/></svg>
+        <input id="q" class="input" type="search" value="cowboy bebop" autocomplete="off" style="padding-left: 42px;">
+      </div>
+      <p class="help">2 de 4 animes fixados. Busca no catálogo do AniList.</p>
+    </div>
+
+    <div class="pair-2" data-estado="vazio" role="status" style="padding-block: var(--space-6); text-align: center;">
+      <p class="t-h3">Nada encontrado para “cowboy bebop”.</p>
+      <p class="t-sm">Tente outro título, ou o nome em japonês.</p>
+    </div>
+
+    <div class="stack" data-estado="erro">
+      <div class="alert" role="alert"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg><span>Não deu para buscar agora. Tente de novo.</span></div>
+      <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Tentar de novo</button>
+    </div>
+
+    <ul class="list" aria-label="Resultados" data-estado="resultados">
+      <li>
+        <img class="thumb thumb--lg" src="covers/c07.svg" alt="">
+        <div class="grow pair"><p class="t-poster">Cowboy Bebop</p><p class="t-cap">Série de 1998, 26 episódios</p></div>
+        <span class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Já fixado</span>
+      </li>
+      <li>
+        <img class="thumb thumb--lg" src="covers/c06.svg" alt="">
+        <div class="grow pair"><p class="t-poster">Cowboy Bebop: O Filme</p><p class="t-cap">Filme de 2001</p></div>
+        <button type="button" class="mq-btn mq-btn--primary mq-btn--sm" aria-label="Fixar Cowboy Bebop: O Filme">Fixar</button>
+      </li>
+      <li>
+        <img class="thumb thumb--lg" src="covers/c12.svg" alt="">
+        <div class="grow pair"><p class="t-poster">Cowboy Bebop: Yose Atsume Blues</p><p class="t-cap">Especial de 1998</p></div>
+        <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" aria-label="Fixar Cowboy Bebop: Yose Atsume Blues">Fixar</button>
+      </li>
+      <li aria-hidden="true">
+        <span class="thumb thumb--lg"></span>
+        <div class="grow pair-2"><span class="mq-sk" style="width: 70%;"></span><span class="mq-sk"></span></div>
+      </li>
+    </ul>
+    <p class="t-cap">Itens marcados como adultos não aparecem.</p>
+  </section>
+</div>
+<script src="estados.js"></script>
+</body>
+</html>

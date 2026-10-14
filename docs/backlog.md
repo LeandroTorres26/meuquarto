@@ -2,7 +2,7 @@
 
 ## Scope: MVP (P2) vs roadmap
 **In P2:** everything in `requirements.md` FR-01..FR-20 (room as minimal prototype).
-**Roadmap (TCC):** full room (inventory, layout editor, premium objects), taste compatibility, embeddable widgets, story cards, yearly recap, "recommend me something", mixed collections, spoiler/private profile, visit stats, subscriptions, more integrations (see table below), CSV import (Skoob etc.), OAuth account linking, account export, admin panel, MAL, Google login, queue-based sync.
+**Roadmap (TCC):** full room (inventory, layout editor, premium objects), taste compatibility, embeddable widgets, story cards, yearly recap, "recommend me something", mixed collections, spoiler/private profile, visit stats, subscriptions, dedicated item page `/{slug}/item/{id}` and global work page `/obra/{id}` ("who else has it"), more integrations (see table below), CSV import (Skoob etc.), OAuth account linking, account export, admin panel, MAL, Google login, queue-based sync.
 
 ### Roadmap: future integrations (each = one new `ActivityProvider`)
 Feasibility is a first guess and must be checked per platform (API availability and terms) before committing.
@@ -55,6 +55,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Edit profile; avatar upload to S3-compatible storage
 - Public profile page with cached read model (NFR-02)
 - Open Graph metadata and image
+- Item details modal (S17) with `?item=` URL state and external links
 
 ### E3 Catalog and highlights (M1)
 - `CatalogProvider` interface + TMDB (movies/series)

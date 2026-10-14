@@ -1,5 +1,10 @@
-Toast is a short, self-dismissing confirmation or error message, inverted so it reads over any theme.
+Toast is a short confirmation or error, inverted (`ink` background) so it reads over any theme.
 
-Provide one sentence that starts with a bold status word ("Pronto.", "Erro."). Use `role="status"` for success and `role="alert"` for failures. Place it bottom-center on mobile and bottom-right on desktop, and dismiss after 5 seconds unless it is an error.
+React: `<Meuquarto.Toast tone title onClose>sentence</Meuquarto.Toast>`. Plain HTML: `div.mq-toast` (`mq-toast--error`) with an icon, `p.mq-toast__text` starting with a `strong` status word, and for errors `button.mq-toast__close`. Stack them inside `div.mq-toasts`: bottom center on phones, bottom right from 600px.
 
-Do not: stack more than two toasts, or put actions inside one; use a dialog for that.
+| Tone | Behavior |
+| --- | --- |
+| success | `role="status"`, check icon, leaves after 5 seconds. The status word repeats the action's verb ("Salvar perfil" → "Salvo."). |
+| error | `role="alert"`, alert icon and a `danger` stripe on the left, stays until closed. Says what failed and what happens next. |
+
+Do not: stack more than two, put actions inside (use a dialog), or rely on the stripe color alone: the word "Erro." is required.

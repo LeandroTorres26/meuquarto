@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conta, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="perfil.html" class="mq-btn mq-btn--ghost mq-btn--sm">Ver meu perfil</a>
+    </div>
+  </header>
+  <div class="wrap pshell">
+    <nav class="pnav" aria-label="Painel">
+      <div class="pnav__group"><a class="tab" href="painel-perfil.html">Perfil</a><a class="tab" href="painel-destaques.html">Destaques</a><a class="tab" href="painel-agora.html">Agora</a><a class="tab" href="painel-contas.html">Contas vinculadas</a></div>
+      <div class="pnav__group"><a class="tab" href="loja.html">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html" aria-current="page">Conta</a></div>
+    </nav>
+
+    <main class="pmain" style="max-width: 640px;">
+      <div class="page-head">
+        <h1 class="t-h1">Conta</h1>
+        <p class="t-body muted">Entrou como leandro@email.com.</p>
+      </div>
+
+      <form class="fieldset" aria-labelledby="senha-h">
+        <h2 id="senha-h" class="t-h2" style="margin-bottom: calc(var(--space-4) - var(--space-6));">Trocar senha</h2>
+        <div class="field"><label class="label" for="atual">Senha atual</label><input id="atual" class="input" type="password" autocomplete="current-password"></div>
+        <div class="field"><label class="label" for="nova">Nova senha</label><input id="nova" class="input" type="password" autocomplete="new-password" aria-describedby="nova-h"><p id="nova-h" class="help">Pelo menos 8 caracteres.</p></div>
+        <div class="field"><label class="label" for="conf">Repita a nova senha</label><input id="conf" class="input" type="password" autocomplete="new-password"></div>
+        <button type="submit" class="mq-btn mq-btn--primary self-start">Salvar nova senha</button>
+      </form>
+
+      <section class="stack next" aria-labelledby="sessao-h">
+        <div class="row row--between">
+          <div class="pair-2"><h2 id="sessao-h" class="t-h2">Sair</h2><p class="help">Encerra a sessão neste aparelho.</p></div>
+          <button type="button" class="mq-btn mq-btn--secondary"><svg class="icon" aria-hidden="true"><use href="icons.svg#log-out"/></svg>Sair</button>
+        </div>
+      </section>
+
+      <section class="region region--danger next" aria-labelledby="del-h">
+        <div class="pair-2">
+          <h2 id="del-h" class="t-h2">Excluir conta</h2>
+          <p class="t-body">Seu perfil sai do ar e meuquarto.com.br/leandro fica livre para outra pessoa. Isso não pode ser desfeito.</p>
+        </div>
+        <ul class="t-sm" style="padding-left: 20px; display: flex; flex-direction: column; gap: var(--space-1);">
+          <li>Apagamos perfil, foto, destaques e contas vinculadas.</li>
+          <li>Temas comprados são perdidos, sem reembolso.</li>
+          <li>Registros de pagamento ficam guardados sem seus dados, como a lei pede.</li>
+        </ul>
+        <div class="field"><label class="label" for="del-pass">Digite sua senha para confirmar</label><input id="del-pass" class="input" type="password" autocomplete="current-password"></div>
+        <button type="button" class="mq-btn mq-btn--danger self-start">Excluir minha conta</button>
+      </section>
+    </main>
+  </div>
+</div>
+</body>
+</html>

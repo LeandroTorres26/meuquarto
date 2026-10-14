@@ -19,6 +19,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - FR-08 Search each category in its catalog (TMDB, AniList, Open Library, IGDB, Deezer) and pin an item.
 - FR-09 Create, reorder, edit (personal note, FR-10) and remove highlights per category.
 - FR-10 Optional short personal note per highlight ("why it is here").
+- FR-10a Clicking a highlight or "Agora" item opens a details modal (S17) with the note, origin and links to the item on its platforms; state kept in the URL (`?item=`).
 - FR-11 A mixed list "Favoritos de tudo" with items of any category.
 
 ### Integrations

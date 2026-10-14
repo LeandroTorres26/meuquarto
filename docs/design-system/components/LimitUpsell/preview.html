@@ -1,4 +1,7 @@
-<!-- @dsCard group="Feedback" height=190 subtitle="Shown when the free highlight limit is reached" -->
-<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"><style>body{margin:0;padding:16px;background:var(--surface-100);font-family:var(--font-sans);color:var(--ink)}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}</style></head><body>
-<div class="mq-upsell"><p class="mq-upsell__text"><strong>Limite de destaques atingido</strong>Seu plano grátis guarda 4 destaques por categoria. Com um pack, são 12.</p><div class="row"><span class="mq-meter">4 de 4</span><a class="mq-btn mq-btn--primary" href="#">Ver loja</a></div></div>
-</body></html>
+<!-- @dsCard group="Feedback" height=260 subtitle="Shown in the editor when a free list is full" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"><style>body{margin:0;padding:24px;background:var(--surface-100);font-family:var(--font-sans);color:var(--ink)}</style></head><body><div id="root"></div><script>
+const e=React.createElement,M=window.Meuquarto,U=M.LimitUpsell;
+ReactDOM.createRoot(document.getElementById('root')).render(e('div',{style:{display:'grid',gap:'16px',maxWidth:'760px'}},
+ e(U,{used:4,limit:4,title:'Filmes está cheio',href:'#'},'No plano grátis cabem 4 por categoria. Com o pack de destaques, cabem 12.'),
+ e(U,{used:4,limit:4,title:'Favoritos de tudo está cheio',href:'#'},'O plano grátis guarda 4 destaques em Favoritos de tudo. Com um pack, são 12.')));
+</script></body></html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Destaques, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body data-estado-padrao="filmes">
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="perfil.html" class="mq-btn mq-btn--ghost mq-btn--sm">Ver meu perfil</a>
+    </div>
+  </header>
+  <div class="wrap pshell">
+    <nav class="pnav" aria-label="Painel">
+      <div class="pnav__group"><a class="tab" href="painel-perfil.html">Perfil</a><a class="tab" href="painel-destaques.html" aria-current="page">Destaques</a><a class="tab" href="painel-agora.html">Agora</a><a class="tab" href="painel-contas.html">Contas vinculadas</a></div>
+      <div class="pnav__group"><a class="tab" href="loja.html">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html">Conta</a></div>
+    </nav>
+
+    <main class="pmain">
+      <div class="page-head">
+        <h1 class="t-h1">Destaques</h1>
+        <p class="t-body muted">O que fica fixado na sua parede. Arraste para mudar a ordem.</p>
+      </div>
+
+      <div class="stack">
+        <div class="chips" role="tablist" aria-label="Categoria">
+          <button type="button" role="tab" class="chip" data-tab="favoritos" aria-selected="false">Favoritos de tudo <span class="count">4/4</span></button>
+          <button type="button" role="tab" class="chip" data-tab="filmes" aria-selected="true">Filmes <span class="count">4/4</span></button>
+          <button type="button" role="tab" class="chip" aria-selected="false">Séries <span class="count">4/4</span></button>
+          <button type="button" role="tab" class="chip" aria-selected="false">Animes <span class="count">2/4</span></button>
+          <button type="button" role="tab" class="chip" aria-selected="false">Mangás <span class="count">4/4</span></button>
+          <button type="button" role="tab" class="chip" aria-selected="false">Livros <span class="count">4/4</span></button>
+          <button type="button" role="tab" class="chip" aria-selected="false">Games <span class="count">4/4</span></button>
+          <button type="button" role="tab" class="chip" aria-selected="false">Música <span class="count">4/4</span></button>
+        </div>
+        <div class="mq-upsell" data-estado="filmes">
+          <p class="mq-upsell__text"><strong>Filmes está cheio</strong>No plano grátis cabem 4 por categoria. Com o pack de destaques, cabem 12.</p>
+          <div class="mq-upsell__side"><p class="mq-slots"><span class="mq-slots__bar" aria-hidden="true"><span></span><span></span><span></span><span></span></span>4 de 4</p><a class="mq-btn mq-btn--primary" href="loja.html">Ver o pack</a></div>
+        </div>
+        <div class="mq-upsell" data-estado="favoritos">
+          <p class="mq-upsell__text"><strong>Favoritos de tudo está cheio</strong>O plano grátis guarda 4 destaques em Favoritos de tudo. Com um pack, são 12.</p>
+          <div class="mq-upsell__side"><p class="mq-slots"><span class="mq-slots__bar" aria-hidden="true"><span></span><span></span><span></span><span></span></span>4 de 4</p><a class="mq-btn mq-btn--primary" href="loja.html">Ver o pack</a></div>
+        </div>
+      </div>
+
+      <div class="cols-aside next" data-estado="favoritos">
+        <section class="stack" aria-labelledby="fav-lista-h">
+          <div class="row row--between">
+            <h2 id="fav-lista-h" class="t-h3">Favoritos de tudo</h2>
+            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#plus"/></svg>Fixar obra</button>
+          </div>
+          <ol class="stack" style="list-style: none; padding: 0; gap: var(--space-3);" aria-label="Favoritos de tudo, na ordem da parede">
+            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb" src="covers/c01.svg" alt=""><div class="pair"><p class="t-poster">Perfect Days</p><p class="t-cap">Filme, 2023</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Perfect Days" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Perfect Days"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Perfect Days"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f1">Nota para Perfect Days</label><input id="f1" class="input" value="assisti 3 vezes"></div></li>
+            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb" src="covers/c12.svg" alt=""><div class="pair"><p class="t-poster">Frieren</p><p class="t-cap">Anime, 2023</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Frieren"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Frieren"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Frieren"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f2">Nota para Frieren</label><input id="f2" class="input" placeholder="Por que está aqui? (opcional)"></div></li>
+            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb thumb--sq" src="covers/c11.svg" alt=""><div class="pair"><p class="t-poster">Clube da Esquina</p><p class="t-cap">Música, 1972</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Clube da Esquina"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Clube da Esquina"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Clube da Esquina"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f3">Nota para Clube da Esquina</label><input id="f3" class="input" value="repeat o mês todo"></div></li>
+            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb" src="covers/c03.svg" alt=""><div class="pair"><p class="t-poster">Outer Wilds</p><p class="t-cap">Game, 2019</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Outer Wilds"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Outer Wilds" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Outer Wilds"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f4">Nota para Outer Wilds</label><input id="f4" class="input" placeholder="Por que está aqui? (opcional)"></div></li>
+          </ol>
+        </section>
+        <section class="stack" aria-labelledby="fav-previa-h">
+          <div class="pair-2"><h2 id="fav-previa-h" class="t-h3">Na sua parede</h2><p class="help">O primeiro bloco de capas do seu perfil.</p></div>
+          <ul class="shelf" style="grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: var(--space-3);">
+            <li><article class="mq-item mq-item--poster" style="--tilt-f:0.883"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c01.svg" alt=""><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Perfect Days</h3><p class="mq-item__sub">2023</p></div></div></article></li>
+            <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.516"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-spine"></span><img class="mq-art" src="covers/c12.svg" alt=""><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Frieren</h3><p class="mq-item__sub">2023</p></div></div></article></li>
+            <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.88"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-record"></span><img class="mq-art" src="covers/c11.svg" alt=""><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Clube da Esquina</h3><p class="mq-item__sub">1972</p></div></div></article></li>
+            <li><article class="mq-item mq-item--game" style="--tilt-f:-0.844"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-gamebar"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c03.svg" alt=""><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Outer Wilds</h3><p class="mq-item__sub">2019</p></div></div></article></li>
+          </ul>
+        </section>
+      </div>
+
+      <div class="cols-aside next" data-estado="filmes">
+        <section class="stack" aria-labelledby="lista-h">
+          <div class="row row--between">
+            <h2 id="lista-h" class="t-h3">Filmes fixados</h2>
+            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#plus"/></svg>Fixar filme</button>
+          </div>
+          <ol class="stack" style="list-style: none; padding: 0; gap: var(--space-3);" aria-label="Filmes, na ordem da parede">
+            <li class="pin-row">
+              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
+              <img class="thumb" src="covers/c09.svg" alt="">
+              <div class="pair"><p class="t-poster">Paris, Texas</p><p class="t-cap">1984, Wim Wenders</p></div>
+              <div class="tools"><button type="button" class="ib" aria-label="Subir Paris, Texas" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Paris, Texas"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Paris, Texas"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
+              <div class="note"><label class="sr" for="n1">Nota para Paris, Texas</label><input id="n1" class="input" placeholder="Por que está aqui? (opcional)"></div>
+            </li>
+            <li class="pin-row pin-row--drag">
+              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
+              <img class="thumb" src="covers/c02.svg" alt="">
+              <div class="pair"><p class="t-poster">Central do Brasil</p><p class="t-cap">1998, Walter Salles</p></div>
+              <div class="tools"><button type="button" class="ib" aria-label="Subir Central do Brasil"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Central do Brasil"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Central do Brasil"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
+              <div class="note"><label class="sr" for="n2">Nota para Central do Brasil</label><input id="n2" class="input" value="chorei no final"></div>
+            </li>
+            <li class="pin-row">
+              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
+              <img class="thumb" src="covers/c05.svg" alt="">
+              <div class="pair"><p class="t-poster">Aftersun</p><p class="t-cap">2022, Charlotte Wells</p></div>
+              <div class="tools"><button type="button" class="ib" aria-label="Subir Aftersun"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Aftersun"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Aftersun"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
+              <div class="note"><label class="sr" for="n3">Nota para Aftersun</label><input id="n3" class="input" placeholder="Por que está aqui? (opcional)"></div>
+            </li>
+            <li class="pin-row">
+              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
+              <img class="thumb" src="covers/c04.svg" alt="">
+              <div class="pair"><p class="t-poster">Cidade de Deus</p><p class="t-cap">2002, Fernando Meirelles</p></div>
+              <div class="tools"><button type="button" class="ib" aria-label="Subir Cidade de Deus"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Cidade de Deus" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Cidade de Deus"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
+              <div class="note"><label class="sr" for="n4">Nota para Cidade de Deus</label><input id="n4" class="input" placeholder="Por que está aqui? (opcional)"></div>
+            </li>
+          </ol>
+        </section>
+
+        <section class="stack" aria-labelledby="previa-h">
+          <div class="pair-2">
+            <h2 id="previa-h" class="t-h3">Na sua parede</h2>
+            <p class="help">Assim quem visita vê.</p>
+          </div>
+          <ul class="shelf" style="grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: var(--space-3);">
+            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.373"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt=""><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Paris, Texas</h3><p class="mq-item__sub">1984</p></div></div></article></li>
+            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.618"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c02.svg" alt=""><span class="mq-pin"></span><p class="mq-slip">chorei no final</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Central do Brasil</h3><p class="mq-item__sub">1998</p></div></div></article></li>
+            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.987"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c05.svg" alt=""><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Aftersun</h3><p class="mq-item__sub">2022</p></div></div></article></li>
+            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.682"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c04.svg" alt=""><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Cidade de Deus</h3><p class="mq-item__sub">2002</p></div></div></article></li>
+          </ul>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+<script src="estados.js"></script>
+</body>
+</html>

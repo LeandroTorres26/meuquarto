@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seu perfil, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="perfil.html" class="mq-btn mq-btn--ghost mq-btn--sm">Ver meu perfil</a>
+    </div>
+  </header>
+  <div class="wrap pshell">
+    <nav class="pnav" aria-label="Painel">
+      <div class="pnav__group"><a class="tab" href="painel-perfil.html" aria-current="page">Perfil</a><a class="tab" href="painel-destaques.html">Destaques</a><a class="tab" href="painel-agora.html">Agora</a><a class="tab" href="painel-contas.html">Contas vinculadas</a></div>
+      <div class="pnav__group"><a class="tab" href="loja.html">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html">Conta</a></div>
+    </nav>
+
+    <main class="pmain">
+      <div class="page-head">
+        <h1 class="t-h1">Seu perfil</h1>
+        <p class="t-body muted">O que aparece no topo de meuquarto.com.br/leandro.</p>
+      </div>
+
+      <div class="cols-aside">
+        <form class="form-groups" aria-label="Dados do perfil">
+          <fieldset class="fieldset">
+            <legend class="t-h3">Foto e nome</legend>
+            <div class="row row--nowrap" style="gap: var(--space-6);">
+              <div class="mq-polaroid" style="width: 104px; flex: none; padding: 6px 6px 4px;">
+                <span class="mq-tape" aria-hidden="true"></span>
+                <img class="mq-art" src="covers/c08.svg" alt="Sua foto atual">
+                <p class="mq-polaroid__cap" style="font-size: 20px; line-height: 22px;">eu, no quarto</p>
+              </div>
+              <div class="pair-2">
+                <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start"><svg class="icon" aria-hidden="true"><use href="icons.svg#upload"/></svg>Trocar foto</button>
+                <p class="help">JPG ou PNG, até 5 MB.</p>
+              </div>
+            </div>
+            <div class="field"><label class="label" for="nome">Nome</label><input id="nome" class="input" value="Leandro"></div>
+            <div class="field"><label class="label" for="legenda">Legenda da foto</label><input id="legenda" class="input" value="eu, no quarto"></div>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend class="t-h3">Sobre você</legend>
+            <div class="field">
+              <label class="label" for="frase">Frase escrita à mão</label>
+              <input id="frase" class="input" value="meu quarto, minhas regras" aria-describedby="frase-h">
+              <p id="frase-h" class="help">Aparece ao lado do nome. Até 30 caracteres.</p>
+            </div>
+            <div class="field">
+              <div class="row row--between"><label class="label" for="bio">Bio</label><span class="t-cap" aria-live="polite">71 de 160</span></div>
+              <textarea id="bio" class="input" rows="3" style="resize: vertical;">Dev de dia, cinéfilo de noite. Anime, mangá e jogos de qualquer época.</textarea>
+            </div>
+          </fieldset>
+
+          <fieldset class="fieldset">
+            <legend class="t-h3">Endereço</legend>
+            <div class="field">
+              <label class="label" for="slug">Link do perfil</label>
+              <div class="prefixed"><span>meuquarto.com.br/</span><input id="slug" class="input" value="leandro" aria-describedby="slug-h"></div>
+              <p id="slug-h" class="help">Se mudar, o link antigo para de funcionar.</p>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit" class="mq-btn mq-btn--primary">Salvar perfil</button>
+            <div class="mq-toast" role="status"><span><strong>Pronto.</strong> Perfil salvo.</span></div>
+          </div>
+        </form>
+
+        <section class="stack" aria-labelledby="tema-h">
+          <div class="pair-2">
+            <h2 id="tema-h" class="t-h3">Tema</h2>
+            <p class="help">Muda as cores do seu perfil e do quarto. <a href="loja.html">Mais temas na loja</a></p>
+          </div>
+          <div class="grid" role="radiogroup" aria-labelledby="tema-h" style="grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3);">
+            <label class="theme-opt"><input type="radio" name="tema" value="noite" checked><div class="swatch" data-theme="noite" aria-hidden="true"><span class="swatch__poster"></span><span class="swatch__aa">AA</span><span class="swatch__bar"></span><span class="swatch__lamp"></span></div><span class="row row--between"><span class="t-label">Noite</span><span class="t-cap">grátis</span></span></label>
+            <label class="theme-opt"><input type="radio" name="tema" value="dia"><div class="swatch" data-theme="dia" aria-hidden="true"><span class="swatch__poster"></span><span class="swatch__aa">AA</span><span class="swatch__bar"></span><span class="swatch__lamp"></span></div><span class="row row--between"><span class="t-label">Dia</span><span class="t-cap">grátis</span></span></label>
+            <label class="theme-opt"><input type="radio" name="tema" value="estufa"><div class="swatch" data-theme="estufa" aria-hidden="true"><span class="swatch__poster"></span><span class="swatch__aa">AA</span><span class="swatch__bar"></span><span class="swatch__lamp"></span></div><span class="row row--between"><span class="t-label">Estufa</span><span class="t-cap">comprado</span></span></label>
+            <label class="theme-opt"><input type="radio" name="tema" value="locadora" disabled><div class="swatch" data-theme="locadora" aria-hidden="true"><span class="swatch__poster"></span><span class="swatch__aa">AA</span><span class="swatch__bar"></span><span class="swatch__lamp"></span></div><span class="row row--between"><span class="t-label">Locadora</span><span class="t-cap">na loja</span></span></label>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

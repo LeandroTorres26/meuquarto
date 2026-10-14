@@ -1,7 +1,8 @@
-<!-- @dsCard group="Feedback" height=170 subtitle="Inverted toast with a spoken status word" -->
-<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"><style>body{margin:0;padding:16px;background:var(--surface-100);font-family:var(--font-sans);color:var(--ink)}.row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}</style></head><body>
-<div style="display:grid;gap:12px">
-<div class="mq-toast" role="status"><span><strong>Pronto.</strong> Destaque fixado em Filmes.</span></div>
-<div class="mq-toast" role="alert"><span><strong>Erro.</strong> Não foi possível sincronizar o Steam.</span></div>
-</div>
-</body></html>
+<!-- @dsCard group="Feedback" height=220 subtitle="Success leaves on its own; error stays and can be closed" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap"><style>body{margin:0;padding:24px;background:var(--surface-100);font-family:var(--font-sans);color:var(--ink)}</style></head><body><div id="root"></div><script>
+const e=React.createElement,M=window.Meuquarto,T=M.Toast;
+ReactDOM.createRoot(document.getElementById('root')).render(e('div',{style:{display:'grid',gap:'12px',justifyItems:'start'}},
+ e(T,{tone:'success',title:'Salvo.'},'Perfil atualizado.'),
+ e(T,{tone:'success',title:'Fixado.'},'Cowboy Bebop: O Filme está em Animes.'),
+ e(T,{tone:'error',onClose:()=>{}},'Não foi possível sincronizar o Steam. Tentamos de novo em 20 min.')));
+</script></body></html>

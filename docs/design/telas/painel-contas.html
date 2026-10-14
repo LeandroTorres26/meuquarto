@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contas vinculadas, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body data-estado-padrao="normal">
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="perfil.html" class="mq-btn mq-btn--ghost mq-btn--sm">Ver meu perfil</a>
+    </div>
+  </header>
+  <div class="wrap pshell">
+    <nav class="pnav" aria-label="Painel">
+      <div class="pnav__group"><a class="tab" href="painel-perfil.html">Perfil</a><a class="tab" href="painel-destaques.html">Destaques</a><a class="tab" href="painel-agora.html">Agora</a><a class="tab" href="painel-contas.html" aria-current="page">Contas vinculadas</a></div>
+      <div class="pnav__group"><a class="tab" href="loja.html">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html">Conta</a></div>
+    </nav>
+
+    <main class="pmain">
+      <div class="page-head">
+        <h1 class="t-h1">Contas vinculadas</h1>
+        <p class="t-body muted measure">Lemos só o que é público e atualizamos sozinhos a cada 6 horas. Seus destaques fixados à mão nunca mudam.</p>
+      </div>
+
+      <section class="stack" aria-labelledby="ativas-h">
+        <h2 id="ativas-h" class="t-h2">Conectadas</h2>
+        <div class="cards">
+          <article class="region" aria-labelledby="p-lb">
+            <div class="row row--between"><h3 id="p-lb" class="t-h3">Letterboxd</h3><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span></div>
+            <div class="pair">
+              <p class="t-body">letterboxd.com/leandro</p>
+              <p class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 3 minutos</p>
+            </div>
+            <div class="actions">
+              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#clock"/></svg>Atualizar em 12 min</button>
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
+            </div>
+          </article>
+          <article class="region" aria-labelledby="p-al">
+            <div class="row row--between"><h3 id="p-al" class="t-h3">AniList</h3><span class="row"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-copy"/></svg>Mangá</span></span></div>
+            <div class="pair">
+              <p class="t-body">anilist.co/user/leandrot</p>
+              <p class="status status--ok" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 2 horas</p>
+              <p class="status" data-estado="sincronizando" role="status" style="color: var(--ink-muted);"><span class="mq-spinner" aria-hidden="true" style="margin-top: 2px;"></span>Buscando sua lista no AniList…</p>
+            </div>
+            <div class="actions">
+              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Atualizar agora</button>
+              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="sincronizando" disabled aria-busy="true"><span class="mq-spinner" aria-hidden="true"></span>Sincronizando…</button>
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
+            </div>
+          </article>
+          <article class="region region--danger" aria-labelledby="p-fm">
+            <div class="row row--between"><h3 id="p-fm" class="t-h3">Last.fm</h3><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span></div>
+            <div class="pair">
+              <p class="t-body">last.fm/user/leandro_t</p>
+              <p class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>O Last.fm não respondeu às 14:20. Tentamos de novo às 14:40; o que já está no perfil continua lá.</p>
+            </div>
+            <div class="actions">
+              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Tentar agora</button>
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="stack next" aria-labelledby="novas-h">
+        <div class="pair-2">
+          <h2 id="novas-h" class="t-h2">Conectar mais</h2>
+          <p class="help">Basta o nome de usuário. O perfil precisa estar público.</p>
+        </div>
+        <div class="cards">
+          <form class="region region--line" aria-labelledby="p-st">
+            <div class="row row--between"><h3 id="p-st" class="t-h3">Steam</h3><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span></div>
+            <div class="field"><label class="label" for="steam">Perfil do Steam</label><input id="steam" class="input" placeholder="steamcommunity.com/id/seunome"><p class="help">A lista de jogos também precisa estar pública.</p></div>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start">Conectar Steam</button>
+          </form>
+          <form class="region region--line" aria-labelledby="p-gr">
+            <div class="row row--between"><h3 id="p-gr" class="t-h3">Goodreads</h3><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span></div>
+            <div class="field">
+              <label class="label" for="gr">Usuário do Goodreads</label>
+              <input id="gr" class="input input--error" value="leandro-torres" aria-invalid="true" aria-describedby="gr-err">
+              <p id="gr-err" class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>Esse perfil não existe ou está privado. Confira o nome na URL do seu perfil.</p>
+            </div>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start">Conectar Goodreads</button>
+          </form>
+          <div class="region region--line" aria-labelledby="p-csv">
+            <h3 id="p-csv" class="t-h3">Outra plataforma</h3>
+            <p class="t-sm">Usa Skoob, StoryGraph ou Backloggd? Importação por arquivo CSV chega em uma próxima versão. Séries você fixa à mão em Destaques.</p>
+            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start" disabled>Em breve</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+<script src="estados.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Loja, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="perfil.html" class="mq-btn mq-btn--ghost mq-btn--sm">Ver meu perfil</a>
+    </div>
+  </header>
+  <div class="wrap pshell">
+    <nav class="pnav" aria-label="Painel">
+      <div class="pnav__group"><a class="tab" href="painel-perfil.html">Perfil</a><a class="tab" href="painel-destaques.html">Destaques</a><a class="tab" href="painel-agora.html">Agora</a><a class="tab" href="painel-contas.html">Contas vinculadas</a></div>
+      <div class="pnav__group"><a class="tab" href="loja.html" aria-current="page">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html">Conta</a></div>
+    </nav>
+
+    <main class="pmain">
+      <div class="page-head">
+        <h1 class="t-h1">Loja</h1>
+        <p class="t-body muted measure">Compra única, com Pix ou cartão. O que você compra fica com você enquanto a conta existir.</p>
+      </div>
+
+      <div class="cards store">
+        <article class="item" aria-labelledby="loc-h">
+          <div class="item__preview" data-theme="locadora" aria-label="Prévia do tema Locadora">
+            <p class="t-display" style="font-size: 32px; line-height: 32px;">Leandro</p>
+            <p class="t-hand" style="font-size: 22px; line-height: 24px;">meu quarto, minhas regras</p>
+            <ul class="shelf" aria-hidden="true">
+              <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.373"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt=""><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon"><use href="icons.svg#clapperboard"/></svg>Filme</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Paris, Texas</h3></div></div></article></li>
+              <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.426"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-spine"></span><img class="mq-art" src="covers/c07.svg" alt=""><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Cowboy Bebop</h3></div></div></article></li>
+            </ul>
+          </div>
+          <div class="item__body">
+            <div class="pair-2"><h2 id="loc-h" class="t-h3">Tema Locadora</h2><p class="t-sm">Azul de noite, amarelo de letreiro e fita vermelha.</p></div>
+            <div class="item__buy"><p class="price">R$ 9,90</p><a href="loja-sucesso.html" class="mq-btn mq-btn--primary">Comprar</a></div>
+          </div>
+        </article>
+
+        <article class="item" aria-labelledby="pack-h">
+          <div class="item__preview" aria-hidden="true" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--space-2); padding-bottom: var(--space-6);">
+            <span style="aspect-ratio: 2 / 3; background: var(--sticker-movie); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; background: var(--sticker-series); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; background: var(--sticker-anime); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; background: var(--sticker-manga); border-radius: 2px;"></span>
+            <span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span>
+            <span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span><span style="aspect-ratio: 2 / 3; border: 2px dashed var(--border-strong); border-radius: 2px;"></span>
+          </div>
+          <div class="item__body">
+            <div class="pair-2"><h2 id="pack-h" class="t-h3">Pack de destaques</h2><p class="t-sm">De 4 para 12 obras em cada categoria e em Favoritos de tudo.</p></div>
+            <div class="item__buy"><p class="price">R$ 14,90</p><button type="button" class="mq-btn mq-btn--primary">Comprar</button></div>
+          </div>
+        </article>
+
+        <article class="item" aria-labelledby="est-h">
+          <div class="item__preview" data-theme="estufa" aria-label="Prévia do tema Estufa">
+            <p class="t-display" style="font-size: 32px; line-height: 32px;">Leandro</p>
+            <p class="t-hand" style="font-size: 22px; line-height: 24px;">meu quarto, minhas regras</p>
+            <ul class="shelf" aria-hidden="true">
+              <li><article class="mq-item mq-item--book mq-item--volume" style="--tilt-f:-0.996"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c10.svg" alt=""><span class="mq-tag mq-tag--book"><svg class="mq-icon icon"><use href="icons.svg#book-open"/></svg>Livro</span><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Torto Arado</h3></div></div></article></li>
+              <li><article class="mq-item mq-item--manga mq-item--volume" style="--tilt-f:-0.597"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c05.svg" alt=""><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon"><use href="icons.svg#book-copy"/></svg>Mangá</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Vagabond</h3></div></div></article></li>
+            </ul>
+          </div>
+          <div class="item__body">
+            <div class="pair-2"><h2 id="est-h" class="t-h3">Tema Estufa</h2><p class="t-sm">Verde de planta, rosa de flor e luz de fim de tarde.</p></div>
+            <div class="item__buy"><p class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Você já tem</p><a href="painel-perfil.html" class="mq-btn mq-btn--secondary">Usar tema</a></div>
+          </div>
+        </article>
+      </div>
+
+      <p class="t-cap">O pagamento é feito no Stripe. O item libera quando o pagamento é confirmado; no Pix, leva poucos segundos.</p>
+    </main>
+  </div>
+</div>
+</body>
+</html>

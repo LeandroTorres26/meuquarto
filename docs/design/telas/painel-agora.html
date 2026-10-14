@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agora, painel do meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="perfil.html" class="mq-btn mq-btn--ghost mq-btn--sm">Ver meu perfil</a>
+    </div>
+  </header>
+  <div class="wrap pshell">
+    <nav class="pnav" aria-label="Painel">
+      <div class="pnav__group"><a class="tab" href="painel-perfil.html">Perfil</a><a class="tab" href="painel-destaques.html">Destaques</a><a class="tab" href="painel-agora.html" aria-current="page">Agora</a><a class="tab" href="painel-contas.html">Contas vinculadas</a></div>
+      <div class="pnav__group"><a class="tab" href="loja.html">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html">Conta</a></div>
+    </nav>
+
+    <main class="pmain">
+      <div class="page-head">
+        <h1 class="t-h1">Agora</h1>
+        <p class="t-body muted measure">Um item por categoria no topo do seu perfil. Deixe no automático, escolha você mesmo ou esconda.</p>
+      </div>
+
+      <div class="list" role="list" aria-label="Categorias do Agora" style="gap: 0;">
+        <div class="now-set" role="listitem">
+          <span class="mq-tag mq-tag--movie self-start"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span>
+          <div class="row row--nowrap" style="gap: var(--space-3);"><img class="thumb" src="covers/c01.svg" alt=""><div class="pair"><p class="t-poster">Perfect Days</p><p class="t-cap">Do Letterboxd, muda sozinho</p></div></div>
+          <fieldset class="seg"><legend class="sr">Filme</legend><label><input type="radio" name="movie" checked>Automático</label><label><input type="radio" name="movie">Escolher</label><label><input type="radio" name="movie">Esconder</label></fieldset>
+        </div>
+        <div class="now-set" role="listitem">
+          <span class="mq-tag mq-tag--series self-start"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#tv"/></svg>Série</span>
+          <div class="pair-2"><p class="t-sm empty">Escondido no perfil.</p><p class="t-cap">Séries não têm plataforma para sincronizar. Escolha à mão.</p></div>
+          <fieldset class="seg"><legend class="sr">Série</legend><label><input type="radio" name="series" disabled>Automático</label><label><input type="radio" name="series">Escolher</label><label><input type="radio" name="series" checked>Esconder</label></fieldset>
+        </div>
+        <div class="now-set" role="listitem">
+          <span class="mq-tag mq-tag--anime self-start"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span>
+          <div class="row row--nowrap" style="gap: var(--space-3);"><img class="thumb" src="covers/c12.svg" alt=""><div class="pair"><p class="t-poster">Frieren</p><p class="t-cap">Do AniList, muda sozinho</p></div></div>
+          <fieldset class="seg"><legend class="sr">Anime</legend><label><input type="radio" name="anime" checked>Automático</label><label><input type="radio" name="anime">Escolher</label><label><input type="radio" name="anime">Esconder</label></fieldset>
+        </div>
+        <div class="now-set" role="listitem">
+          <span class="mq-tag mq-tag--book self-start"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span>
+          <div class="row row--nowrap" style="gap: var(--space-3);"><img class="thumb" src="covers/c10.svg" alt=""><div class="pair grow"><p class="t-poster">Torto Arado</p><p class="t-cap">Escolhido por você. <a href="painel-contas.html">Conecte o Goodreads</a> para o automático.</p></div></div>
+          <fieldset class="seg"><legend class="sr">Livro</legend><label><input type="radio" name="book" disabled>Automático</label><label><input type="radio" name="book" checked>Escolher</label><label><input type="radio" name="book">Esconder</label></fieldset>
+        </div>
+        <div class="now-set" role="listitem">
+          <span class="mq-tag mq-tag--game self-start"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span>
+          <div class="row row--nowrap" style="gap: var(--space-3);"><img class="thumb" src="covers/c03.svg" alt=""><div class="pair grow"><p class="t-poster">Outer Wilds</p><p class="t-cap">Escolhido por você. <a href="painel-contas.html">Conecte o Steam</a> para o automático.</p></div></div>
+          <fieldset class="seg"><legend class="sr">Game</legend><label><input type="radio" name="game" disabled>Automático</label><label><input type="radio" name="game" checked>Escolher</label><label><input type="radio" name="game">Esconder</label></fieldset>
+        </div>
+        <div class="now-set" role="listitem">
+          <span class="mq-tag mq-tag--music self-start"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span>
+          <div class="row row--nowrap" style="gap: var(--space-3);"><img class="thumb thumb--sq" src="covers/c11.svg" alt=""><div class="pair"><p class="t-poster">Clube da Esquina</p><p class="t-cap">Do Last.fm, muda sozinho</p></div></div>
+          <fieldset class="seg"><legend class="sr">Música</legend><label><input type="radio" name="music" checked>Automático</label><label><input type="radio" name="music">Escolher</label><label><input type="radio" name="music">Esconder</label></fieldset>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>

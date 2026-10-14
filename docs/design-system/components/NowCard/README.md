@@ -1,5 +1,15 @@
-NowCard is the "Agora" block entry: one item per category with the lamp dot, a verb, the source and the sync status.
+NowCard is one entry of the "Agora" block: the lamp, a verb, the work and where it came from.
 
-Provide the category verb (Assistindo, Lendo, Ouvindo, Jogando), the item title, a thumbnail and the status text. Show the accent lamp only for items that came from sync or were pinned; a hidden item renders nothing. Failed sync shows the status line in `danger` with the word "Erro", never color alone.
+React: `<Meuquarto.NowCard verb title status cover square lamp card state>`. Plain HTML: `div.mq-now` with `.mq-now__thumb`, `.mq-now__body`, `.mq-now__kicker` (lamp + verb), `.mq-now__title`, `.mq-now__status`.
 
-Do: keep the status in `body-sm`. Do not: call external providers while rendering; read the cached read model.
+It is a row, not a box: the list that holds the entries is the group (on the profile, a list with dividers; below 1024px a sideways strip). Use `card` only when one entry stands alone.
+
+| State | Look |
+| --- | --- |
+| Default | cover, lamp, verb in `caption`, title in `poster` type (one line, ellipsis), status in `body-sm`. |
+| Pinned by hand | same, status "Escolhido por você". |
+| Error | status in `danger` with an icon and the word "Erro.", plus what happens next. |
+| Empty | dashed cover slot, no lamp, "Nada por aqui agora" in `body-sm`. On the public profile, hide empty entries instead. |
+| Loading | shimmering cover slot and two skeleton bars, `aria-busy`. |
+
+Verbs: Assistindo (filme, série, anime), Lendo (livro, mangá), Ouvindo (música), Jogando (game). Do not call external providers while rendering; read the cached read model.

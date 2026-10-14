@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Criar conta no meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in" style="max-width: none;">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="entrar.html" class="mq-btn mq-btn--ghost mq-btn--sm">Entrar</a>
+    </div>
+  </header>
+
+  <div class="auth">
+    <aside class="auth__art" aria-hidden="true">
+      <p class="t-hand">meu quarto, minhas regras</p>
+      <ul class="shelf" style="grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 520px;">
+        <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.618"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c02.svg" alt=""><span class="mq-pin"></span><p class="mq-slip">chorei no final</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Central do Brasil</h3><p class="mq-item__sub">1998</p></div></div></article></li>
+        <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.516"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-spine"></span><img class="mq-art" src="covers/c12.svg" alt=""><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Frieren</h3><p class="mq-item__sub">2023</p></div></div></article></li>
+        <li><article class="mq-item mq-item--vinyl" style="--tilt-f:0.619"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-record"></span><img class="mq-art" src="covers/c06.svg" alt=""><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Elis &amp; Tom</h3><p class="mq-item__sub">1974</p></div></div></article></li>
+      </ul>
+    </aside>
+
+    <main class="auth__form wrap wrap--form">
+      <div class="groups">
+        <div class="pair-2">
+          <h1 class="t-h1">Crie seu quarto</h1>
+          <p class="t-body muted">Leva um minuto. Depois você conecta as contas e fixa os favoritos.</p>
+        </div>
+
+        <form class="form">
+          <div class="field">
+            <label class="label" for="slug">Seu endereço</label>
+            <div class="prefixed prefixed--ok"><span>meuquarto.com.br/</span><input id="slug" class="input" value="leandro" autocomplete="off" aria-describedby="slug-ok slug-h"></div>
+            <p id="slug-ok" class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Disponível</p>
+            <p id="slug-h" class="help">Letras minúsculas, números e hífen, de 3 a 30 caracteres.</p>
+          </div>
+          <div class="field">
+            <label class="label" for="email">E-mail</label>
+            <input id="email" class="input" type="email" autocomplete="email" placeholder="voce@email.com">
+          </div>
+          <div class="field">
+            <label class="label" for="senha">Senha</label>
+            <input id="senha" class="input" type="password" autocomplete="new-password" aria-describedby="senha-h">
+            <p id="senha-h" class="help">Pelo menos 8 caracteres.</p>
+          </div>
+          <label class="check"><input type="checkbox"><span>Li e aceito os <a href="termos.html">Termos de uso</a> e a <a href="termos.html">Política de privacidade</a>.</span></label>
+          <button type="submit" class="mq-btn mq-btn--primary btn-block">Criar conta</button>
+        </form>
+
+        <p class="t-sm">Já tem conta? <a href="entrar.html">Entrar</a></p>
+      </div>
+    </main>
+  </div>
+</div>
+</body>
+</html>
