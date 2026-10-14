@@ -27,7 +27,7 @@ Rule: only ready-made, maintained components; no hand-written cryptography, toke
 | Threat | Where | Controls |
 |---|---|---|
 | Account takeover (credential stuffing, brute force) | sign in, password reset | Argon2id, common-password check, reset links single-use and short-lived with neutral responses (no account enumeration), rate limit and lockout backoff on sign in, generic error messages, session rotation on login, logout invalidates session |
-| Session theft / CSRF | painel | HttpOnly + Secure + SameSite=Lax cookie, CSRF tokens on state-changing requests, short idle timeout |
+| Session theft / CSRF | painel | HttpOnly + Secure + SameSite=Lax cookie (set on Spring Session's `CookieSerializer`, tested), CSRF tokens on state-changing requests, short idle timeout |
 | IDOR (editing someone else's data) | every painel endpoint | owner taken from the session, never from the request body or path; authorization test per endpoint |
 | XSS | profile name, bio, notes, provider data | React escaping only, no `dangerouslySetInnerHTML`, strict CSP, sanitize on input length/charset, provider strings treated as untrusted |
 | SSRF / injection via usernames | linked accounts | usernames validated by a strict regex per provider and URL-encoded; requests only to a fixed allowlist of provider hosts; no user-provided URLs fetched |

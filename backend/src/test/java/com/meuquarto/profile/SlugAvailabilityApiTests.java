@@ -36,7 +36,12 @@ class SlugAvailabilityApiTests {
 
     @AfterEach
     void cleanUp() {
-        profiles.deleteAll();
+        jdbc.update("delete from users"); // cascades to profiles
+    }
+
+    private long user(String email) {
+        return jdbc.queryForObject(
+                "insert into users (email, password_hash) values (?, 'x') returning id", Long.class, email);
     }
 
     @Test
@@ -50,7 +55,7 @@ class SlugAvailabilityApiTests {
 
     @Test
     void takenSlugIsUnavailable() throws Exception {
-        profiles.save(new Profile(1L, Slug.of("leandro")));
+        profiles.save(new Profile(user("a@x.com"), Slug.of("leandro")));
 
         mvc.perform(get("/api/slugs/{slug}/availability", "LEANDRO"))
                 .andExpect(status().isOk())
@@ -79,11 +84,11 @@ class SlugAvailabilityApiTests {
 
     @Test
     void databaseRejectsDuplicateAndMalformedSlugsEvenOutsideTheApi() {
-        profiles.saveAndFlush(new Profile(1L, Slug.of("leandro")));
+        profiles.saveAndFlush(new Profile(user("a@x.com"), Slug.of("leandro")));
 
-        assertThatThrownBy(() -> profiles.saveAndFlush(new Profile(2L, Slug.of("leandro"))))
+        assertThatThrownBy(() -> profiles.saveAndFlush(new Profile(user("b@x.com"), Slug.of("leandro"))))
                 .isInstanceOf(DataIntegrityViolationException.class);
-        assertThatThrownBy(() -> jdbc.update("insert into profiles (user_id, slug) values (3, 'Bad Slug')"))
+        assertThatThrownBy(() -> jdbc.update("insert into profiles (user_id, slug) values (?, 'Bad Slug')", user("c@x.com")))
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 }
