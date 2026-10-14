@@ -17,6 +17,7 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | [0011](0011-collection-and-highlights.md) | Unlimited collection, limited highlights | Accepted |
 | [0012](0012-authentication-and-cryptography.md) | Authentication and cryptography stack | Accepted |
 | 0013 | Room rendering technology | To write in epic E6 |
+| [0014](0014-module-internal-structure.md) | Module internal structure: light layers | Accepted |
 
 ## Template
 

@@ -22,7 +22,7 @@ Deploy: one VPS, Docker Compose (caddy, web, api, postgres, minio optional), Git
 Java 21, Spring Boot 4.x (3.x left open-source support), Maven, Spring Security, Spring Data JPA, Flyway, springdoc-openapi, Caffeine cache, Testcontainers. Front: Next.js 16 + TypeScript. Monorepo: `backend/`, `frontend/`, `docs/`, `infra/`.
 
 ## Modules and boundaries
-Package by module (`com.meuquarto.<module>`), each exposing a small public API; no module reads another's tables directly. Enforce with ArchUnit later (TCC).
+Package by module (`com.meuquarto.<module>`), each with four light layers inside (`api`, `application`, `domain`, `infra`, ADR 0014). Other modules call only a module's `application` services; no module reads another's tables directly. Enforced with ArchUnit (#48).
 
 ## Provider design (OO showcase)
 ```java
@@ -49,4 +49,4 @@ Public profile is served from a pre-assembled view (profile + highlights + now) 
 Checkout Session (Pix + card) → user pays → `checkout.session.completed` / `payment_intent.succeeded` webhook (signature verified, idempotent by event id) → `orders` paid → `entitlements` granted.
 
 ## Decisions
-Recorded in [`docs/adr/`](adr/README.md) (0001 to 0012). Still open: 0013, room rendering technology, decided in epic E6.
+Recorded in [`docs/adr/`](adr/README.md) (0001 to 0012, 0014). Still open: 0013, room rendering technology, decided in epic E6.
