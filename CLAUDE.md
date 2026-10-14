@@ -63,7 +63,7 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 - One GitHub issue at a time. Branch `<type>/<issue-number>-<short-slug>` (types: `feat`, `fix`, `chore`, `docs`), from `main`.
 - Commits in Conventional Commits style (`feat(profile): ...`). Small, focused commits.
 - Open a PR linked to the issue (`Closes #n`) using the PR template. The owner reviews and merges every PR; never merge, force-push to `main` or enable auto-merge.
-- A PR is ready only when: CI passes, new behavior has tests, migrations run on a clean database, and the docs that changed (API, decisions, rules) are updated in the same PR.
+- A PR is ready only when: CI passes (`.github/workflows/ci.yml`: backend verify, frontend lint/typecheck/format/build/audit, Docker image builds), new behavior has tests, migrations run on a clean database, and the docs that changed (API, decisions, rules) are updated in the same PR.
 - A new architectural decision gets a new ADR in `docs/adr/` (next number, same template).
 - Don't add features outside the issue. Out-of-scope findings become a note in the PR or a new issue suggestion.
 
