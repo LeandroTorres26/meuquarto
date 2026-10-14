@@ -86,7 +86,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Stripe test→live checklist (MEI, account activation)
 
 ### E6 Room prototype (M4)
-- Design spike and ADR 11 (technology)
+- Design spike and ADR 0012 (technology)
 - Scene from highlights (posters, shelf, vinyl, console, board)
 - "Ver quarto" entry from profile; lazy loading
 
