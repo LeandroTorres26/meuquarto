@@ -44,6 +44,7 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 - Inside each module, four light layers (ADR 0014): `api/` (controllers, request/response DTOs), `application/` (use cases, transactions, authorization), `domain/` (entities, value objects, business rules), `infra/` (repositories, external clients). Dependencies point inward: `api` → `application` → `domain`; `domain` imports nothing from the other three.
 - Controllers are thin: validate, call one application service, map the result. No business rules in controllers or repositories.
 - Between modules, call only the other module's `application` services and DTOs; never its `domain` entities, repositories, tables or `infra`.
+- These module and layer rules are tests (`backend/src/test/java/com/meuquarto/architecture`, ArchUnit): a violation fails the build. Don't weaken a rule to make code pass; fix the dependency or ask.
 - Integrations are the OO showcase: one class per platform implementing `CatalogProvider` or `ActivityProvider` (in `media/infra`), resolved by a registry. Adding a platform must not touch other modules.
 - Every business rule (BR-xx in `docs/requirements.md`) lives in `domain`, is unit-tested without Spring in a test named after it, and is referenced in a comment only where the code would otherwise be unclear.
 - Schema changes only through new Flyway migrations in `backend/src/main/resources/db/migration` (`V<n>__snake_case_description.sql`); never edit an applied migration. Hibernate only validates the schema (`ddl-auto: validate`).
