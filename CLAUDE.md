@@ -21,8 +21,8 @@ The GitHub issue being worked on is the spec for the task. If an issue conflicts
 
 ## Stack
 
-- `backend/`: Java 21, Spring Boot 3, Maven, Spring Security (session cookie, CSRF), Spring Data JPA, PostgreSQL, Flyway, springdoc-openapi, Caffeine, Testcontainers.
-- `frontend/`: Next.js + TypeScript. Public profile pages are server-rendered (SEO and Open Graph). Calls the backend REST API; never holds secrets.
+- `backend/`: Java 21, Spring Boot 4, Maven, Spring Security (session cookie, CSRF), Spring Data JPA, PostgreSQL, Flyway, springdoc-openapi, Caffeine, Testcontainers.
+- `frontend/`: Next.js 16 + TypeScript (Cache Components). Public profile pages are server-rendered (SEO and Open Graph). Calls the backend REST API; never holds secrets.
 - `infra/`: Docker Compose (caddy, web, api, postgres, minio), deploy scripts.
 - Payments: Stripe Checkout (Pix + card), one-time purchases, entitlement granted only by a verified webhook.
 - Object storage: S3-compatible (R2 or MinIO).
@@ -66,4 +66,18 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 
 ## Commands
 
-Filled in by the M0 skeleton issue (build, test, run locally, lint for backend and frontend, docker compose up).
+Backend (from `backend/`, needs JDK 21; Maven comes from the wrapper):
+- `./mvnw verify`: compile and run all tests (the CI gate)
+- `./mvnw spring-boot:run`: run the API on http://localhost:8080 (health at `/api/health`)
+
+Frontend (from `frontend/`, needs Node 22):
+- `npm ci`: install exactly what the lockfile pins
+- `npm run dev`: dev server on http://localhost:3000 (expects the API at `API_URL`, default `http://localhost:8080`)
+- `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`: the CI gate
+- `npm run format`: apply Prettier
+
+Whole stack (from the repo root, needs Docker; copy `.env.example` to `.env` first):
+- `docker compose -f infra/docker-compose.yml --env-file .env up --build`
+- `docker compose -f infra/docker-compose.yml --env-file .env down` (add `-v` to wipe the database volume). Every compose command needs `--env-file .env`.
+
+Next.js 16 differs from older versions (Cache Components are on): read `frontend/AGENTS.md` and the docs in `frontend/node_modules/next/dist/docs/` before writing frontend code.

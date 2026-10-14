@@ -5,7 +5,7 @@
 Browser ── Next.js (TypeScript, SSR for /{slug} + Open Graph)
               │  REST/JSON (OpenAPI), session cookie
               ▼
-        Spring Boot 3 (Java 21) — modular monolith
+        Spring Boot 4 (Java 21) — modular monolith
    ┌───────────┬────────────┬─────────────┬────────────┬──────────┐
    │ identity  │ profile    │ media       │ billing    │ room     │
    │ (auth)    │ (highlights│ (catalog,   │ (Stripe,   │ (proto)  │
@@ -19,7 +19,7 @@ Browser ── Next.js (TypeScript, SSR for /{slug} + Open Graph)
 Deploy: one VPS, Docker Compose (caddy, web, api, postgres, minio optional), GitHub Actions builds images and deploys on merge to `main`. Production only; Stripe in test mode until the switch.
 
 ## Stack
-Java 21, Spring Boot 3.x, Maven, Spring Security, Spring Data JPA, Flyway, springdoc-openapi, Caffeine cache, Testcontainers. Front: Next.js + TypeScript. Monorepo: `backend/`, `frontend/`, `docs/`, `infra/`.
+Java 21, Spring Boot 4.x (3.x left open-source support), Maven, Spring Security, Spring Data JPA, Flyway, springdoc-openapi, Caffeine cache, Testcontainers. Front: Next.js 16 + TypeScript. Monorepo: `backend/`, `frontend/`, `docs/`, `infra/`.
 
 ## Modules and boundaries
 Package by module (`com.meuquarto.<module>`), each exposing a small public API; no module reads another's tables directly. Enforce with ArchUnit later (TCC).
