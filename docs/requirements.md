@@ -43,7 +43,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 ## Business rules
 | ID | Rule |
 |---|---|
-| BR-01 | Profile slug is unique, lowercase, 3-30 chars, `[a-z0-9-]`, with a reserved-word list. |
+| BR-01 | Profile slug is unique, 3-30 chars of `a-z`, `0-9` and single hyphens between them (no leading, trailing or double hyphen); input is trimmed and lowercased; reserved words (app routes, infrastructure paths, brand) are refused. The list lives in `profile/domain/Slug.java`; the database repeats the format as a CHECK constraint. |
 | BR-02 | Collections have no limit. Highlights (shown on the profile home) are limited: free plan 4 per category and 4 in "Favoritos de tudo"; with a purchased pack, 12 each. |
 | BR-03 | A linked account cannot be synced again within 15 min of the previous sync; the scheduler picks accounts older than 6 h. |
 | BR-04 | The same work from different sources is one `media_item` (canonical key: category + canonical catalog + external id). |
