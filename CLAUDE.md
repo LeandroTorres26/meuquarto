@@ -46,7 +46,8 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 - Between modules, call only the other module's `application` services and DTOs; never its `domain` entities, repositories, tables or `infra`.
 - Integrations are the OO showcase: one class per platform implementing `CatalogProvider` or `ActivityProvider` (in `media/infra`), resolved by a registry. Adding a platform must not touch other modules.
 - Every business rule (BR-xx in `docs/requirements.md`) lives in `domain`, is unit-tested without Spring in a test named after it, and is referenced in a comment only where the code would otherwise be unclear.
-- Schema changes only through new Flyway migrations; never edit an applied migration.
+- Schema changes only through new Flyway migrations in `backend/src/main/resources/db/migration` (`V<n>__snake_case_description.sql`); never edit an applied migration. Hibernate only validates the schema (`ddl-auto: validate`).
+- Integration tests that touch the database use `@Import(TestcontainersConfiguration.class)` (`com.meuquarto.support`); never H2 or mocks for persistence.
 - External APIs are never called while rendering a public profile; the profile reads local data (snapshot in `media_items`) and a cache.
 - External calls have timeouts, respect rate limits and fail per provider (one provider down never breaks the others). Tests mock providers; no test hits a real external API.
 - Secrets only from environment variables. Never commit keys; `.env.example` lists the names.
@@ -70,8 +71,9 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 ## Commands
 
 Backend (from `backend/`, needs JDK 21; Maven comes from the wrapper):
-- `./mvnw verify`: compile and run all tests (the CI gate)
-- `./mvnw spring-boot:run`: run the API on http://localhost:8080 (health at `/api/health`)
+- `./mvnw verify`: compile and run all tests (the CI gate). Needs Docker running: integration tests start a real PostgreSQL with Testcontainers.
+- `./mvnw spring-boot:test-run`: run the API on http://localhost:8080 with a throwaway PostgreSQL container (no setup)
+- `./mvnw spring-boot:run`: run the API against the compose database (set `DB_PASSWORD` from `.env`)
 
 Frontend (from `frontend/`, needs Node 22):
 - `npm ci`: install exactly what the lockfile pins
