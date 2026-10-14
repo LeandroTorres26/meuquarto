@@ -1,0 +1,14 @@
+#!/bin/sh
+# Optional local secret scan before each commit. Enable once with:
+#   git config core.hooksPath .githooks
+# Uses a local gitleaks if installed, otherwise the pinned Docker image.
+set -e
+if command -v gitleaks >/dev/null 2>&1; then
+  exec gitleaks git --pre-commit --staged --redact --no-banner
+fi
+if command -v docker >/dev/null 2>&1; then
+  root=$(git rev-parse --show-toplevel)
+  exec env MSYS_NO_PATHCONV=1 docker run --rm -v "$root:/repo" -w /repo zricethezav/gitleaks:v8.30.1 \
+    git --pre-commit --staged --redact --no-banner /repo
+fi
+echo "pre-commit: gitleaks not found (install it or start Docker); skipping secret scan" >&2

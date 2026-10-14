@@ -22,6 +22,12 @@ Web: http://localhost:3000 · API health: http://localhost:8080/api/health
 
 Development commands are listed in [CLAUDE.md](CLAUDE.md#commands).
 
+Optional: block commits that contain secrets (uses a local `gitleaks` or Docker):
+
+```bash
+git config core.hooksPath .githooks
+```
+
 ## Documentation
 
 Start at [docs/briefing.md](docs/briefing.md), then [requirements](docs/requirements.md), [architecture](docs/architecture.md), [decisions](docs/adr/README.md) and [security](docs/security.md).
