@@ -43,7 +43,8 @@ Rule: only ready-made, maintained components; no hand-written cryptography, toke
 
 ### Repository and CI
 - `.env` and key files ignored; only `.env.example` with names.
-- Secret scanning in CI (gitleaks) on every PR; Dependabot alerts and version updates; CodeQL for Java and TypeScript.
+- Secret scanning in layers: optional local pre-commit hook (`.githooks/pre-commit`), GitHub push protection, gitleaks over the full history on every PR (required check), GitHub secret scanning alerts.
+- Dependabot alerts and version updates; CodeQL (`security-extended`) for Java, TypeScript and the workflows on every PR and weekly.
 - Owner reviews every PR; no direct pushes to `main` once CI exists.
 
 ### Backend
