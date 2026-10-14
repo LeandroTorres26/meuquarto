@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 /** Error codes the web app turns into messages. Never echoes input or internals. */
-@RestControllerAdvice(assignableTypes = AuthController.class)
+@RestControllerAdvice(assignableTypes = {AuthController.class, AccountController.class})
 class AuthErrors {
 
     record ErrorResponse(String error) {}

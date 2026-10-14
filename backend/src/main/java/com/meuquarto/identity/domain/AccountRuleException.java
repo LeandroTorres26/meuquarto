@@ -9,7 +9,9 @@ public class AccountRuleException extends RuntimeException {
         PASSWORD_TOO_SHORT,
         PASSWORD_TOO_LONG,
         PASSWORD_TOO_COMMON,
-        PASSWORD_SAME_AS_EMAIL
+        PASSWORD_SAME_AS_EMAIL,
+        /** The current password given to confirm a sensitive action is wrong. */
+        WRONG_PASSWORD
     }
 
     private final Rule rule;

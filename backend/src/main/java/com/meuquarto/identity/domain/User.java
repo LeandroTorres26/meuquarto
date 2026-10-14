@@ -47,4 +47,8 @@ public class User {
     public String passwordHash() {
         return passwordHash;
     }
+
+    public void changePasswordHash(String newPasswordHash) {
+        this.passwordHash = newPasswordHash;
+    }
 }
