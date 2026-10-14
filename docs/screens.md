@@ -21,6 +21,8 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S14 | Account | `/painel/conta` | yes | Change password, delete account (confirmation) |
 | S15 | Terms / Privacy | `/termos` `/privacidade` | no | Legal text |
 | S16 | 404 / profile not found | | no | |
+| S19 | Forgot password | `/esqueci-senha` | no | E-mail field; same confirmation message whether or not the account exists ("Se existir uma conta com esse e-mail, enviamos um link."). Linked from S3. |
+| S20 | Reset password | `/redefinir-senha?token=…` | no | New password + confirmation; states: valid, expired/used link (offer to request again), success (go to S3). |
 | S18 | Category listing | `/{slug}/{categoria}` (`filmes`, `series`, `animes`, `mangas`, `livros`, `musica`, `games`) | no | "Ver todos" target. Whole visible collection of one category: cover grid, search by title, sort (recentes, título, ano), infinite scroll or pages, highlight badge, empty and no-result states. Click opens S17. |
 | S17 | Item details | modal in S4/S5, `?item={mediaItemId}` | no | Opened by clicking any highlight or "Agora" card. Cover, title, year, category sticker, personal note, origin ("assistido em 3 out. no Letterboxd" when synced), external links ("Ver no Letterboxd", "Ver no TMDB"...). Centered dialog from 600px, bottom sheet on mobile. URL param makes it shareable; back button and Esc close it. In S5 it is the existing info panel. |
 
@@ -37,4 +39,4 @@ Cross-cutting components: cookie banner, toasts, empty states (no highlights yet
 ## Design inputs
 - Brand: name "meuquarto"; metaphor of a personal room; Brazilian audience.
 - Profile themes are original (abstract/animated backgrounds, frames), never franchise assets.
-- Room view style open (isometric 2D vs minimal Three.js) — design decides, then ADR 11.
+- Room view style open (isometric 2D vs minimal Three.js) — design decides, then ADR 0013.

@@ -6,6 +6,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 
 ### Accounts
 - FR-01 Sign up / sign in with e-mail + password; session via HttpOnly cookie.
+- FR-01a "Esqueci minha senha": request a reset link by e-mail (single-use, 30 min), set a new password; all other sessions end (ADR 0012).
 - FR-02 Delete account (hard delete of all user data; payment records kept anonymized).
 - FR-03 Terms, privacy policy and minimal cookie banner.
 
@@ -60,7 +61,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - NFR-04 Versioned migrations (Flyway); OpenAPI documentation generated.
 - NFR-05 Unit tests for business rules; integration tests with Testcontainers (PostgreSQL); providers mocked. CI required on every PR.
 - NFR-06 Docker Compose deploy on a single VPS with HTTPS; auto-deploy on merge to `main`.
-- NFR-07 Security: BCrypt/Argon2 passwords, CSRF protection, secrets only in environment and never exposed to the browser, Stripe webhook signature check.
+- NFR-07 Security: only ready-made, maintained components (Spring Security, Argon2id passwords, Spring Session JDBC, TLS by Caddy, Stripe); no hand-written cryptography or auth. CSRF protection, secrets only in environment and never exposed to the browser, Stripe webhook signature check. Details in `docs/security.md` and ADR 0012.
 - NFR-08 Images in S3-compatible storage (R2 or MinIO), never in the database.
 - NFR-09 LGPD basics: consent via terms, data deletion, minimal data collected.
 - NFR-10 UI language pt-BR; code, repo and technical docs in English.

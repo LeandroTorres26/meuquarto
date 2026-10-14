@@ -5,6 +5,8 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 | Table | Key columns | Notes |
 |---|---|---|
 | `users` | id, email (unique), password_hash, created_at | identity |
+| `password_reset_tokens` | id, user_id, token_hash (SHA-256), expires_at, used_at | single-use, 30 min (ADR 0012) |
+| `spring_session`, `spring_session_attributes` | managed by Spring Session JDBC | created by its schema script through a Flyway migration |
 | `profiles` | id, user_id (unique FK), slug (unique), display_name, bio, avatar_key, theme_id, created_at | 1:1 with user |
 | `media_items` | id, category, canonical_provider, external_id, title, year, image_url, adult, metadata_json, fetched_at | unique (category, canonical_provider, external_id); snapshot (BR-04) |
 | `media_external_ids` | media_item_id, provider, external_id | maps Steam/Letterboxd ids to the canonical item |
@@ -30,4 +32,4 @@ Notes
 - `synced_entries` keeps the raw activity (dates, "assistido em"); sync upserts `collection_items` from it following BR-10.
 - Account deletion cascades to profile, highlights, linked accounts, entries; `orders` rows are anonymized (user_id nulled).
 - Deleting a profile doesn't delete shared `media_items` (they are a global cache).
-- Entities: 18 tables (requirement from the professor: ≥ 3).
+- Entities: 19 tables plus the 2 Spring Session tables (requirement from the professor: ≥ 3).

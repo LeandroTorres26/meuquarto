@@ -1,6 +1,6 @@
 # 0003. Session cookie over JWT
 
-- Status: Accepted
+- Status: Accepted, refined by 0012 (Argon2id, Spring Session JDBC, password reset)
 - Date: 2026-10-12
 
 ## Context

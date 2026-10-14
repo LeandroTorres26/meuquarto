@@ -9,10 +9,24 @@ Security is part of every issue, not a phase. This file is the baseline: what we
 - Secrets: API keys (TMDB, IGDB, Last.fm, Steam), Stripe keys and webhook secret, database and storage credentials, SSH keys.
 - Availability of public profiles.
 
+## Cryptography and authentication (ADR 0012)
+Rule: only ready-made, maintained components; no hand-written cryptography, token formats or auth filters.
+
+| Need | Component |
+|---|---|
+| Authentication, sessions, CSRF, access control | Spring Security |
+| Password hashing | Argon2id (`Argon2PasswordEncoder`) behind `DelegatingPasswordEncoder` |
+| Session storage | Spring Session JDBC (PostgreSQL), ID rotated on login |
+| Reset tokens | `SecureRandom` 256 bits, stored as SHA-256 hash, single use, 30 min |
+| Transport | TLS 1.2/1.3 by Caddy, Let's Encrypt, HSTS |
+| Payments | Stripe Checkout (no card data on our side) |
+| Backups | restic (AES-256), off the VPS |
+| E-mail | Transactional provider with SPF, DKIM, DMARC |
+
 ## Main threats
 | Threat | Where | Controls |
 |---|---|---|
-| Account takeover (credential stuffing, brute force) | sign in | BCrypt/Argon2, rate limit and lockout backoff on sign in, generic error messages, session rotation on login, logout invalidates session |
+| Account takeover (credential stuffing, brute force) | sign in, password reset | Argon2id, common-password check, reset links single-use and short-lived with neutral responses (no account enumeration), rate limit and lockout backoff on sign in, generic error messages, session rotation on login, logout invalidates session |
 | Session theft / CSRF | painel | HttpOnly + Secure + SameSite=Lax cookie, CSRF tokens on state-changing requests, short idle timeout |
 | IDOR (editing someone else's data) | every painel endpoint | owner taken from the session, never from the request body or path; authorization test per endpoint |
 | XSS | profile name, bio, notes, provider data | React escaping only, no `dangerouslySetInnerHTML`, strict CSP, sanitize on input length/charset, provider strings treated as untrusted |

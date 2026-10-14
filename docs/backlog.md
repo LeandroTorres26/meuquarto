@@ -48,6 +48,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 ### E1 Identity (M1)
 - Sign up / sign in / sign out (session cookie, CSRF)
 - Password change; account deletion (FR-02)
+- Forgot password by e-mail (FR-01a, S19, S20)
 - Terms, privacy and cookie banner
 
 ### E2 Profile (M1)
@@ -86,7 +87,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Stripe test→live checklist (MEI, account activation)
 
 ### E6 Room prototype (M4)
-- Design spike and ADR 0012 (technology)
+- Design spike and ADR 0013 (technology)
 - Scene from highlights (posters, shelf, vinyl, console, board)
 - "Ver quarto" entry from profile; lazy loading
 
@@ -102,4 +103,5 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Check domain `meuquarto.com.br`, social handles, INPI
 - Create Stripe account (MEI) and confirm Pix is enabled
 - Create Twitch app for IGDB, TMDB and Last.fm API keys
+- Create transactional e-mail account (Resend or Brevo) and add SPF, DKIM, DMARC records
 - Choose VPS provider
