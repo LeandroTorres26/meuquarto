@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: meuquarto-api
+  threads:
+    virtual:
+      enabled: true
+
+server:
+  port: 8080
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+    include-exception: false
+
+# Only the health endpoint is exposed, at /api/health, without details.
+management:
+  endpoints:
+    web:
+      base-path: /api
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      show-components: never
