@@ -15,6 +15,12 @@ spring:
       ddl-auto: validate # schema changes only through Flyway
   flyway:
     locations: classpath:db/migration
+  # Sessions in PostgreSQL (ADR 0012); tables come from Flyway (V4), never auto-created.
+  session:
+    timeout: 30d
+    jdbc:
+      initialize-schema: never
+      cleanup-cron: "0 */30 * * * *"
 
 server:
   port: 8080
