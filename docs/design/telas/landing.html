@@ -101,10 +101,24 @@
     </div>
   </footer>
 
-  <div class="cookie region" role="region" aria-label="Aviso de cookies">
+  <!-- Cookie notice: "Entendi" closes it and it does not come back (remembered per browser). ?cookies=1 shows it again. -->
+  <div class="cookie region" role="region" aria-label="Aviso de cookies" id="cookie" hidden>
     <p class="t-sm" style="color: var(--ink);">Usamos só os cookies necessários para manter você conectado. <a href="termos.html">Saiba mais</a></p>
-    <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start">Entendi</button>
+    <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start" id="cookie-ok">Entendi</button>
   </div>
 </div>
+<script>
+(function () {
+  var box = document.getElementById('cookie'), seen = false;
+  try { seen = localStorage.getItem('mq-cookies') === 'ok'; } catch (_) {}
+  if (new URLSearchParams(location.search).get('cookies') === '1') seen = false;
+  box.hidden = seen;
+  document.getElementById('cookie-ok').addEventListener('click', function () {
+    box.hidden = true;
+    try { localStorage.setItem('mq-cookies', 'ok'); } catch (_) {}
+    document.querySelector('.wordmark').focus();   /* focus goes back to the top instead of being lost */
+  });
+})();
+</script>
 </body>
 </html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="noite">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Animes de Leandro no meuquarto</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
+<link rel="stylesheet" href="../../design-system/components/bundle.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+<!-- S18 Listagem da categoria (/{slug}/{categoria}), public. Prototype params: ?c=filmes|series|animes|mangas|livros|musica|games,
+     ?q=<busca>, ?ordem=recentes|titulo|ano, ?estado=vazia (empty collection). Clicking a cover opens S17 (&item=<id>). -->
+<div class="page">
+  <header class="topbar">
+    <div class="wrap topbar__in">
+      <a href="landing.html" class="wordmark">meuquarto</a>
+      <a href="cadastro.html" class="mq-btn mq-btn--ghost mq-btn--sm">Crie o seu</a>
+    </div>
+  </header>
+
+  <main class="wrap sections" style="padding-top: var(--page-top); padding-bottom: var(--l5);">
+    <div class="page-head">
+      <a class="owner" href="perfil.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#arrow-left"/></svg><img src="covers/c08.svg" alt=""><span>Leandro</span></a>
+      <div class="pair-2">
+        <h1 class="t-h1" id="cat-h">Animes</h1>
+        <p class="t-sm" id="cat-count">24 animes na coleção de Leandro</p>
+      </div>
+    </div>
+
+    <section class="groups" aria-labelledby="cat-h" id="cat-body">
+      <div class="cat-tools" id="tools">
+        <div class="search">
+          <label for="q" class="sr">Buscar por título</label>
+          <svg class="icon" aria-hidden="true"><use href="icons.svg#search"/></svg>
+          <input id="q" class="input" type="search" placeholder="Buscar por título" autocomplete="off">
+        </div>
+        <fieldset class="seg" id="ordem">
+          <legend class="sr">Ordenar por</legend>
+          <label><input type="radio" name="ordem" value="recentes" checked>Recentes</label>
+          <label><input type="radio" name="ordem" value="titulo">Título</label>
+          <label><input type="radio" name="ordem" value="ano">Ano</label>
+        </fieldset>
+      </div>
+
+      <div class="stack">
+        <ul class="shelf shelf--grid" id="grid" aria-label="Coleção"></ul>
+        <div id="empty" hidden></div>
+        <p class="t-cap" id="status" role="status" aria-live="polite"></p>
+        <div id="more" aria-hidden="true"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap footer__in">
+      <div class="stack">
+        <a href="landing.html" class="wordmark">meuquarto</a>
+        <p class="t-sm">Seu gosto num endereço só. <a href="cadastro.html">Crie o seu</a></p>
+      </div>
+      <div class="pair-2">
+        <p class="t-cap">Filmes e séries: TMDB. Este produto usa a API do TMDB, mas não é endossado nem certificado pelo TMDB. Anime e mangá: AniList. Livros: Open Library e Goodreads. Games: IGDB e Steam. Música: Deezer e Last.fm.</p>
+        <p class="t-cap"><a href="termos.html">Termos</a> e <a href="termos.html">privacidade</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- S17 Detalhes do item: filled by item.js from ?item=<id> -->
+  <dialog class="dialog dialog--fit" id="item-dlg" aria-labelledby="item-h"></dialog>
+</div>
+<script src="item.js"></script>
+<script src="item-dialog.js"></script>
+<script>
+(function () {
+  var PAGE = 12;   /* infinite scroll: 12 covers per page, skeletons while the next page loads */
+  var q = new URLSearchParams(location.search);
+  var C = MQItem.category(q.get('c')) || MQItem.category('animes');
+  var all = q.get('estado') === 'vazia' ? [] : MQItem.collection(C.slug);
+  var st = { q: q.get('q') || '', ordem: q.get('ordem') || 'recentes', shown: PAGE, loading: false };
+  var $ = function (id) { return document.getElementById(id); };
+  var norm = function (s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+  var count = function (n) { return n + ' ' + C.unit[n === 1 ? 0 : 1]; };
+
+  document.title = C.label + ' de Leandro no meuquarto';
+  $('cat-h').textContent = C.label;
+  $('cat-count').textContent = all.length ? count(all.length) + ' na coleção de Leandro. ' + C.hl.length + ' em destaque no perfil.' : 'Coleção vazia.';
+  $('q').value = st.q;
+  document.querySelector('#ordem input[value="' + st.ordem + '"]').checked = true;
+
+  function list() {
+    var l = all.filter(function (id) { return !st.q || norm(MQItem.get(id).title).indexOf(norm(st.q)) >= 0; });
+    if (st.ordem === 'titulo') l.sort(function (a, b) { return MQItem.get(a).title.localeCompare(MQItem.get(b).title, 'pt'); });
+    if (st.ordem === 'ano') l.sort(function (a, b) { return MQItem.get(b).year - MQItem.get(a).year; });
+    return l;
+  }
+  function skeletons(n) {
+    var shape = { movie: 'poster', series: 'poster', anime: 'dvd', manga: 'manga mq-item--volume', book: 'book mq-item--volume', game: 'game', music: 'vinyl' }[C.cat];
+    var one = '<li aria-hidden="true"><div class="mq-item mq-item--' + shape + ' mq-item--loading"><div class="mq-item__cover"><span class="mq-art"></span></div><div class="mq-item__meta"><span class="mq-sk"></span><span class="mq-sk"></span></div></div></li>';
+    return new Array(n + 1).join(one);
+  }
+  function render() {
+    var l = list(), vis = l.slice(0, st.shown);
+    $('grid').innerHTML = vis.map(function (id) { return '<li>' + MQItem.card(id, { href: '?c=' + C.slug + '&item=' + id, highlight: MQItem.isHighlight(C.slug, id) }) + '</li>'; }).join('') + (st.loading ? skeletons(Math.min(6, l.length - vis.length)) : '');
+    $('tools').hidden = !all.length;
+    var empty = $('empty');
+    if (!all.length) {
+      empty.hidden = false;
+      empty.innerHTML = '<div class="cat-empty"><div class="pair-2"><h2 class="t-h3">Leandro ainda não tem ' + C.unit[1] + ' na coleção.</h2><p class="t-sm">Quando houver, aparecem aqui.</p></div><a class="mq-btn mq-btn--secondary" href="perfil.html">Voltar ao perfil</a></div>';
+    } else if (!l.length) {
+      empty.hidden = false;
+      empty.innerHTML = '<div class="cat-empty"><div class="pair-2"><h2 class="t-h3">Nada com “' + st.q.replace(/</g, '&lt;') + '” em ' + C.label + '.</h2><p class="t-sm">Confira a grafia ou busque pelo título original.</p></div><button type="button" class="mq-btn mq-btn--secondary" id="clear">Limpar busca</button></div>';
+    } else empty.hidden = true;
+    $('status').textContent = l.length ? 'Mostrando ' + vis.length + ' de ' + count(l.length) + (st.q ? ' para “' + st.q + '”' : '') + '.' : '';
+  }
+  function keepUrl() {
+    var u = new URLSearchParams(location.search);
+    st.q ? u.set('q', st.q) : u.delete('q');
+    st.ordem !== 'recentes' ? u.set('ordem', st.ordem) : u.delete('ordem');
+    history.replaceState(history.state, '', '?' + u.toString());
+  }
+  $('q').addEventListener('input', function () { st.q = this.value.trim(); st.shown = PAGE; keepUrl(); render(); });
+  $('ordem').addEventListener('change', function (e) { st.ordem = e.target.value; st.shown = PAGE; keepUrl(); render(); });
+  document.addEventListener('click', function (e) { if (e.target.id === 'clear') { st.q = ''; $('q').value = ''; keepUrl(); render(); $('q').focus(); } });
+
+  /* next page when the end of the grid comes into view; skeletons in the medium's shape meanwhile */
+  var io = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting || st.loading || st.shown >= list().length) return;
+    st.loading = true; render();
+    setTimeout(function () { st.loading = false; st.shown += PAGE; render(); io.unobserve($('more')); io.observe($('more')); }, 700);   /* re-check: still in view loads the next page */
+  }, { rootMargin: '200px' });
+  io.observe($('more'));
+
+  render();
+})();
+</script>
+</body>
+</html>

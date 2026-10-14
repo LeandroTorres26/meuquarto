@@ -82,12 +82,14 @@
   var reduce = matchMedia('(prefers-reduced-motion: reduce)'), noHover = matchMedia('(hover: none)');
 
   /* ---------- scene ---------- */
+  var GB = {};   /* each object's bounds in room units, collected from its boxes */
   function boxes() {
     var out = [], dim = st.lamp ? 0 : 0.3;
     function shade(a) { var v = Math.min(0.85, a + dim); return v > 0 ? 'box-shadow:inset 0 0 0 9999px hsl(240 33% 5% / ' + v.toFixed(2) + ');' : ''; }
     function B(x0, x1, y0, y1, z0, z1, c, o) {
       o = o || {};
       var W = x1 - x0, H = y1 - y0, D = z1 - z0, cx = (x0 + x1) / 2, cy = (y0 + y1) / 2, cz = (z0 + z1) / 2;
+      if (o.g) { var g = GB[o.g] || (GB[o.g] = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9, z0: 1e9, z1: -1e9 }); g.x0 = Math.min(g.x0, x0); g.x1 = Math.max(g.x1, x1); g.y0 = Math.min(g.y0, y0); g.y1 = Math.max(g.y1, y1); g.z0 = Math.min(g.z0, z0); g.z1 = Math.max(g.z1, z1); }
       var defs = [['front', W, H, 'translateZ(' + D / 2 + 'px)', .06], ['back', W, H, 'rotateY(180deg) translateZ(' + D / 2 + 'px)', .3], ['right', D, H, 'rotateY(90deg) translateZ(' + W / 2 + 'px)', .18], ['left', D, H, 'rotateY(-90deg) translateZ(' + W / 2 + 'px)', .12], ['top', W, D, 'rotateX(90deg) translateZ(' + H / 2 + 'px)', 0]];
       var f = '';
       defs.forEach(function (d) {
@@ -228,11 +230,16 @@
   function frameObject(k) {
     requestAnimationFrame(function () {
       relayout();
-      var z = 1.6, s = tgt.fs * z, p = project(groups[k].at, s, { yaw: tgt.yaw, pitch: tgt.pitch });
-      var ox = tgt.cx - s * BOX.cx, oy = tgt.cy - s * BOX.cy;
+      /* the whole object, centered in the visible area between the tools and the top of the sheet (or left of the side panel) */
       var side = room.classList.contains('room--side'), sh = sheet.getBoundingClientRect(), tl = document.querySelector('.room-tools').getBoundingClientRect();
-      var top = (side ? 72 : tl.bottom + 8), bottom = (side ? tl.top : sh.top) - 12, midX = side ? (sh.left - 8) / 2 : innerWidth / 2;
-      moveTo({ zoom: z, px: midX - (ox + p.x), py: top + (bottom - top) * 0.25 - (oy + p.y) });
+      var vx0 = 8, vx1 = side ? sh.left - 16 : innerWidth - 8, vy0 = (side ? 72 : tl.bottom + 8), vy1 = (side ? tl.top : sh.top) - 12;
+      var g = GB[k], c = { yaw: tgt.yaw, pitch: tgt.pitch }, b = { x0: 1e9, x1: -1e9, y0: 1e9, y1: -1e9 };
+      [g.x0, g.x1].forEach(function (x) { [g.y0, g.y1].forEach(function (y) { [g.z0, g.z1].forEach(function (zz) {
+        var p = project([x, y, zz], 1, c); b.x0 = Math.min(b.x0, p.x); b.x1 = Math.max(b.x1, p.x); b.y0 = Math.min(b.y0, p.y); b.y1 = Math.max(b.y1, p.y);
+      }); }); });
+      var z = clamp(Math.min((vx1 - vx0) * 0.7 / ((b.x1 - b.x0) * tgt.fs), (vy1 - vy0) * 0.7 / ((b.y1 - b.y0) * tgt.fs)), [1, 2.4]), s = tgt.fs * z;
+      var ox = tgt.cx - s * BOX.cx, oy = tgt.cy - s * BOX.cy;
+      moveTo({ zoom: z, px: (vx0 + vx1) / 2 - (ox + s * (b.x0 + b.x1) / 2), py: (vy0 + vy1) / 2 - (oy + s * (b.y0 + b.y1) / 2) });
     });
   }
   function homeCamera() { moveTo({ zoom: 1, px: 0, py: 0 }); }
@@ -260,6 +267,7 @@
       : '<div class="pair-2"><h2 class="t-h3">' + g.title + '</h2><p class="t-sm">' + g.sub + '</p></div><ul class="list">' + g.items.map(function (i) { var it = MQItem.get(i); return '<li><button type="button" class="room-item" data-item="' + i + '"><img class="thumb' + (it.cat === 'music' ? ' thumb--sq' : '') + '" src="' + it.cover + '" alt=""><span class="grow pair"><span class="t-poster">' + it.title.replace(/&/g, '&amp;') + '</span><span class="t-cap">' + it.year + '</span></span></button></li>'; }).join('') + '</ul>';
     $('lamp').setAttribute('aria-pressed', String(st.lamp));
     sheetSize();
+    if (typeof chipsEnd === 'function') requestAnimationFrame(chipsEnd);
   }
   function select(k) {
     if (itemId()) history.replaceState(null, '', location.pathname);
@@ -310,7 +318,10 @@
   addEventListener('keydown', function (e) { if (e.code === 'Space' && !(e.target.closest && e.target.closest('button, a, input, textarea')) && !st.touch) { spaceDown = true; room.classList.add('is-pan-ready'); e.preventDefault(); } });
   addEventListener('keyup', function (e) { if (e.code === 'Space') { spaceDown = false; room.classList.remove('is-pan-ready'); } });
   stage.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-  stage.addEventListener('dragstart', function (e) { e.preventDefault(); });   /* no native image drag out of the scene */
+  stage.addEventListener('dragstart', function (e) { e.preventDefault(); });
+  function chipsEnd() { var c = $('chips'); c.classList.toggle('is-end', c.scrollLeft + c.clientWidth >= c.scrollWidth - 2); }
+  $('chips').addEventListener('scroll', chipsEnd, { passive: true });
+  addEventListener('resize', chipsEnd);   /* no native image drag out of the scene */
   function groupAt(x, y) {
     var el = document.elementFromPoint(x, y), b = el && el.closest('.bx[data-g], .room-pin');
     return b ? (b.getAttribute('data-g') || b.getAttribute('data-k')) : null;

@@ -15,19 +15,21 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - FR-06 Open Graph preview (title, description, image) when the link is shared.
 - FR-07 Adult-content filter: items flagged adult by providers are hidden (BR-08).
 
-### Highlights (CRUD core)
-- FR-08 Search each category in its catalog (TMDB, AniList, Open Library, IGDB, Deezer) and pin an item.
-- FR-09 Create, reorder, edit (personal note, FR-10) and remove highlights per category.
-- FR-10 Optional short personal note per highlight ("why it is here").
-- FR-10a Clicking a highlight or "Agora" item opens a details modal (S17) with the note, origin and links to the item on its platforms; state kept in the URL (`?item=`).
-- FR-11 A mixed list "Favoritos de tudo" with items of any category.
+### Collection and highlights (CRUD core)
+- FR-08 Each category has a **collection** with no size limit, fed by sync (BR-10) and by manual additions: search the category's catalog (TMDB, AniList, Open Library, IGDB, Deezer) and add an item.
+- FR-09 The owner can add, remove and hide collection items; hiding a synced item keeps it out of the collection on later syncs.
+- FR-09a **Highlights** are the collection items the owner marks "Destacar"; they are the only ones shown on the profile home, in the owner's order (BR-02). With no highlight marked, the profile shows the most recent items of the collection.
+- FR-10 Optional short personal note per collection item ("why it is here").
+- FR-10a Clicking any item (highlight, "Agora" or listing) opens a details modal (S17) with the note, origin and links to the item on its platforms; state kept in the URL (`?item=`).
+- FR-10b "Ver todos" per category opens the public listing `/{slug}/{categoria}` (S18): the whole visible collection as a cover grid with search by title, sort (recent, title, year), pagination or infinite scroll; highlights carry a badge.
+- FR-11 A mixed list "Favoritos de tudo" with items picked from any collection (highlight-only, no listing).
 
 ### Integrations
 - FR-12 Link an external account by public username: Letterboxd (RSS), AniList (GraphQL, anime + manga), Last.fm, Steam, Goodreads (RSS). Validate that the account exists and is public.
 - FR-13 Scheduled sync (every ~6 h) plus manual "sync now" button (BR-03).
 - FR-14 Show sync status per account (last success, last error).
 - FR-15 "Agora" block: one item per category, automatic from sync, with manual override or hide (BR-06).
-- FR-16 Unlink an account (synced data removed; manual highlights kept).
+- FR-16 Unlink an account: items that came only from it leave the collection, except those the owner highlighted or noted, which become manual.
 
 ### Monetization
 - FR-17 Theme/cosmetic store (seeded catalog, no admin panel).
@@ -41,14 +43,15 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 | ID | Rule |
 |---|---|
 | BR-01 | Profile slug is unique, lowercase, 3-30 chars, `[a-z0-9-]`, with a reserved-word list. |
-| BR-02 | Free plan: max 4 highlights per category and 4 in "Favoritos de tudo". With a purchased pack: 12 each. |
+| BR-02 | Collections have no limit. Highlights (shown on the profile home) are limited: free plan 4 per category and 4 in "Favoritos de tudo"; with a purchased pack, 12 each. |
 | BR-03 | A linked account cannot be synced again within 15 min of the previous sync; the scheduler picks accounts older than 6 h. |
 | BR-04 | The same work from different sources is one `media_item` (canonical key: category + canonical catalog + external id). |
 | BR-05 | A premium theme can only be applied if the user owns it. Purchases are permanent. |
 | BR-06 | "Agora" shows the latest synced item per category unless the user pinned or hid it. |
-| BR-07 | A highlight can't be duplicated inside the same list. |
+| BR-07 | A work appears once per collection (synced and manual merge into one item) and once per highlight list. |
 | BR-08 | Adult-flagged items are never shown on the public profile in P2. |
 | BR-09 | A purchase is granted only after a verified Stripe webhook, idempotent per event id. |
+| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList, entries with status completed, current, paused or repeating (never planning). Goodreads, shelves read and currently-reading. Steam, owned games with playtime > 0. Last.fm, loved tracks and albums with at least N scrobbles (N configured, start at 10), never each play. |
 
 ## Non-functional requirements
 - NFR-01 Modular monolith; each external platform is one `MediaProvider` implementation (Strategy/Adapter).

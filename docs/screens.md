@@ -11,7 +11,7 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S4 | Public profile | `/{slug}` | no | Header (avatar, name, bio), "Agora", "Favoritos de tudo", highlights per category, "Ver quarto" button, TMDB/provider attribution footer |
 | S5 | Room view | `/{slug}/quarto` (or modal) | no | Isometric scene built from highlights; back to profile |
 | S6 | Editor: profile | `/painel` | yes | Name, bio, avatar upload, slug, theme picker |
-| S7 | Editor: highlights | `/painel/destaques` | yes | Tabs per category + "Favoritos de tudo"; search-and-pin dialog; reorder; note field; limit indicator and upsell |
+| S7 | Editor: collection and highlights | `/painel/destaques` | yes | Tabs per category + "Favoritos de tudo". Per category: the highlights strip (reorder, limit indicator and upsell) and the whole collection below (search, sort, source badge, note, "Destacar", "Ocultar"/"Remover", "Adicionar obra" opens S8) |
 | S8 | Search/pin dialog | modal in S7 | yes | Search catalog, result cards, pin |
 | S9 | Linked accounts | `/painel/contas` | yes | Provider cards: link username, status, last sync, "sync now" (cooldown), unlink |
 | S10 | "Agora" settings | `/painel/agora` | yes | Per category: auto item, pin manually, hide |
@@ -21,6 +21,7 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S14 | Account | `/painel/conta` | yes | Change password, delete account (confirmation) |
 | S15 | Terms / Privacy | `/termos` `/privacidade` | no | Legal text |
 | S16 | 404 / profile not found | | no | |
+| S18 | Category listing | `/{slug}/{categoria}` (`filmes`, `series`, `animes`, `mangas`, `livros`, `musica`, `games`) | no | "Ver todos" target. Whole visible collection of one category: cover grid, search by title, sort (recentes, título, ano), infinite scroll or pages, highlight badge, empty and no-result states. Click opens S17. |
 | S17 | Item details | modal in S4/S5, `?item={mediaItemId}` | no | Opened by clicking any highlight or "Agora" card. Cover, title, year, category sticker, personal note, origin ("assistido em 3 out. no Letterboxd" when synced), external links ("Ver no Letterboxd", "Ver no TMDB"...). Centered dialog from 600px, bottom sheet on mobile. URL param makes it shareable; back button and Esc close it. In S5 it is the existing info panel. |
 
 Cross-cutting components: cookie banner, toasts, empty states (no highlights yet), limit-reached upsell, loading skeletons, error states for failed sync.

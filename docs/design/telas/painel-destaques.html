@@ -3,13 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Destaques, painel do meuquarto</title>
+<title>Destaques e coleção, painel do meuquarto</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Figtree:wght@400;500;600;700&family=Caveat:wght@500;600;700&display=swap">
 <link rel="stylesheet" href="../../design-system/assets/Code/meuquarto.tokens.css">
 <link rel="stylesheet" href="../../design-system/components/bundle.css">
 <link rel="stylesheet" href="site.css">
 </head>
-<body data-estado-padrao="filmes">
+<body>
+<!-- S7 Destaques. Per category: the highlights strip (ordered, limit 4 free / 12 with the pack) above the whole collection
+     (no limit; sync + manual). Prototype params: ?aba=favoritos|filmes|series|animes|mangas|livros|musica|games, ?pack=1 (limit 12).
+     Everything on the page works: highlight, remove, reorder, note, hide/remove, search, sort. -->
 <div class="page">
   <header class="topbar">
     <div class="wrap topbar__in">
@@ -26,108 +29,133 @@
     <main class="pmain">
       <div class="page-head">
         <h1 class="t-h1">Destaques</h1>
-        <p class="t-body muted">O que fica fixado na sua parede. Arraste para mudar a ordem.</p>
+        <p class="t-body muted measure">Sua coleção guarda tudo, sem limite. Os destaques são o que você escolhe dela para a parede do perfil.</p>
       </div>
+      <div class="chips" role="tablist" aria-label="Categoria" id="tabs"></div>
 
-      <div class="stack">
-        <div class="chips" role="tablist" aria-label="Categoria">
-          <button type="button" role="tab" class="chip" data-tab="favoritos" aria-selected="false">Favoritos de tudo <span class="count">4/4</span></button>
-          <button type="button" role="tab" class="chip" data-tab="filmes" aria-selected="true">Filmes <span class="count">4/4</span></button>
-          <button type="button" role="tab" class="chip" aria-selected="false">Séries <span class="count">4/4</span></button>
-          <button type="button" role="tab" class="chip" aria-selected="false">Animes <span class="count">2/4</span></button>
-          <button type="button" role="tab" class="chip" aria-selected="false">Mangás <span class="count">4/4</span></button>
-          <button type="button" role="tab" class="chip" aria-selected="false">Livros <span class="count">4/4</span></button>
-          <button type="button" role="tab" class="chip" aria-selected="false">Games <span class="count">4/4</span></button>
-          <button type="button" role="tab" class="chip" aria-selected="false">Música <span class="count">4/4</span></button>
-        </div>
-        <div class="mq-upsell" data-estado="filmes">
-          <p class="mq-upsell__text"><strong>Filmes está cheio</strong>No plano grátis cabem 4 por categoria. Com o pack de destaques, cabem 12.</p>
-          <div class="mq-upsell__side"><p class="mq-slots"><span class="mq-slots__bar" aria-hidden="true"><span></span><span></span><span></span><span></span></span>4 de 4</p><a class="mq-btn mq-btn--primary" href="loja.html">Ver o pack</a></div>
-        </div>
-        <div class="mq-upsell" data-estado="favoritos">
-          <p class="mq-upsell__text"><strong>Favoritos de tudo está cheio</strong>O plano grátis guarda 4 destaques em Favoritos de tudo. Com um pack, são 12.</p>
-          <div class="mq-upsell__side"><p class="mq-slots"><span class="mq-slots__bar" aria-hidden="true"><span></span><span></span><span></span><span></span></span>4 de 4</p><a class="mq-btn mq-btn--primary" href="loja.html">Ver o pack</a></div>
-        </div>
-      </div>
-
-      <div class="cols-aside next" data-estado="favoritos">
-        <section class="stack" aria-labelledby="fav-lista-h">
-          <div class="row row--between">
-            <h2 id="fav-lista-h" class="t-h3">Favoritos de tudo</h2>
-            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#plus"/></svg>Fixar obra</button>
-          </div>
-          <ol class="stack" style="list-style: none; padding: 0; gap: var(--space-3);" aria-label="Favoritos de tudo, na ordem da parede">
-            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb" src="covers/c01.svg" alt=""><div class="pair"><p class="t-poster">Perfect Days</p><p class="t-cap">Filme, 2023</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Perfect Days" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Perfect Days"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Perfect Days"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f1">Nota para Perfect Days</label><input id="f1" class="input" value="assisti 3 vezes"></div></li>
-            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb" src="covers/c12.svg" alt=""><div class="pair"><p class="t-poster">Frieren</p><p class="t-cap">Anime, 2023</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Frieren"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Frieren"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Frieren"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f2">Nota para Frieren</label><input id="f2" class="input" placeholder="Por que está aqui? (opcional)"></div></li>
-            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb thumb--sq" src="covers/c11.svg" alt=""><div class="pair"><p class="t-poster">Clube da Esquina</p><p class="t-cap">Música, 1972</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Clube da Esquina"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Clube da Esquina"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Clube da Esquina"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f3">Nota para Clube da Esquina</label><input id="f3" class="input" value="repeat o mês todo"></div></li>
-            <li class="pin-row"><svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg><img class="thumb" src="covers/c03.svg" alt=""><div class="pair"><p class="t-poster">Outer Wilds</p><p class="t-cap">Game, 2019</p></div><div class="tools"><button type="button" class="ib" aria-label="Subir Outer Wilds"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Outer Wilds" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Outer Wilds"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div><div class="note"><label class="sr" for="f4">Nota para Outer Wilds</label><input id="f4" class="input" placeholder="Por que está aqui? (opcional)"></div></li>
-          </ol>
-        </section>
-        <section class="stack" aria-labelledby="fav-previa-h">
-          <div class="pair-2"><h2 id="fav-previa-h" class="t-h3">Na sua parede</h2><p class="help">O primeiro bloco de capas do seu perfil.</p></div>
-          <ul class="shelf" style="grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: var(--space-3);">
-            <li><article class="mq-item mq-item--poster" style="--tilt-f:0.883"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c01.svg" alt=""><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Perfect Days</h3><p class="mq-item__sub">2023</p></div></div></article></li>
-            <li><article class="mq-item mq-item--dvd" style="--tilt-f:0.516"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-spine"></span><img class="mq-art" src="covers/c12.svg" alt=""><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Frieren</h3><p class="mq-item__sub">2023</p></div></div></article></li>
-            <li><article class="mq-item mq-item--vinyl" style="--tilt-f:-0.88"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-record"></span><img class="mq-art" src="covers/c11.svg" alt=""><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Clube da Esquina</h3><p class="mq-item__sub">1972</p></div></div></article></li>
-            <li><article class="mq-item mq-item--game" style="--tilt-f:-0.844"><div class="mq-item__link"><figure class="mq-item__cover"><span class="mq-gamebar"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span><img class="mq-art" src="covers/c03.svg" alt=""><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Outer Wilds</h3><p class="mq-item__sub">2019</p></div></div></article></li>
-          </ul>
-        </section>
-      </div>
-
-      <div class="cols-aside next" data-estado="filmes">
-        <section class="stack" aria-labelledby="lista-h">
-          <div class="row row--between">
-            <h2 id="lista-h" class="t-h3">Filmes fixados</h2>
-            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#plus"/></svg>Fixar filme</button>
-          </div>
-          <ol class="stack" style="list-style: none; padding: 0; gap: var(--space-3);" aria-label="Filmes, na ordem da parede">
-            <li class="pin-row">
-              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
-              <img class="thumb" src="covers/c09.svg" alt="">
-              <div class="pair"><p class="t-poster">Paris, Texas</p><p class="t-cap">1984, Wim Wenders</p></div>
-              <div class="tools"><button type="button" class="ib" aria-label="Subir Paris, Texas" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Paris, Texas"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Paris, Texas"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
-              <div class="note"><label class="sr" for="n1">Nota para Paris, Texas</label><input id="n1" class="input" placeholder="Por que está aqui? (opcional)"></div>
-            </li>
-            <li class="pin-row pin-row--drag">
-              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
-              <img class="thumb" src="covers/c02.svg" alt="">
-              <div class="pair"><p class="t-poster">Central do Brasil</p><p class="t-cap">1998, Walter Salles</p></div>
-              <div class="tools"><button type="button" class="ib" aria-label="Subir Central do Brasil"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Central do Brasil"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Central do Brasil"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
-              <div class="note"><label class="sr" for="n2">Nota para Central do Brasil</label><input id="n2" class="input" value="chorei no final"></div>
-            </li>
-            <li class="pin-row">
-              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
-              <img class="thumb" src="covers/c05.svg" alt="">
-              <div class="pair"><p class="t-poster">Aftersun</p><p class="t-cap">2022, Charlotte Wells</p></div>
-              <div class="tools"><button type="button" class="ib" aria-label="Subir Aftersun"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Aftersun"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Aftersun"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
-              <div class="note"><label class="sr" for="n3">Nota para Aftersun</label><input id="n3" class="input" placeholder="Por que está aqui? (opcional)"></div>
-            </li>
-            <li class="pin-row">
-              <svg class="icon grip" aria-hidden="true"><use href="icons.svg#grip"/></svg>
-              <img class="thumb" src="covers/c04.svg" alt="">
-              <div class="pair"><p class="t-poster">Cidade de Deus</p><p class="t-cap">2002, Fernando Meirelles</p></div>
-              <div class="tools"><button type="button" class="ib" aria-label="Subir Cidade de Deus"><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-up"/></svg></button><button type="button" class="ib" aria-label="Descer Cidade de Deus" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#chevron-down"/></svg></button><button type="button" class="ib ib--danger" aria-label="Remover Cidade de Deus"><svg class="icon" aria-hidden="true"><use href="icons.svg#trash"/></svg></button></div>
-              <div class="note"><label class="sr" for="n4">Nota para Cidade de Deus</label><input id="n4" class="input" placeholder="Por que está aqui? (opcional)"></div>
-            </li>
-          </ol>
-        </section>
-
-        <section class="stack" aria-labelledby="previa-h">
-          <div class="pair-2">
-            <h2 id="previa-h" class="t-h3">Na sua parede</h2>
-            <p class="help">Assim quem visita vê.</p>
-          </div>
-          <ul class="shelf" style="grid-template-columns: repeat(2, minmax(0, 1fr)); padding-top: var(--space-3);">
-            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.373"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c09.svg" alt=""><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Paris, Texas</h3><p class="mq-item__sub">1984</p></div></div></article></li>
-            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.618"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c02.svg" alt=""><span class="mq-pin"></span><p class="mq-slip">chorei no final</p></figure><div class="mq-item__meta"><h3 class="mq-item__title">Central do Brasil</h3><p class="mq-item__sub">1998</p></div></div></article></li>
-            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.987"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c05.svg" alt=""><span class="mq-pin"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Aftersun</h3><p class="mq-item__sub">2022</p></div></div></article></li>
-            <li><article class="mq-item mq-item--poster" style="--tilt-f:-0.682"><div class="mq-item__link"><figure class="mq-item__cover"><img class="mq-art" src="covers/c04.svg" alt=""><span class="mq-tape"></span></figure><div class="mq-item__meta"><h3 class="mq-item__title">Cidade de Deus</h3><p class="mq-item__sub">2002</p></div></div></article></li>
-          </ul>
-        </section>
-      </div>
+      <section class="stack next" aria-labelledby="hl-h" id="hl"></section>
+      <section class="stack next" aria-labelledby="coll-h" id="coll"></section>
     </main>
   </div>
+  <div class="mq-toasts" id="toasts" aria-live="polite"></div>
 </div>
-<script src="estados.js"></script>
+<script src="item.js"></script>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var LIMIT = q.get('pack') === '1' ? 12 : 4;
+  var $ = function (id) { return document.getElementById(id); };
+  var icon = function (n) { return '<svg class="icon" aria-hidden="true"><use href="icons.svg#' + n + '"/></svg>'; };
+  var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); };
+  var norm = function (s) { return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+  var CATL = { movie: 'Filme', series: 'Série', anime: 'Anime', manga: 'Mangá', book: 'Livro', game: 'Game', music: 'Música' };
+
+  /* tabs: Favoritos de tudo (cross-category) + one per category */
+  var TABS = [{ slug: 'favoritos', label: 'Favoritos de tudo', unit: ['item', 'itens'], hl: MQItem.favorites.slice(), all: true }].concat(MQItem.cats.map(function (c) {
+    return { slug: c.slug, label: c.label, unit: c.unit, hl: c.hl.slice(), cat: c.cat };
+  }));
+  var coll = {}, notes = {}, gone = {};
+  TABS.forEach(function (t) { coll[t.slug] = t.all ? [].concat.apply([], MQItem.cats.map(function (c) { return MQItem.collection(c.slug); })) : MQItem.collection(t.slug); });
+  var st = { tab: (TABS.filter(function (t) { return t.slug === q.get('aba'); })[0] || TABS[1]).slug, q: '', ordem: 'recentes', menu: null };
+  var tab = function () { return TABS.filter(function (t) { return t.slug === st.tab; })[0]; };
+  var note = function (id) { return id in notes ? notes[id] : MQItem.get(id).note; };
+
+  function meter(n) {
+    var bar = ''; for (var i = 0; i < LIMIT; i++) bar += '<span' + (i < n ? '' : ' class="is-free"') + '></span>';
+    return '<p class="mq-slots"><span class="mq-slots__bar" aria-hidden="true">' + bar + '</span>' + n + ' de ' + LIMIT + '</p>';
+  }
+  function slotCard(id) {
+    var it = MQItem.get(id);
+    return MQItem.card(id, { tag: tab().all }).replace(/<a class="mq-item__link"[^>]*>/, '<div class="mq-item__link">').replace('</a></article>', '</div></article>');
+  }
+  function renderTabs() {
+    $('tabs').innerHTML = TABS.map(function (t) {
+      return '<button type="button" role="tab" class="chip" data-tab="' + t.slug + '" aria-selected="' + (t.slug === st.tab) + '">' + t.label + ' <span class="count">' + t.hl.length + '/' + LIMIT + '</span></button>';
+    }).join('');
+  }
+  function renderHl() {
+    var t = tab(), n = t.hl.length, full = n >= LIMIT;
+    var slots = t.hl.map(function (id, i) {
+      var name = esc(MQItem.get(id).title);
+      return '<li class="hl-slot">' + slotCard(id) + '<div class="hl-ctrl">' +
+        '<button type="button" class="ib" data-move="' + id + '" data-dir="-1" aria-label="Mover ' + name + ' para antes"' + (i === 0 ? ' disabled' : '') + '>' + icon('chevron-left') + '</button>' +
+        '<button type="button" class="ib" data-move="' + id + '" data-dir="1" aria-label="Mover ' + name + ' para depois"' + (i === n - 1 ? ' disabled' : '') + '>' + icon('chevron-right') + '</button>' +
+        '<button type="button" class="ib ib--danger" data-unhl="' + id + '" aria-label="Remover ' + name + ' dos destaques">' + icon('x') + '</button></div></li>';
+    }).join('');
+    var free = full ? '' : '<li class="hl-slot"><a class="mq-slot hl-empty" href="#coll-h">' + icon('plus') + '<span>Destaque um item da coleção</span></a></li>';
+    $('hl').innerHTML =
+      '<div class="hl-head"><div class="pair-2"><h2 id="hl-h" class="t-h2">Destaques' + (t.all ? '' : ' de ' + t.label) + '</h2><p class="help">Na ordem da parede. Use as setas para mudar a ordem.</p></div>' + meter(n) + '</div>' +
+      (full && LIMIT < 12 ? '<div class="mq-upsell"><p class="mq-upsell__text" id="hl-full"><strong>' + t.label + ' está cheio</strong>No plano grátis cabem 4 destaques. Com o pack de destaques, cabem 12. A coleção continua sem limite.</p><div class="mq-upsell__side"><a class="mq-btn mq-btn--primary" href="loja.html">Ver o pack</a></div></div>' : '') +
+      (full && LIMIT >= 12 ? '<p class="help" id="hl-full">Os 12 destaques estão ocupados. Remova um para destacar outro.</p>' : '') +
+      (n ? '<ol class="hl-strip' + (LIMIT > 4 ? ' hl-strip--pack' : '') + '" aria-label="Destaques, na ordem da parede">' + slots + free + '</ol>' : '<div class="cat-empty"><p class="t-sm">Nenhum destaque ainda. O perfil mostra os destaques; escolha na coleção abaixo.</p></div>');
+  }
+  function list() {
+    var t = tab();
+    var l = coll[t.slug].filter(function (id) { return !gone[id] && (!st.q || norm(MQItem.get(id).title).indexOf(norm(st.q)) >= 0); });
+    if (st.ordem === 'titulo') l.sort(function (a, b) { return MQItem.get(a).title.localeCompare(MQItem.get(b).title, 'pt'); });
+    if (st.ordem === 'ano') l.sort(function (a, b) { return MQItem.get(b).year - MQItem.get(a).year; });
+    return l;
+  }
+  function renderColl(keepFocus) {
+    var t = tab(), full = t.hl.length >= LIMIT, l = list(), total = coll[t.slug].filter(function (id) { return !gone[id]; }).length;
+    var rows = l.map(function (id) {
+      var it = MQItem.get(id), hl = t.hl.indexOf(id) >= 0, synced = !!it.origin, name = esc(it.title);
+      var src = synced ? MQItem.platform(it.cat)[0] : 'Manual';
+      var act = hl
+        ? '<button type="button" class="mq-btn mq-btn--ghost mq-btn--sm" data-unhl="' + id + '">Remover dos destaques</button>'
+        : '<button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-hl="' + id + '"' + (full ? ' disabled aria-describedby="hl-full"' : '') + '>' + icon('star') + 'Destacar</button>';
+      var menu = '<div class="menu"><button type="button" class="ib" data-menu="' + id + '" aria-haspopup="menu" aria-expanded="' + (st.menu === id) + '" aria-label="Mais ações para ' + name + '">' + icon('ellipsis') + '</button>' +
+        (st.menu === id ? '<div class="menu__pop" role="menu">' + (synced
+          ? '<button type="button" role="menuitem" data-hide="' + id + '">' + icon('eye-off') + 'Ocultar da coleção</button>'
+          : '<button type="button" role="menuitem" class="is-danger" data-remove="' + id + '">' + icon('trash') + 'Remover da coleção</button>') + '</div>' : '') + '</div>';
+      return '<li class="coll-row"><img class="thumb' + (it.cat === 'music' ? ' thumb--sq' : '') + '" src="' + it.cover + '" alt="">' +
+        '<div class="meta"><p class="t-poster">' + name + '</p><p class="line"><span class="t-cap">' + (t.all ? CATL[it.cat] + ', ' : '') + it.year + '</span><span class="src-badge' + (synced ? '' : ' src-badge--manual') + '">' + src + '</span>' + (hl ? '<span class="hl-seal hl-seal--row">' + icon('star') + 'Destaque</span>' : '') + '</p></div>' +
+        '<div class="note"><label class="sr" for="n-' + id + '">Nota para ' + name + '</label><input id="n-' + id + '" class="input input--sm" data-note="' + id + '" value="' + esc(note(id)) + '" placeholder="Adicionar nota (opcional)"></div>' +
+        '<div class="acts">' + act + menu + '</div></li>';
+    }).join('');
+    $('coll').innerHTML =
+      '<div class="hl-head"><div class="pair-2"><h2 id="coll-h" class="t-h2" tabindex="-1">Coleção' + (t.all ? '' : ' de ' + t.label) + '</h2><p class="help">' + total + ' ' + t.unit[total === 1 ? 0 : 1] + '. ' + (t.all ? 'Tudo o que está na sua coleção, de todas as categorias.' : 'O que vem das contas vinculadas e o que você adicionou à mão.') + '</p></div>' +
+      '<a class="mq-btn mq-btn--secondary mq-btn--sm" href="busca.html">' + icon('plus') + 'Adicionar obra</a></div>' +
+      '<div class="cat-tools"><div class="search"><label for="cq" class="sr">Buscar na coleção</label>' + icon('search') + '<input id="cq" class="input" type="search" placeholder="Buscar na coleção" value="' + esc(st.q) + '" autocomplete="off"></div>' +
+      '<fieldset class="seg" id="ordem"><legend class="sr">Ordenar por</legend>' + [['recentes', 'Recentes'], ['titulo', 'Título'], ['ano', 'Ano']].map(function (o) { return '<label><input type="radio" name="ordem" value="' + o[0] + '"' + (st.ordem === o[0] ? ' checked' : '') + '>' + o[1] + '</label>'; }).join('') + '</fieldset></div>' +
+      (full ? '<p class="help">' + icon('star') + ' Destaques cheios: para destacar outro, remova um da faixa acima' + (LIMIT < 12 ? ' ou veja o pack' : '') + '. Adicionar à coleção continua livre.</p>' : '') +
+      (l.length ? '<ul class="coll-list" aria-label="Coleção">' + rows + '</ul>' : '<div class="cat-empty"><p class="t-sm">' + (st.q ? 'Nada com “' + esc(st.q) + '” na coleção.' : 'A coleção está vazia. Adicione uma obra ou vincule uma conta.') + '</p></div>');
+    if (keepFocus) { var i = $('cq'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
+  }
+  function renderAll() { renderTabs(); renderHl(); renderColl(); }
+  function toast(html, undo) {
+    var el = document.createElement('div');
+    el.className = 'mq-toast'; el.setAttribute('role', 'status');
+    el.innerHTML = '<p class="mq-toast__text">' + html + '</p>' + (undo ? '<button type="button" class="mq-btn mq-btn--ghost mq-btn--sm" data-undo>Desfazer</button>' : '');
+    if (undo) el.querySelector('[data-undo]').onclick = function () { undo(); el.remove(); };
+    $('toasts').appendChild(el);
+    setTimeout(function () { el.remove(); }, 6000);
+  }
+  function refocus(sel) { var el = document.querySelector(sel); if (el && !el.disabled) el.focus(); else $('hl-h').setAttribute('tabindex', '-1'), $('hl-h').focus(); }
+
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('button, a'); if (!b) { if (st.menu) { st.menu = null; renderColl(); } return; }
+    var t = tab(), d = b.dataset;
+    if (d.tab) { st.tab = d.tab; st.q = ''; st.menu = null; history.replaceState(null, '', '?aba=' + d.tab + (LIMIT > 4 ? '&pack=1' : '')); renderAll(); return; }
+    if (d.hl) { if (t.hl.length < LIMIT) { t.hl.push(d.hl); renderAll(); toast('<strong>' + esc(MQItem.get(d.hl).title) + '</strong> está nos destaques.'); refocus('[data-unhl="' + d.hl + '"].mq-btn'); } return; }
+    if (d.unhl) { var i = t.hl.indexOf(d.unhl), id = d.unhl; t.hl.splice(i, 1); renderAll(); toast('<strong>' + esc(MQItem.get(id).title) + '</strong> saiu dos destaques. Continua na coleção.', function () { t.hl.splice(i, 0, id); renderAll(); }); refocus('[data-hl="' + id + '"]'); return; }
+    if (d.move) { var j = t.hl.indexOf(d.move), k = j + Number(d.dir); t.hl.splice(j, 1); t.hl.splice(k, 0, d.move); renderAll(); refocus('[data-move="' + d.move + '"][data-dir="' + d.dir + '"]'); return; }
+    if (d.menu) { st.menu = st.menu === d.menu ? null : d.menu; renderColl(); var m = document.querySelector('.menu__pop button'); if (m) m.focus(); return; }
+    if (d.hide || d.remove) {
+      var id2 = d.hide || d.remove, wasHl = t.hl.indexOf(id2), name = esc(MQItem.get(id2).title);
+      gone[id2] = true; if (wasHl >= 0) t.hl.splice(wasHl, 1); st.menu = null; renderAll();
+      toast(d.hide ? '<strong>' + name + '</strong> foi ocultado. Ele não volta na próxima sincronização.' : '<strong>' + name + '</strong> saiu da coleção.', function () { delete gone[id2]; if (wasHl >= 0) t.hl.splice(wasHl, 0, id2); renderAll(); });
+      $('coll-h').focus(); return;
+    }
+  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && st.menu) { var id = st.menu; st.menu = null; renderColl(); var b = document.querySelector('[data-menu="' + id + '"]'); if (b) b.focus(); } });
+  document.addEventListener('input', function (e) {
+    if (e.target.id === 'cq') { st.q = e.target.value; renderColl(true); }
+    if (e.target.dataset.note) notes[e.target.dataset.note] = e.target.value;
+  });
+  document.addEventListener('change', function (e) { if (e.target.name === 'ordem') { st.ordem = e.target.value; renderColl(); document.querySelector('#ordem input[value="' + st.ordem + '"]').focus(); } });
+  renderAll();
+})();
+</script>
 </body>
 </html>

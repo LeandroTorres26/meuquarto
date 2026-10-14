@@ -331,6 +331,53 @@ html:has(dialog.dialog[open]){overflow:hidden}
 .room-item{display:flex;align-items:center;gap:var(--space-3);width:100%;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer;border-radius:var(--radius-sm)}
 .room-item:hover .t-poster{text-decoration:underline;text-underline-offset:3px}
 
+/* ---------- S7 highlights strip + collection ---------- */
+.hl-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2) var(--space-4)}
+.hl-strip{list-style:none;margin:0;padding:var(--space-3) 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,148px));gap:var(--space-6) var(--col-gap);align-items:end}
+@media (max-width:599.98px){.hl-strip{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:136px;overflow-x:auto;margin-inline:calc(-1 * var(--gutter));padding-inline:var(--gutter);scrollbar-width:none}}
+
+.hl-slot{display:flex;flex-direction:column;gap:var(--space-2);min-width:0}
+.hl-slot .mq-item__meta{margin-top:var(--space-2)}
+.hl-ctrl{display:flex;justify-content:center;gap:0}
+.hl-ctrl .ib{width:40px;height:40px}
+.hl-empty{aspect-ratio:2/3;min-height:0}
+.coll-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.coll-row{display:grid;grid-template-columns:40px minmax(0,1fr) auto;column-gap:var(--space-3);row-gap:var(--space-2);align-items:center;padding-block:var(--space-3);border-bottom:1px solid var(--border)}
+.coll-row:first-child{border-top:1px solid var(--border)}
+.coll-row .thumb{grid-row:span 3;align-self:start}
+.coll-row .meta{display:flex;flex-direction:column;gap:var(--space-1);min-width:0}
+.coll-row .meta .t-poster{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.coll-row .line{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-1) var(--space-2)}
+.coll-row .acts{display:flex;align-items:center;gap:var(--space-1);justify-content:flex-end}
+.coll-row .note{grid-column:2 / -1}
+.coll-row .acts{grid-column:2 / -1;justify-content:flex-start}
+@media (min-width:1024px){.coll-row{grid-template-columns:40px minmax(0,1.2fr) minmax(0,1fr) auto}.coll-row .thumb{grid-row:auto;align-self:center}.coll-row .note,.coll-row .acts{grid-column:auto}.coll-row .acts{justify-content:flex-end}}
+.input--sm{min-height:36px;padding:6px 10px;font-size:14px;line-height:20px}
+.src-badge{display:inline-flex;align-items:center;min-height:20px;padding:0 var(--space-2);border:1px solid var(--border-strong);border-radius:var(--radius-pill);font:600 12px/16px var(--font-sans);color:var(--ink-muted);white-space:nowrap}
+.src-badge--manual{border-style:dashed}
+.hl-seal--row{margin-top:0}
+.menu{position:relative}
+.menu__pop{position:absolute;right:0;top:calc(100% + var(--space-1));z-index:20;min-width:200px;padding:var(--space-1);background:var(--surface-200);border:1px solid var(--border-strong);border-radius:var(--radius-md);box-shadow:var(--shadow-lift)}
+.menu__pop button{display:flex;align-items:center;gap:var(--space-2);width:100%;min-height:40px;padding:0 var(--space-3);border:0;border-radius:var(--radius-sm);background:none;color:var(--ink);font:var(--type-label-weight) var(--type-label-size)/var(--type-label-line) var(--font-sans);text-align:left;cursor:pointer}
+.menu__pop button:hover,.menu__pop button:focus-visible{background:var(--surface-300)}
+.menu__pop .is-danger{color:var(--danger)}
+.menu__pop .icon{width:16px;height:16px}
+
+/* ---------- S18 category listing ---------- */
+.page a.owner:not(.mq-btn):not(.tab){display:inline-flex;align-items:center;gap:var(--space-2);align-self:flex-start;min-height:44px;color:var(--ink);text-decoration:none;font:var(--type-label-weight) var(--type-label-size)/var(--type-label-line) var(--font-sans)}
+.owner img{width:28px;height:28px;border-radius:50%;object-fit:cover;background:var(--surface-300)}
+.owner:hover span{text-decoration:underline;text-underline-offset:3px}
+.cat-tools{display:flex;flex-wrap:wrap;gap:var(--space-3) var(--space-4);align-items:center}
+.cat-tools .search{position:relative;flex:1 1 240px;max-width:400px}
+.cat-tools .search .icon{position:absolute;left:13px;top:13px;width:18px;height:18px;color:var(--ink-muted)}
+.cat-tools .search .input{padding-left:42px}
+.cat-tools .seg{flex:0 0 auto;min-width:280px}
+.shelf--grid{align-items:start}
+@media (min-width:1024px){.shelf--grid{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.hl-seal{display:inline-flex;align-items:center;gap:var(--space-1);margin-top:var(--space-1);font:600 12px/16px var(--font-sans);color:var(--brand)}
+.hl-seal .icon{width:12px;height:12px;fill:currentColor;stroke-width:1.5}
+.cat-empty{display:flex;flex-direction:column;align-items:flex-start;gap:var(--l2);padding-block:var(--l3)}
+
 /* ---------- 3D room (S5) ----------
    Two input models, chosen by quarto.html from (hover: hover) / (hover: none) and set as a class:
    mouse (default): labels hidden, one shows on hover or focus with the object's glow; wheel zooms, drag tilts a little.
@@ -351,7 +398,7 @@ html:has(.room){overflow:hidden;overscroll-behavior:none}
 .fc img{display:block;width:100%;height:100%;object-fit:cover}
 /* object glow: a soft brand edge on every face of the object, like a selection highlight in a game */
 .bx[data-g]:not([data-g=""]) .fc{outline:2px solid transparent;outline-offset:-2px;transition:outline-color .18s ease-out,filter .18s ease-out}
-.bx.is-lit .fc{outline-color:var(--brand);filter:drop-shadow(0 0 4px var(--brand))}
+.bx.is-lit[data-g]:not([data-g=""]) .fc{outline-color:var(--brand);filter:drop-shadow(0 0 4px var(--brand))}   /* same specificity as the resting rule above, so the outline shows */
 
 /* labels: one button per object; the label fades in above the object */
 .pin-anchor{position:absolute;left:0;top:0;pointer-events:none}   /* only a shown label (or a touch dot) takes the pointer */
@@ -420,7 +467,10 @@ html:has(.room){overflow:hidden;overscroll-behavior:none}
 .room-expand{position:absolute;right:var(--gutter);bottom:var(--space-4);box-shadow:var(--shadow-card)}
 .room--side .room-expand{top:88px;bottom:auto}
 .room--touch:not(.has-sel) .room-chips{margin-right:calc(52px - var(--inset));padding-right:var(--space-2)}   /* the row ends before the collapse button */
-.room--touch .room-chips .chip{padding-inline:10px}
+.room--touch .room-chips .chip{padding-inline:10px;flex:none;scroll-snap-align:start}
+/* touch chips scroll sideways; a fade at the edge says there is more (removed once scrolled to the end) */
+.room--touch .room-chips{overflow-x:auto;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 28px),transparent)}
+.room--touch .room-chips.is-end{-webkit-mask-image:none;mask-image:none}
 .room--touch:not(.has-sel) .room-collapse{top:12px}
 .room--touch .room-expand{min-height:44px;bottom:calc(var(--space-4) + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:reduce){

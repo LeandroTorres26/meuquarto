@@ -61,7 +61,9 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - `CatalogProvider` interface + TMDB (movies/series)
 - AniList catalog (anime/manga), Open Library (books), IGDB (games), Deezer (music)
 - `media_items` snapshot + canonical key/dedup (BR-04)
-- Highlights CRUD per category + reorder + note (BR-07)
+- Collection per category: add manually, remove, hide, note (BR-07)
+- Highlights: mark "Destacar" inside the collection + reorder (BR-02)
+- Public category listing `/{slug}/{categoria}` (S18): search, sort, pagination
 - "Favoritos de tudo" list
 - Plan limit rule 4/12 (BR-02) with upsell state
 
@@ -72,6 +74,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Last.fm adapter (now playing, top tracks/artists)
 - Steam adapter (recently played; appid → IGDB mapping)
 - Goodreads RSS adapter
+- Sync upserts collection items per platform rules (BR-10); unlink keeps highlighted/noted items as manual (FR-16)
 - Sync scheduler + manual sync with cooldown (BR-03) + `sync_runs` + backoff
 - "Agora" block auto + override (BR-06) + adult filter (BR-08)
 - Provider response cache and rate limiting (NFR-03)

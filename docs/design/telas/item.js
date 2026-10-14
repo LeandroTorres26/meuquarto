@@ -54,6 +54,54 @@
     'hades': ['game', 'Hades', 2020, 'da Supergiant Games', 12, -0.366, 'p', '', '']
   };
 
+  /* ---------- collection: every item of a category (sync + manual, no limit); highlights are the items marked in it ----------
+     Order = most recent first (the "Recentes" sort). Items not on the profile get their tilt, tack and cover from their id,
+     and an origin from their place in the list (series are always by hand). */
+  function slug(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  var MONTHS = ['jan.', 'fev.', 'mar.', 'abr.', 'maio', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'];
+  var VERB = { movie: 'Assistido', anime: 'Assistido', manga: 'Lido', book: 'Lido', game: 'Jogado', music: 'Ouvido' };
+  var EXTRA = {
+    movie: [['Ainda Estou Aqui', 2024, 'de Walter Salles'], ['Retratos Fantasmas', 2023, 'de Kleber Mendonça Filho'], ['Past Lives', 2023, 'de Celine Song'], ['Bacurau', 2019, 'de Kleber Mendonça Filho e Juliano Dornelles'], ['Drive My Car', 2021, 'de Ryusuke Hamaguchi'], ['Asteroid City', 2023, 'de Wes Anderson'], ['Parasita', 2019, 'de Bong Joon-ho'], ['Moonlight', 2016, 'de Barry Jenkins'], ['Que Horas Ela Volta?', 2015, 'de Anna Muylaert'], ['O Som ao Redor', 2012, 'de Kleber Mendonça Filho'], ['Amor à Flor da Pele', 2000, 'de Wong Kar-wai']],
+    series: [['The Bear', 2022, 'de Christopher Storer'], ['Severance', 2022, 'de Dan Erickson'], ['Succession', 2018, 'de Jesse Armstrong'], ['Cidade Invisível', 2021, 'de Carlos Saldanha']],
+    anime: [['Dandadan', 2024, 'estúdio Science SARU'], ['Bocchi the Rock!', 2022, 'estúdio CloverWorks'], ['Chainsaw Man', 2022, 'estúdio MAPPA'], ['Odd Taxi', 2021, 'estúdio OLM'], ['Sonny Boy', 2021, 'estúdio Madhouse'], ['Spy x Family', 2022, 'estúdio Wit e CloverWorks'], ['Vinland Saga', 2019, 'estúdio Wit'], ['Made in Abyss', 2017, 'estúdio Kinema Citrus'], ['March Comes in Like a Lion', 2016, 'estúdio Shaft'], ['Erased', 2016, 'estúdio A-1 Pictures'], ['Haikyu!!', 2014, 'estúdio Production I.G'], ['Ping Pong the Animation', 2014, 'estúdio Tatsunoko'], ['Hunter x Hunter', 2011, 'estúdio Madhouse'], ['Steins;Gate', 2011, 'estúdio White Fox'], ['The Tatami Galaxy', 2010, 'estúdio Madhouse'], ['Fullmetal Alchemist: Brotherhood', 2009, 'estúdio Bones'], ['Monogatari', 2009, 'estúdio Shaft'], ['Kaiji', 2007, 'estúdio Madhouse'], ['Samurai Champloo', 2004, 'estúdio Manglobe']],
+    manga: [],
+    book: [['O Avesso da Pele', 2020, 'de Jeferson Tenório'], ['Ensaio sobre a Cegueira', 1995, 'de José Saramago'], ['Cem Anos de Solidão', 1967, 'de Gabriel García Márquez'], ['A Paixão segundo G.H.', 1964, 'de Clarice Lispector'], ['Quarto de Despejo', 1960, 'de Carolina Maria de Jesus'], ['Vidas Secas', 1938, 'de Graciliano Ramos'], ['Capitães da Areia', 1937, 'de Jorge Amado'], ['Memórias Póstumas de Brás Cubas', 1881, 'de Machado de Assis']],
+    music: [['AmarElo', 2019, 'de Emicida'], ['Bluesman', 2018, 'de Baco Exu do Blues'], ['Cartola', 1976, 'de Cartola'], ['Racional', 1975, 'de Tim Maia'], ['A Tábua de Esmeralda', 1974, 'de Jorge Ben'], ['Loki?', 1974, 'de Arnaldo Baptista'], ['Krig-ha, Bandolo!', 1973, 'de Raul Seixas'], ['Secos & Molhados', 1973, 'dos Secos & Molhados'], ['Transa', 1972, 'de Caetano Veloso'], ['Construção', 1971, 'de Chico Buarque'], ['Tropicália ou Panis et Circencis', 1968, 'de vários artistas']],
+    game: [['Baldur\'s Gate 3', 2023, 'da Larian Studios'], ['Tunic', 2022, 'de Andrew Shouldice'], ['Inscryption', 2021, 'da Daniel Mullins Games'], ['Return of the Obra Dinn', 2018, 'de Lucas Pope'], ['The Legend of Zelda: Breath of the Wild', 2017, 'da Nintendo'], ['Stardew Valley', 2016, 'da ConcernedApe'], ['Undertale', 2015, 'de Toby Fox']]
+  };
+  /* category pages: slug, category, plural label, unit for counts ("24 animes"), profile highlights in wall order */
+  var CATS = [
+    { slug: 'filmes', cat: 'movie', label: 'Filmes', unit: ['filme', 'filmes'], hl: ['paris-texas', 'central-do-brasil', 'aftersun', 'cidade-de-deus'] },
+    { slug: 'series', cat: 'series', label: 'Séries', unit: ['série', 'séries'], hl: ['twin-peaks', 'sintonia', 'familia-soprano', 'fleabag'] },
+    { slug: 'animes', cat: 'anime', label: 'Animes', unit: ['anime', 'animes'], hl: ['cowboy-bebop', 'mob-psycho-100', 'neon-genesis-evangelion', 'mushishi'] },
+    { slug: 'mangas', cat: 'manga', label: 'Mangás', unit: ['mangá', 'mangás'], hl: ['vagabond', 'oyasumi-punpun', 'monster', 'yotsuba'] },
+    { slug: 'livros', cat: 'book', label: 'Livros', unit: ['livro', 'livros'], hl: ['torto-arado', 'grande-sertao-veredas', 'dom-casmurro', 'a-hora-da-estrela'] },
+    { slug: 'musica', cat: 'music', label: 'Música', unit: ['álbum', 'álbuns'], hl: ['elis-e-tom', 'sobrevivendo-no-inferno', 'acabou-chorare', 'da-lama-ao-caos'] },
+    { slug: 'games', cat: 'game', label: 'Games', unit: ['game', 'games'], hl: ['hollow-knight', 'celeste', 'disco-elysium', 'hades'] }
+  ];
+  var FAVORITES = ['perfect-days', 'frieren', 'clube-da-esquina', 'outer-wilds'];
+  var COLL = {};
+  (function () {
+    var today = new Date(2026, 9, 13);
+    CATS.forEach(function (c) {
+      var mine = Object.keys(ROWS).filter(function (id) { return ROWS[id][0] === c.cat; });
+      var extra = EXTRA[c.cat].map(function (e) { return slug(e[0]); });
+      /* interleave: the profile's items sit among the others, so "Recentes" is not just the highlights first */
+      var list = [], a = mine.slice(), b = extra.slice();
+      while (a.length || b.length) { if (b.length) list.push(b.shift()); if (a.length) list.push(a.shift()); if (b.length && list.length % 3 === 0) list.push(b.shift()); }
+      EXTRA[c.cat].forEach(function (e, i) {
+        var id = slug(e[0]), h = hash(id), pos = list.indexOf(id), synced = SRC[c.cat][0] && i % 3 !== 2;
+        var d = new Date(today); d.setDate(d.getDate() - 4 - pos * 9);
+        var origin = synced ? VERB[c.cat] + ' em ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear() + (SRC[c.cat][0] === 'Steam' ? ' na ' : ' no ') + SRC[c.cat][0] : '';
+        var cv = [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12][h % 11], t = ((h >>> 8) % 1000) / 1000 * 2 - 1;
+        ROWS[id] = [c.cat, e[0], e[1], e[2], cv, (t < 0 ? -1 : 1) * Math.max(0.36, Math.abs(t)), (h >>> 4) % 2 ? 't' : 'p', '', origin];
+      });
+      COLL[c.slug] = list;
+    });
+  })();
+  function category(s) { return CATS.filter(function (c) { return c.slug === s; })[0] || null; }
+
   function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function icon(n) { return '<svg class="icon" aria-hidden="true"><use href="icons.svg#' + n + '"/></svg>'; }
   function cover(n) { return 'covers/c' + String(n).padStart(2, '0') + '.svg'; }
@@ -143,5 +191,22 @@
   document.addEventListener('animationend', function (e) {
     if (e.target.classList && e.target.classList.contains('detail__ring')) setPlaying(e.target.closest('.detail__play'), false);
   }, true);
-  window.MQItem = { get: get, render: render, body: body, loading: loading, gone: gone };
+  /* a HighlightCard (static markup) for grids: the shape of the medium, tape or tack, optional sticker and "Destaque" seal */
+  function card(id, opts) {
+    opts = opts || {};
+    var it = get(id), c = CAT[it.cat], shape = c[2];
+    var cls = shape === 'book' || shape === 'manga' ? 'mq-item--' + shape + ' mq-item--volume' : 'mq-item--' + shape;
+    var lead = { dvd: '<span class="mq-spine" aria-hidden="true"></span>', vinyl: '<span class="mq-record" aria-hidden="true"></span>', game: '<span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span>' }[shape] || '';
+    var hl = opts.highlight ? '<span class="hl-seal"><svg class="icon" aria-hidden="true"><use href="icons.svg#star"/></svg>Destaque</span>' : '';
+    return '<article class="mq-item ' + cls + '" style="--tilt-f:' + it.tilt + '"><a class="mq-item__link" href="' + (opts.href || '?item=' + id) + '" aria-label="' + esc(it.title) + ', ' + it.year + (opts.highlight ? ', destaque' : '') + '">' +
+      '<figure class="mq-item__cover">' + lead + '<img class="mq-art" src="' + it.cover + '" alt="" loading="lazy">' +
+      (opts.tag ? '<span class="mq-tag mq-tag--' + it.cat + '">' + icon(c[1]).replace('class="icon"', 'class="mq-icon icon"') + c[0] + '</span>' : '') +
+      (it.fix === 't' ? '<span class="mq-tape" aria-hidden="true"></span>' : '<span class="mq-pin" aria-hidden="true"></span>') + '</figure>' +
+      '<div class="mq-item__meta"><h3 class="mq-item__title">' + esc(it.title) + '</h3><p class="mq-item__sub">' + it.year + '</p>' + hl + '</div></a></article>';
+  }
+
+  window.MQItem = { get: get, render: render, body: body, loading: loading, gone: gone, card: card, slug: slug,
+    cats: CATS, category: category, favorites: FAVORITES, platform: function (cat) { return SRC[cat]; },
+    collection: function (s) { return (COLL[s] || []).slice(); },
+    isHighlight: function (s, id) { var c = category(s); return !!c && c.hl.indexOf(id) >= 0; } };
 })();

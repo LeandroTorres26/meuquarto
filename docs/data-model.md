@@ -8,8 +8,10 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 | `profiles` | id, user_id (unique FK), slug (unique), display_name, bio, avatar_key, theme_id, created_at | 1:1 with user |
 | `media_items` | id, category, canonical_provider, external_id, title, year, image_url, adult, metadata_json, fetched_at | unique (category, canonical_provider, external_id); snapshot (BR-04) |
 | `media_external_ids` | media_item_id, provider, external_id | maps Steam/Letterboxd ids to the canonical item |
+| `collection_items` | id, profile_id, media_item_id, category, note, hidden, added_at, last_activity_at | the owner's collection, no limit; unique (profile_id, media_item_id) (BR-07); `hidden` blocks re-adding by sync |
+| `collection_item_sources` | collection_item_id, source (MANUAL / provider), linked_account_id (nullable), first_seen_at | why an item is in the collection; drives unlink (FR-16) and the S17 origin |
 | `highlight_lists` | id, profile_id, category (nullable = "Favoritos de tudo") | unique (profile_id, category) |
-| `highlights` | id, list_id, media_item_id, position, note | unique (list_id, media_item_id) (BR-07) |
+| `highlights` | id, list_id, collection_item_id, position | the subset shown on the profile home; unique (list_id, collection_item_id); count limited by BR-02 |
 | `linked_accounts` | id, profile_id, provider, username, status, last_synced_at, last_error | unique (profile_id, provider) |
 | `synced_entries` | id, linked_account_id, media_item_id, activity_type, occurred_at | recent activity from providers |
 | `now_entries` | id, profile_id, category, media_item_id, source (AUTO/MANUAL), hidden | one per (profile, category) (BR-06) |
@@ -23,7 +25,9 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 | `room_layouts` | id, profile_id, layout_json | prototype only |
 
 Notes
-- Free plan limits derive from `entitlements` (pack owned → 12, else 4).
+- Free plan limits derive from `entitlements` (pack owned → 12, else 4). They apply to `highlights` only; `collection_items` is unlimited.
+- The public listing (S18) reads `collection_items` where `hidden = false`, paginated, with an index on (profile_id, category, last_activity_at).
+- `synced_entries` keeps the raw activity (dates, "assistido em"); sync upserts `collection_items` from it following BR-10.
 - Account deletion cascades to profile, highlights, linked accounts, entries; `orders` rows are anonymized (user_id nulled).
 - Deleting a profile doesn't delete shared `media_items` (they are a global cache).
-- Entities: 16 tables (requirement from the professor: ≥ 3).
+- Entities: 18 tables (requirement from the professor: ≥ 3).

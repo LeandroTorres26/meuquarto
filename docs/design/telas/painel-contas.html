@@ -26,7 +26,7 @@
     <main class="pmain">
       <div class="page-head">
         <h1 class="t-h1">Contas vinculadas</h1>
-        <p class="t-body muted measure">Lemos só o que é público e atualizamos sozinhos a cada 6 horas. Seus destaques fixados à mão nunca mudam.</p>
+        <p class="t-body muted measure">Lemos só o que é público e atualizamos sozinhos a cada 6 horas. O que vem daqui entra na sua coleção; o que você adicionou à mão e os seus destaques nunca mudam.</p>
       </div>
 
       <section class="stack" aria-labelledby="ativas-h">
@@ -36,6 +36,7 @@
             <div class="row row--between"><h3 id="p-lb" class="t-h3">Letterboxd</h3><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span></div>
             <div class="pair">
               <p class="t-body">letterboxd.com/leandro</p>
+              <p class="t-cap">Entra na coleção: seu diário recente; o histórico se acumula a partir de agora.</p>
               <p class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 3 minutos</p>
             </div>
             <div class="actions">
@@ -47,6 +48,7 @@
             <div class="row row--between"><h3 id="p-al" class="t-h3">AniList</h3><span class="row"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-copy"/></svg>Mangá</span></span></div>
             <div class="pair">
               <p class="t-body">anilist.co/user/leandrot</p>
+              <p class="t-cap">Entra na coleção: completos, assistindo, pausados e revendo.</p>
               <p class="status status--ok" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 2 horas</p>
               <p class="status" data-estado="sincronizando" role="status" style="color: var(--ink-muted);"><span class="mq-spinner" aria-hidden="true" style="margin-top: 2px;"></span>Buscando sua lista no AniList…</p>
             </div>
@@ -60,6 +62,7 @@
             <div class="row row--between"><h3 id="p-fm" class="t-h3">Last.fm</h3><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span></div>
             <div class="pair">
               <p class="t-body">last.fm/user/leandro_t</p>
+              <p class="t-cap">Entra na coleção: faixas amadas e álbuns que você mais ouve.</p>
               <p class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>O Last.fm não respondeu às 14:20. Tentamos de novo às 14:40; o que já está no perfil continua lá.</p>
             </div>
             <div class="actions">
@@ -79,6 +82,7 @@
           <form class="region region--line" aria-labelledby="p-st">
             <div class="row row--between"><h3 id="p-st" class="t-h3">Steam</h3><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span></div>
             <div class="field"><label class="label" for="steam">Perfil do Steam</label><input id="steam" class="input" placeholder="steamcommunity.com/id/seunome"><p class="help">A lista de jogos também precisa estar pública.</p></div>
+            <p class="t-cap">Entra na coleção: jogos com tempo de jogo.</p>
             <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start">Conectar Steam</button>
           </form>
           <form class="region region--line" aria-labelledby="p-gr">
@@ -88,11 +92,12 @@
               <input id="gr" class="input input--error" value="leandro-torres" aria-invalid="true" aria-describedby="gr-err">
               <p id="gr-err" class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>Esse perfil não existe ou está privado. Confira o nome na URL do seu perfil.</p>
             </div>
+            <p class="t-cap">Entra na coleção: estantes lidos e lendo.</p>
             <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start">Conectar Goodreads</button>
           </form>
           <div class="region region--line" aria-labelledby="p-csv">
             <h3 id="p-csv" class="t-h3">Outra plataforma</h3>
-            <p class="t-sm">Usa Skoob, StoryGraph ou Backloggd? Importação por arquivo CSV chega em uma próxima versão. Séries você fixa à mão em Destaques.</p>
+            <p class="t-sm">Usa Skoob, StoryGraph ou Backloggd? Importação por arquivo CSV chega em uma próxima versão. Séries você adiciona à mão em Destaques.</p>
             <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start" disabled>Em breve</button>
           </div>
         </div>

@@ -24,7 +24,7 @@
   }
 
   document.addEventListener('click', function (e) {
-    var a = e.target.closest('a[href^="?item="]');
+    var a = e.target.closest('a[href^="?"][href*="item="]');   /* ?item=<id>, or ?c=animes&item=<id> on S18 */
     if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
     e.preventDefault();
     opener = a;
