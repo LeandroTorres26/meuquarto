@@ -48,15 +48,5 @@ Public profile is served from a pre-assembled view (profile + highlights + now) 
 ## Billing flow
 Checkout Session (Pix + card) → user pays → `checkout.session.completed` / `payment_intent.succeeded` webhook (signature verified, idempotent by event id) → `orders` paid → `entitlements` granted.
 
-## ADRs to write in `docs/adr/`
-1. Modular monolith over microservices
-2. Next.js separate front over Thymeleaf
-3. Session cookie over JWT
-4. Username-only account linking, no OAuth
-5. Canonical catalog per category and dedup key
-6. Metadata snapshot + image hotlink
-7. Scheduler + cooldown instead of queue
-8. Stripe for payments (Pix + card), one-time purchases
-9. S3-compatible object storage
-10. API terms/licensing review (TMDB commercial license, attribution)
-11. Room rendering technology (after design)
+## Decisions
+Recorded in [`docs/adr/`](adr/README.md) (0001 to 0011). Still open: 0012, room rendering technology, decided in epic E6.
