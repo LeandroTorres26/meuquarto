@@ -19,6 +19,8 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | 0013 | Room rendering technology | To write in epic E6 |
 | [0014](0014-module-internal-structure.md) | Module internal structure: light layers | Accepted |
 | [0015](0015-csp-and-rate-limiting.md) | CSP without nonce and in-memory rate limiting | Accepted |
+| [0016](0016-same-origin-api-proxy.md) | Same-origin API through proxy.ts | Accepted |
+| [0017](0017-real-client-address-behind-proxies.md) | Real client address behind the web proxy and Caddy | Accepted |
 
 ## Template
 

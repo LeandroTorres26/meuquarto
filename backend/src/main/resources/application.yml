@@ -24,6 +24,17 @@ spring:
 
 server:
   port: 8080
+  # Real client address (ADR 0017). Tomcat's RemoteIpValve rewrites remoteAddr from X-Forwarded-For
+  # only when the direct peer is one of internal-proxies; from anyone else the header is ignored.
+  # The API port is never public (compose binds 127.0.0.1, production exposes only Caddy), so the
+  # only peers are the web container and Caddy, on private Docker ranges, plus loopback.
+  forward-headers-strategy: native
+  tomcat:
+    remoteip:
+      remote-ip-header: X-Forwarded-For
+      protocol-header: X-Forwarded-Proto
+      internal-proxies: >-
+        10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, 127.0.0.0/8, ::1/128
   error:
     include-stacktrace: never
     include-message: never

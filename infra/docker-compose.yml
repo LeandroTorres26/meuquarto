@@ -36,6 +36,8 @@ services:
     build: ../frontend
     environment:
       API_URL: http://api:8080
+      # false unless a reverse proxy that overwrites X-Forwarded-For (Caddy) is in front (ADR 0017).
+      TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-false}
     depends_on:
       api:
         condition: service_healthy
