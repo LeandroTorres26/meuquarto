@@ -63,6 +63,14 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 - Accessibility as in the design system README: real buttons and links, labels on inputs, visible focus, contrast 4.5:1, `prefers-reduced-motion` respected.
 - Icons: Lucide.
 
+## Object-oriented requirements (course)
+
+This is the P2 project of the POO course: the professor requires inheritance, abstract classes, interfaces and subtype polymorphism in **our own code**, and Spring features (`UserDetails`, `JpaRepository`, annotations) do not count. The owner must be able to explain every hierarchy line by line.
+
+- Every feature that matches one of the hierarchies in ADR 0018 (`ActivityProvider`, `CatalogProvider`, `Plan`, `ValidationRule`, `DomainException`, optionally `RoomObject`) implements it exactly as designed there. Don't replace it with `if`/`switch` on a type or with a framework class.
+- Hierarchies are plain Java: no Spring or JPA annotations or base classes inside them, readable, small methods, no framework magic. Callers use the base type and never `instanceof`.
+- Update `docs/poo-no-projeto.md` (the owner's study guide, pt-BR) in the same PR whenever a hierarchy is added or changed.
+
 ## Workflow
 
 - One GitHub issue at a time. Branch `<type>/<issue-number>-<short-slug>` (types: `feat`, `fix`, `chore`, `docs`), from `main`.
