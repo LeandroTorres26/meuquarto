@@ -57,6 +57,8 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 ## Frontend conventions
 
 - Implement screens from `docs/design/telas/*.html`, keeping class names from `site.css` and `docs/design-system/components/bundle.css`, and using the design system components (`HighlightCard`, `HighlightGrid`, `CategoryTag`…). Tokens come from `docs/design-system/tokens.json` / `meuquarto.tokens.css`; no hard-coded colors or spacing.
+- Design system CSS lives in `frontend/src/styles/` (copies of the files in `docs/`, because the Docker build context is `frontend/`). Never edit them there: change the source in `docs/design-system/` or `docs/design/telas/` and run `npm run sync:design` (also copies the placeholder covers to `public/covers`). `src/app/globals.css` holds the app-only additions.
+- The browser only talks to the Next origin: `/api/*` is proxied to `API_URL` at runtime by `src/proxy.ts` (ADR 0016). Browser code uses `src/lib/api-client.ts` (CSRF handled); server components use `src/lib/session.ts`. Never put the API address or secrets in client code.
 - UI copy in pt-BR (informal "você", sentence case, no emoji, no exclamation marks). Code, identifiers, commits and technical docs in English.
 - Accessibility as in the design system README: real buttons and links, labels on inputs, visible focus, contrast 4.5:1, `prefers-reduced-motion` respected.
 - Icons: Lucide.
@@ -80,7 +82,8 @@ Backend (from `backend/`, needs JDK 21; Maven comes from the wrapper):
 Frontend (from `frontend/`, needs Node 22):
 - `npm ci`: install exactly what the lockfile pins
 - `npm run dev`: dev server on http://localhost:3000 (expects the API at `API_URL`, default `http://localhost:8080`)
-- `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`: the CI gate
+- `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run test` (Vitest, pure logic), `npm run build`: the CI gate
+- `npm run sync:design`: copy the design system CSS from `docs/` into `src/styles/`
 - `npm run format`: apply Prettier
 
 Whole stack (from the repo root, needs Docker; copy `.env.example` to `.env` first):
