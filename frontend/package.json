@@ -9,9 +9,12 @@
     "lint": "eslint",
     "typecheck": "next typegen && tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "sync:design": "node scripts/sync-design.mjs",
+    "test": "vitest run"
   },
   "dependencies": {
+    "lucide-react": "1.61.0",
     "next": "16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
@@ -25,7 +28,8 @@
     "eslint-config-next": "16.4.2",
     "eslint-config-prettier": "10.1.8",
     "prettier": "3.9.10",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "5.0.5"
   },
   "engines": {
     "node": ">=22"
