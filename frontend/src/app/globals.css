@@ -1,6 +1,23 @@
-/* Placeholder until the design system tokens are wired in. */
-body {
-  margin: 0;
-  padding: 32px 16px;
-  font-family: system-ui, sans-serif;
+/* App-level additions on top of the design system CSS (src/styles, synced from docs/). */
+
+/* The tokens name the fonts directly; next/font self-hosts them under generated family names,
+   exposed through the --font-*-loaded variables set on <html> by the root layout. */
+:root:root {
+  --font-display:
+    var(--font-display-loaded), "Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
+  --font-sans: var(--font-sans-loaded), Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: var(--font-hand-loaded), Caveat, "Comic Sans MS", cursive;
+}
+
+/* The design system already handles motion in its components (spinner slows down, cards stop tilting);
+   this covers the rest: no smooth scrolling and no transitions. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }

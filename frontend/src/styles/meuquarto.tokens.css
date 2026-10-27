@@ -1,0 +1,154 @@
+/* GENERATED COPY of docs/design-system/assets/Code/meuquarto.tokens.css. Do not edit here: change the source and run `npm run sync:design`. */
+/* meuquarto design tokens as CSS custom properties. Source of truth: tokens.json. Regenerate when it changes. */
+/* Themes: apply with data-theme="<id>" on html or any wrapper. The first theme is the default and the fallback for missing values. */
+:root,
+[data-theme="noite"] {
+  --surface-100: hsl(225 20% 8%);
+  --surface-200: hsl(225 20% 12%);
+  --surface-300: hsl(225 19% 17%);
+  --ink: hsl(42 32% 92%);
+  --ink-muted: hsl(231 8% 68%);
+  --brand: hsl(14 100% 62%);
+  --on-brand: hsl(225 20% 8%);
+  --brand-tint: hsl(18 41% 16%);
+  --accent: hsl(36 87% 62%);
+  --on-accent: hsl(225 20% 8%);
+  --success: hsl(144 47% 66%);
+  --danger: hsl(7 100% 74%);
+  --border: hsl(228 19% 21%);
+  --border-strong: hsl(228 11% 48%);
+  --focus: hsl(203 79% 71%);
+  --tape: hsl(46 60% 75% / .94);
+  --paper: hsl(52 69% 87%);
+  --paper-ink: hsl(225 41% 18%);
+  --on-sticker: hsl(225 20% 8%);
+  --sticker-movie: hsl(44 89% 61%);
+  --sticker-series: hsl(198 78% 64%);
+  --sticker-anime: hsl(334 100% 75%);
+  --sticker-manga: hsl(266 100% 81%);
+  --sticker-book: hsl(124 46% 70%);
+  --sticker-game: hsl(17 100% 68%);
+  --sticker-music: hsl(240 21% 93%);
+  --shadow-poster: 0 1px 1px hsl(0 0% 0% / .6), 0 8px 18px hsl(0 0% 0% / .6);
+  --shadow-card: 0 1px 2px hsl(0 0% 0% / .4), 0 8px 24px hsl(0 0% 0% / .35);
+  --shadow-lift: 0 2px 4px hsl(0 0% 0% / .5), 0 16px 40px hsl(0 0% 0% / .55);
+}
+[data-theme="dia"] {
+  --surface-100: hsl(220 21% 95%);
+  --surface-200: hsl(220 27% 98%);
+  --surface-300: hsl(218 21% 90%);
+  --ink: hsl(227 18% 10%);
+  --ink-muted: hsl(224 12% 37%);
+  --brand: hsl(12 90% 41%);
+  --on-brand: hsl(0 0% 100%);
+  --brand-tint: hsl(15 100% 90%);
+  --accent: hsl(36 87% 62%);
+  --on-accent: hsl(227 18% 10%);
+  --success: hsl(147 56% 28%);
+  --danger: hsl(3 71% 41%);
+  --border: hsl(219 19% 85%);
+  --border-strong: hsl(226 10% 47%);
+  --focus: hsl(210 88% 36%);
+  --tape: hsl(47 56% 66% / .94);
+  --paper: hsl(50 100% 89%);
+  --paper-ink: hsl(224 45% 21%);
+  --on-sticker: hsl(225 20% 8%);
+  --shadow-poster: 0 1px 1px hsl(227 18% 10% / .2), 0 6px 14px hsl(227 18% 10% / .28);
+  --shadow-card: 0 1px 2px hsl(227 18% 10% / .1), 0 8px 24px hsl(227 18% 10% / .1);
+  --shadow-lift: 0 2px 4px hsl(227 18% 10% / .14), 0 16px 40px hsl(227 18% 10% / .22);
+}
+[data-theme="locadora"] {
+  --surface-100: hsl(223 74% 15%);
+  --surface-200: hsl(223 71% 22%);
+  --surface-300: hsl(224 66% 30%);
+  --ink: hsl(46 100% 93%);
+  --ink-muted: hsl(226 51% 82%);
+  --brand: hsl(48 100% 56%);
+  --on-brand: hsl(223 74% 15%);
+  --brand-tint: hsl(225 58% 35%);
+  --accent: hsl(0 100% 65%);
+  --on-accent: hsl(223 74% 15%);
+  --success: hsl(146 62% 68%);
+  --danger: hsl(0 100% 80%);
+  --border: hsl(225 57% 33%);
+  --border-strong: hsl(227 47% 65%);
+  --focus: hsl(48 100% 56%);
+  --tape: hsl(0 100% 65% / .94);
+  --paper: hsl(46 100% 93%);
+  --paper-ink: hsl(223 74% 15%);
+  --on-sticker: hsl(225 20% 8%);
+  --sticker-series: hsl(196 86% 73%);
+  --sticker-anime: hsl(333 100% 81%);
+  --sticker-game: hsl(18 100% 72%);
+  --sticker-music: hsl(46 100% 93%);
+}
+[data-theme="estufa"] {
+  --surface-100: hsl(150 35% 9%);
+  --surface-200: hsl(139 35% 14%);
+  --surface-300: hsl(145 33% 20%);
+  --ink: hsl(99 46% 93%);
+  --ink-muted: hsl(136 19% 72%);
+  --brand: hsl(342 100% 78%);
+  --on-brand: hsl(150 35% 9%);
+  --brand-tint: hsl(335 35% 22%);
+  --accent: hsl(47 90% 69%);
+  --on-accent: hsl(150 35% 9%);
+  --success: hsl(103 64% 69%);
+  --danger: hsl(9 100% 77%);
+  --border: hsl(146 32% 24%);
+  --border-strong: hsl(147 22% 54%);
+  --focus: hsl(203 100% 80%);
+  --tape: hsl(47 90% 69% / .94);
+  --paper: hsl(68 59% 92%);
+  --paper-ink: hsl(139 41% 13%);
+  --on-sticker: hsl(225 20% 8%);
+  --sticker-manga: hsl(268 100% 86%);
+  --sticker-book: hsl(92 67% 73%);
+}
+:root {
+  /* spacing: proximity levels (see tokens.json spacing.note) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 10px;
+  --radius-pill: 999px;
+  --tilt-max: 2.5deg;
+  --tilt-min: 0.9deg;
+  --tilt-mobile-scale: 0.6;
+  --font-display: "Big Shoulders Display", Impact, "Arial Narrow", sans-serif;
+  --font-sans: Figtree, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: Caveat, "Comic Sans MS", cursive;
+  /* identity: display face, uppercase */
+  --type-display-xl-size: 80px; --type-display-xl-line: 72px; --type-display-xl-weight: 900; --type-display-xl-tracking: 0.005em;
+  --type-display-size: 56px; --type-display-line: 52px; --type-display-weight: 900; --type-display-tracking: 0.01em;
+  --type-poster-size: 16px; --type-poster-line: 18px; --type-poster-weight: 800; --type-poster-tracking: 0.03em;
+  /* interface: sans, sentence case */
+  --type-h1-size: 32px; --type-h1-line: 40px; --type-h1-weight: 700; --type-h1-tracking: -0.01em;
+  --type-h2-size: 24px; --type-h2-line: 32px; --type-h2-weight: 700; --type-h2-tracking: -0.005em;
+  --type-h3-size: 18px; --type-h3-line: 24px; --type-h3-weight: 600;
+  --type-lead-size: 18px; --type-lead-line: 28px; --type-lead-weight: 400;
+  --type-body-size: 16px; --type-body-line: 24px; --type-body-weight: 400;
+  --type-body-sm-size: 14px; --type-body-sm-line: 20px; --type-body-sm-weight: 400;
+  --type-label-size: 14px; --type-label-line: 20px; --type-label-weight: 600;
+  --type-caption-size: 12px; --type-caption-line: 16px; --type-caption-weight: 500; --type-caption-tracking: 0.01em;
+  /* hand */
+  --type-note-size: 22px; --type-note-line: 22px; --type-note-weight: 600;
+  --type-note-lg-size: 30px; --type-note-lg-line: 28px; --type-note-lg-weight: 700;
+}
+@media (max-width: 599.98px) {
+  :root {
+    --type-display-xl-size: 56px; --type-display-xl-line: 52px;
+    --type-display-size: 44px; --type-display-line: 40px;
+    --type-h1-size: 28px; --type-h1-line: 36px;
+  }
+}
+
+/* Mobile rule for resting angles: in a container narrower than 480px, angle = factor * tilt-max * tilt-mobile-scale (see HighlightCard). */
