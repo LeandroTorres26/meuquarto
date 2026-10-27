@@ -52,12 +52,15 @@ Rule: only ready-made, maintained components; no hand-written cryptography, toke
 - Bean Validation on every request DTO; size limits on strings and lists.
 - JPA parameters only (no string-built SQL).
 - Error responses without stack traces or internal details.
-- Rate limiting (sign in, sign up, search, manual sync).
+- Security headers on every API response (Spring Security): `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`, HSTS (1 year, includeSubDomains; Spring sends it on HTTPS only), `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`. Tested.
+- CORS is disabled: the browser only talks to the Next.js origin, which proxies `/api`. A cross-origin preflight is refused (tested).
+- Per-IP rate limiting (`shared/ratelimit`, ADR 0015), in memory, answering 429 with `Retry-After`: sign up 10/hour, sign in 30/15 min (on top of the per-account throttle), slug availability 60/min, anonymous ceiling 300/min. Limits are `meuquarto.rate-limit.*`. Manual sync (BR-03) and search get their own limits in their issues.
+- The client address is `getRemoteAddr()`. Behind Caddy every request would look like it comes from the proxy, so #5/#6 must set `server.forward-headers-strategy` (and Caddy must overwrite, not append, `X-Forwarded-For`) before the limits are meaningful in production.
 - Structured logs without passwords, tokens, cookies or full e-mails.
 - Least-privilege database user for the app (no superuser); Flyway runs with the same or a migration user.
 
 ### Frontend
-- Security headers via Next.js/Caddy: CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'none'`.
+- Security headers via `next.config.ts` (CSP, HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'none'`). The CSP is static with `'unsafe-inline'` for scripts and styles because a nonce would disable partial prerendering (ADR 0015); no `unsafe-eval` in production.
 - No secrets in the client bundle (only `NEXT_PUBLIC_*` values that are public by design).
 - External links with `rel="noopener noreferrer"`.
 
