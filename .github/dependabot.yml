@@ -19,6 +19,10 @@ updates:
       # Bump this together with the runtime, never on its own.
       - dependency-name: "@types/node"
         update-types: ["version-update:semver-major"]
+      # TypeScript majors wait for typescript-eslint (used by eslint-config-next) to support them;
+      # TS 7 was refused in #75. Bump typescript, eslint-config-next and typescript-eslint together.
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: docker
     directory: /infra
     schedule:
