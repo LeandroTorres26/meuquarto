@@ -14,7 +14,7 @@ Issue #52 asks for a strict CSP on the web app and rate limits on the abuse-pron
 ## Consequences
 - Public pages stay prerendered and cacheable; the CSP does not block injected inline scripts, so it is a second line of defense, not the first.
 - Limiter state is per instance and lost on restart. Fine for one API container; moving to several instances needs a shared store (Redis) or edge limits.
-- Behind Caddy, the app must enable forwarded headers, otherwise every client shares the proxy address (see docs/security.md).
+- Behind the web proxy and Caddy, the client address comes from trusted forwarded headers, otherwise every client shares the proxy address (ADR 0017).
 
 ## Alternatives considered
 - Nonce-based CSP via `proxy.ts`: strictest, but forces dynamic rendering of every page and disables partial prerendering.

@@ -2,12 +2,24 @@
 
 export type Session = { email: string; slug: string | null };
 
-/** Returns the signed-in user, or null when the cookie is missing, expired or the API is down. */
-export async function fetchSession(apiUrl: string, cookie: string | null): Promise<Session | null> {
+/**
+ * Returns the signed-in user, or null when the cookie is missing, expired or the API is down.
+ * `clientAddress` is the already-validated client IP (forwarded-headers.ts), so the API counts this
+ * call against the visitor and not against the web container (ADR 0017).
+ */
+export async function fetchSession(
+  apiUrl: string,
+  cookie: string | null,
+  clientAddress: string | null = null,
+): Promise<Session | null> {
   if (!cookie) return null;
   try {
     const res = await fetch(`${apiUrl}/api/auth/me`, {
-      headers: { cookie, accept: "application/json" },
+      headers: {
+        cookie,
+        accept: "application/json",
+        ...(clientAddress ? { "x-forwarded-for": clientAddress } : {}),
+      },
       cache: "no-store",
       redirect: "manual",
       signal: AbortSignal.timeout(3000),
