@@ -3,7 +3,7 @@ import "server-only";
 export type ApiHealth = "UP" | "DOWN";
 
 // Server-side only: the API address never reaches the browser bundle.
-const apiUrl = () => process.env.API_URL ?? "http://localhost:8080";
+export const apiUrl = () => process.env.API_URL ?? "http://localhost:8080";
 
 export async function getApiHealth(): Promise<ApiHealth> {
   try {

@@ -55,7 +55,7 @@ Rule: only ready-made, maintained components; no hand-written cryptography, toke
 - Security headers on every API response (Spring Security): `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'`, HSTS (1 year, includeSubDomains; Spring sends it on HTTPS only), `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`, `Permissions-Policy`. Tested.
 - CORS is disabled: the browser only talks to the Next.js origin, which proxies `/api`. A cross-origin preflight is refused (tested).
 - Per-IP rate limiting (`shared/ratelimit`, ADR 0015), in memory, answering 429 with `Retry-After`: sign up 10/hour, sign in 30/15 min (on top of the per-account throttle), slug availability 60/min, anonymous ceiling 300/min. Limits are `meuquarto.rate-limit.*`. Manual sync (BR-03) and search get their own limits in their issues.
-- The client address is `getRemoteAddr()`. Behind Caddy every request would look like it comes from the proxy, so #5/#6 must set `server.forward-headers-strategy` (and Caddy must overwrite, not append, `X-Forwarded-For`) before the limits are meaningful in production.
+- The client address is `getRemoteAddr()`. Behind Caddy every request would look like it comes from the proxy, so #5/#6 must set `server.forward-headers-strategy` (and Caddy must overwrite, not append, `X-Forwarded-For`) before the limits are meaningful in production. The web app proxies /api to the API (ADR 0016), so the address the API sees is the web container until forwarded headers are trusted.
 - Structured logs without passwords, tokens, cookies or full e-mails.
 - Least-privilege database user for the app (no superuser); Flyway runs with the same or a migration user.
 
