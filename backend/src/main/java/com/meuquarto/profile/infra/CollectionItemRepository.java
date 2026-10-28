@@ -31,4 +31,20 @@ public interface CollectionItemRepository extends JpaRepository<CollectionItem, 
             """)
     List<ItemRef> findRefs(@Param("profileId") long profileId, @Param("category") MediaCategory category,
             @Param("includeHidden") boolean includeHidden);
+
+    /** Every visible item of the profile, most recent activity first; what the public read model is built from. */
+    @Query("""
+            select new com.meuquarto.profile.infra.VisibleRef(i.id, i.mediaItemId, i.category) from CollectionItem i
+            where i.profileId = :profileId and i.hidden = false
+            order by i.lastActivityAt desc, i.id desc
+            """)
+    List<VisibleRef> findVisibleRefs(@Param("profileId") long profileId);
+
+    /** The visible items of one category, most recent activity first (index: profile_id, category, last_activity_at). */
+    @Query("""
+            select new com.meuquarto.profile.infra.VisibleRef(i.id, i.mediaItemId, i.category) from CollectionItem i
+            where i.profileId = :profileId and i.category = :category and i.hidden = false
+            order by i.lastActivityAt desc, i.id desc
+            """)
+    List<VisibleRef> findVisibleRefs(@Param("profileId") long profileId, @Param("category") MediaCategory category);
 }

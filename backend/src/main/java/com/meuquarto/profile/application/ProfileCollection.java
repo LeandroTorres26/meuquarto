@@ -42,17 +42,19 @@ public class ProfileCollection {
     private final HighlightListRepository highlightLists;
     private final MediaSnapshots snapshots;
     private final MediaSummaries summaries;
+    private final PublicProfileCache publicProfiles;
     private final TransactionTemplate transaction;
     private final Clock clock = Clock.systemUTC();
 
     public ProfileCollection(ProfileRepository profiles, CollectionItemRepository items,
             HighlightListRepository highlightLists, MediaSnapshots snapshots, MediaSummaries summaries,
-            PlatformTransactionManager transactionManager) {
+            PublicProfileCache publicProfiles, PlatformTransactionManager transactionManager) {
         this.profiles = profiles;
         this.items = items;
         this.highlightLists = highlightLists;
         this.snapshots = snapshots;
         this.summaries = summaries;
+        this.publicProfiles = publicProfiles;
         this.transaction = new TransactionTemplate(transactionManager);
     }
 
@@ -69,7 +71,8 @@ public class ProfileCollection {
             throw new CollectionException(Problem.ADULT_NOT_ALLOWED);
         }
         return transaction.execute(status -> {
-            profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+            Profile profile = profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+            publicProfiles.evictAfterCommit(profile);
             Instant now = clock.instant();
             Optional<CollectionItem> existing = items.findByProfileIdAndMediaItemId(profileId, work.id());
             if (existing.isPresent()) {
@@ -88,7 +91,8 @@ public class ProfileCollection {
     @Transactional
     public void recordSyncedItem(long profileId, MediaCategory category, long mediaItemId, String provider,
             Long linkedAccountId) {
-        profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+        Profile profile = profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+        publicProfiles.evictAfterCommit(profile);
         Instant now = clock.instant();
         Optional<CollectionItem> existing = items.findByProfileIdAndMediaItemId(profileId, mediaItemId);
         if (existing.isPresent()) {
@@ -170,7 +174,9 @@ public class ProfileCollection {
     private CollectionItem ownedItem(long userId, long itemId) {
         long profileId = profileIdOf(userId);
         // Same lock as highlighting: hiding or deleting cannot interleave with "Destacar" of the same item.
-        profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+        Profile profile = profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+        // Every caller changes the item (note, hidden flag, removal), which changes the public page.
+        publicProfiles.evictAfterCommit(profile);
         return items.findByIdAndProfileId(itemId, profileId)
                 .orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
     }

@@ -37,4 +37,27 @@ public interface MediaItemRepository extends JpaRepository<MediaItem, Long> {
 
     @Query("select m.id from MediaItem m where m.id in :ids order by m.year desc nulls last, lower(m.title), m.id")
     List<Long> idsByYearDesc(@Param("ids") Collection<Long> ids);
+
+    // Public listing reads (BR-08): adult works never come back, whatever the caller holds. The pattern is
+    // built by the caller with '!' as the LIKE escape character.
+    @Query("""
+            select m.id from MediaItem m
+            where m.id in :ids and m.adult = false and lower(m.title) like :pattern escape '!'
+            order by m.id
+            """)
+    List<Long> publicIds(@Param("ids") Collection<Long> ids, @Param("pattern") String pattern);
+
+    @Query("""
+            select m.id from MediaItem m
+            where m.id in :ids and m.adult = false and lower(m.title) like :pattern escape '!'
+            order by lower(m.title), m.id
+            """)
+    List<Long> publicIdsByTitle(@Param("ids") Collection<Long> ids, @Param("pattern") String pattern);
+
+    @Query("""
+            select m.id from MediaItem m
+            where m.id in :ids and m.adult = false and lower(m.title) like :pattern escape '!'
+            order by m.year desc nulls last, lower(m.title), m.id
+            """)
+    List<Long> publicIdsByYearDesc(@Param("ids") Collection<Long> ids, @Param("pattern") String pattern);
 }

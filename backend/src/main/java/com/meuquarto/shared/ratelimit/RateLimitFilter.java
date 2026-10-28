@@ -43,7 +43,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 new Limit("slug-availability", paths.matcher(HttpMethod.GET, "/api/slugs/*/availability"),
                         props.slugAvailability()),
                 new Limit("catalog-search", paths.matcher(HttpMethod.GET, "/api/catalog/search"), props.catalogSearch()),
-                new Limit("collection-add", paths.matcher(HttpMethod.POST, "/api/collection"), props.collectionAdd()));
+                new Limit("collection-add", paths.matcher(HttpMethod.POST, "/api/collection"), props.collectionAdd()),
+                new Limit("public-read", paths.matcher(HttpMethod.GET, "/api/public/**"), props.publicRead()));
         this.anonymous = props.anonymous();
     }
 
