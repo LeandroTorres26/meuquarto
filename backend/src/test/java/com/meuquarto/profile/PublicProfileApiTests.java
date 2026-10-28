@@ -56,7 +56,7 @@ class PublicProfileApiTests {
         private static final Pattern ID = Pattern.compile("([a-z0-9-]+?)(?:_(\\d{4}))?");
 
         @Override
-        public String id() {
+        public String catalogName() {
             return "TMDB";
         }
 

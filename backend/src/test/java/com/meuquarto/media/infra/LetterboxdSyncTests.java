@@ -90,7 +90,7 @@ class LetterboxdSyncTests {
     private static final class FakeTmdb implements CatalogProvider {
 
         @Override
-        public String id() {
+        public String catalogName() {
             return "TMDB";
         }
 

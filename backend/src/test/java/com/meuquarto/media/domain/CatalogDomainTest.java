@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 class CatalogDomainTest {
 
     /** Fake catalog: shows the registry works with any class behind the interface. */
-    private record FakeCatalog(String id, MediaCategory served) implements CatalogProvider {
+    private record FakeCatalog(String catalogName, MediaCategory served) implements CatalogProvider {
 
         @Override
         public boolean serves(MediaCategory category) {
@@ -25,7 +25,7 @@ class CatalogDomainTest {
 
         @Override
         public List<CatalogEntry> search(MediaCategory category, String query) {
-            return List.of(new CatalogEntry(category, id, "1", query, null, null, false));
+            return List.of(new CatalogEntry(category, catalogName, "1", query, null, null, false));
         }
 
         @Override
@@ -39,8 +39,8 @@ class CatalogDomainTest {
         CatalogRegistry registry = new CatalogRegistry(List.of(
                 new FakeCatalog("A", MediaCategory.MOVIE), new FakeCatalog("B", MediaCategory.BOOK)));
 
-        assertThat(registry.forCategory(MediaCategory.BOOK).orElseThrow().id()).isEqualTo("B");
-        assertThat(registry.forCategory(MediaCategory.MOVIE).orElseThrow().id()).isEqualTo("A");
+        assertThat(registry.forCategory(MediaCategory.BOOK).orElseThrow().catalogName()).isEqualTo("B");
+        assertThat(registry.forCategory(MediaCategory.MOVIE).orElseThrow().catalogName()).isEqualTo("A");
         assertThat(registry.forCategory(MediaCategory.GAME)).isEmpty();
     }
 

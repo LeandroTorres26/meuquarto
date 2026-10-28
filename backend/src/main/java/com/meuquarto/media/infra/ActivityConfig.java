@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Spring wiring for the activity providers, kept outside the hierarchy on purpose: the provider classes
  * know nothing about Spring. Every {@link ActivityProvider} bean goes into the registry; a new platform
- * is just a new bean. A platform without a provider yet (#31 to #34)
+ * is just a new bean. A platform without a provider yet (#32 to #34)
  * answers {@code PROVIDER_UNAVAILABLE} when linked.
  */
 @Configuration

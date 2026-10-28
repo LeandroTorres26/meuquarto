@@ -41,7 +41,7 @@ public final class TmdbCatalog extends HttpCatalogProvider {
     }
 
     @Override
-    public String id() {
+    public String catalogName() {
         return ID;
     }
 
