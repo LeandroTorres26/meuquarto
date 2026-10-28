@@ -12,9 +12,9 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 |---|---|---|
 | 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider`, `SteamProvider`, `LastFmProvider` implementam direto | planejado nas issues #28 a #34 |
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); os outros quatro na issue #22 |
-| 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | planejado nas issues #24, #37 e #39 |
+| 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); `PackPlan` só passa a ser usado quando houver compra (issue #39) |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
-| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException` | feito |
+| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException` | feito |
 
 Opcional depois (issue #43): `RoomObject` (abstrata) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`.
 
@@ -258,11 +258,39 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
   - Por que o erro vira lista vazia e não exceção? Um provedor fora do ar não pode derrubar a tela nem os outros provedores; o aviso no log traz só o nome do provedor e o tipo de falha, nunca a URL nem o token.
   - Como adiciono o AniList? Uma classe nova `AniListCatalog extends HttpCatalogProvider` e um `@Bean` em `CatalogConfig`; nada mais muda.
 
-### 3. Plan (planejado nas issues #24, #37 e #39)
+### 3. Plan (feito na issue #24)
 
-- Onde: ainda não existe código. Limites de destaques (BR-02) na issue #24; compras e entitlements nas issues #37 e #39 (BR-05).
-- Como vai ser explicado: `FreePlan` e `PackPlan` implementam `Plan` com limites e regras diferentes; quem usa o plano pergunta a ele e não faz `if (temPacote)`. Polimorfismo de subtipo como no PetShop.
-- Pergunta: por que não um `if`? Um terceiro plano exigiria mexer em todos os `if`; com a interface, basta uma classe nova.
+```
+        interface Plan
+ (code, highlightLimit, canApply(ThemeTier),
+  default hasRoomFor(int))
+             ^
+      +------+------+
+      |             |
+final FreePlan   final PackPlan
+(4 destaques,    (12 destaques,
+ temas grátis)    todos os temas)
+```
+
+- Arquivos: `profile/domain/Plan.java` (interface), `FreePlan.java`, `PackPlan.java`, `ThemeTier.java` (enum `FREE`/`PREMIUM`); quem decide qual plano o usuário tem: `profile/application/PlanResolver.java` (interface) e `EveryoneIsFree.java` (por enquanto devolve `FreePlan` para todos); quem usa: `HighlightList.highlight(item, plan)` em `profile/domain/HighlightList.java` e `profile/application/ProfileHighlights.java`. Testes: `profile/domain/PlanTest.java`, `profile/domain/HighlightListTest.java` (sem Spring), `profile/HighlightApiTests.java` (a mesma API com `FreePlan` e com `PackPlan`).
+- Roteiro para explicar: (1) a interface `Plan` diz o que qualquer plano responde: limite de destaques (BR-02) e se um tema pode ser aplicado (BR-05); (2) `FreePlan` e `PackPlan` são `final` e só devolvem números e respostas diferentes; (3) a regra "no máximo N destaques" está em `HighlightList.highlight`, que recebe um `Plan` e pergunta `plan.hasRoomFor(tamanho)`; ela nunca pergunta "o usuário comprou o pacote?"; (4) o método `default hasRoomFor` está na interface porque a conta é a mesma para todo plano, só o limite muda.
+- Comparação com a aula 9: `Plan` é o `Animal`/`Pet`, `FreePlan` e `PackPlan` são `Cachorro` e `Gato`, `HighlightList.highlight(item, plan)` é o `PetShop.gritaria(animal)`: o método recebe o tipo base e o comportamento muda conforme o objeto real. Trocar de plano é entregar outro objeto ao mesmo método.
+- Por que interface e não classe abstrata? Os dois planos não compartilham campos nem construtor; só um contrato (e uma conta pequena, o `default`). Classe abstrata seria herança sem nada para herdar, e ainda gastaria a única herança que a classe pode ter. Com interface, um plano futuro pode estender qualquer coisa.
+- Onde fica o único `if`? Na fábrica: o `PlanResolver` escolhe qual objeto entregar (hoje sempre `FreePlan`; na issue #39 devolverá `PackPlan` se o usuário tiver o entitlement do pacote). É a única decisão sobre quem tem o quê, e fica em um lugar só; ninguém depois dela testa o tipo do plano (sem `instanceof`).
+- Perguntas:
+  - Como trocar de plano sem `if`? O `ProfileHighlights` chama `plans.planOf(userId)`, recebe um `Plan` e passa adiante; o teste de API troca o `PlanResolver` por outro que devolve `PackPlan` e o limite vira 12 sem mexer em nenhuma linha de `HighlightList`.
+  - E se criarem um plano "Premium" com 30 destaques? Uma classe nova `PremiumPlan implements Plan` e o resolvedor passa a entregá-la; as regras de destaque e de tema não mudam.
+  - Por que `Plan` não tem anotação do Spring ou do JPA? É uma hierarquia nossa (ADR 0018): Java puro, testada sem contexto.
+  - Por que `canApply` recebe `ThemeTier` e não um tema? Os temas só existem na issue #37; `ThemeTier` (grátis ou premium) já deixa o método com sentido hoje. Quando existirem, o método pode receber o tema.
+  - Por que o erro de limite é `CONFLICT` (HTTP 409) e não `INVALID` (400)? O pedido é válido; ele conflita com o estado atual (a lista está cheia para o seu plano). Depois de remover um destaque, o mesmo pedido funciona.
+
+## Destaques (issue #24)
+
+Regras de negócio em classes comuns: `profile/domain/HighlightList.java` (entidade com as regras: `highlight`, `unhighlight`, `dropItem`, `reorder`), `Highlight.java`, `HighlightException.java` (sexta subclasse de `DomainException`, com códigos como `HIGHLIGHT_LIMIT_REACHED`, `ALREADY_HIGHLIGHTED`, `INVALID_ORDER`); serviço em `profile/application/ProfileHighlights.java`.
+
+- BR-02 (limite pelo plano), BR-07 (uma obra uma vez por lista), FR-11 ("Favoritos de tudo" é a lista com categoria `null`, aceita qualquer categoria e usa o mesmo limite).
+- Esconder ou apagar um item da coleção tira o item dos destaques (`ProfileCollection.leaveHighlights`).
+- Reordenar: o cliente manda todos os ids da lista na nova ordem; se não for exatamente o conjunto atual, `INVALID_ORDER`.
 
 ---
 

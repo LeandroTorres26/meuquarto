@@ -12,8 +12,8 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 | `media_external_ids` | media_item_id, provider, external_id | maps Steam/Letterboxd ids to the canonical item; primary key (provider, external_id) |
 | `collection_items` | id, profile_id, media_item_id, category, note, hidden, added_at, last_activity_at | the owner's collection, no limit; unique (profile_id, media_item_id) (BR-07); `hidden` blocks re-adding by sync |
 | `collection_item_sources` | collection_item_id, source (MANUAL / provider), linked_account_id (nullable), first_seen_at | why an item is in the collection; drives unlink (FR-16) and the S17 origin |
-| `highlight_lists` | id, profile_id, category (nullable = "Favoritos de tudo") | unique (profile_id, category) |
-| `highlights` | id, list_id, collection_item_id, position | the subset shown on the profile home; unique (list_id, collection_item_id); count limited by BR-02 |
+| `highlight_lists` | id, profile_id, category (nullable = "Favoritos de tudo") | unique (profile_id, category) `NULLS NOT DISTINCT`, so there is one favorites list per profile; created on first use |
+| `highlights` | id, list_id, collection_item_id, position | the subset shown on the profile home; unique (list_id, collection_item_id); count limited by BR-02 (a domain rule, from the user's `Plan`); positions are 0..n-1; deleting the collection item cascades, hiding removes it in the domain |
 | `linked_accounts` | id, profile_id, provider, username, status, last_synced_at, last_error | unique (profile_id, provider) |
 | `synced_entries` | id, linked_account_id, media_item_id, activity_type, occurred_at | recent activity from providers |
 | `now_entries` | id, profile_id, category, media_item_id, source (AUTO/MANUAL), hidden | one per (profile, category) (BR-06) |
