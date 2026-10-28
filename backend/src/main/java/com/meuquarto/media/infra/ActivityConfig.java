@@ -9,11 +9,17 @@ import org.springframework.context.annotation.Configuration;
 /**
  * Spring wiring for the activity providers, kept outside the hierarchy on purpose: the provider classes
  * know nothing about Spring. Every {@link ActivityProvider} bean goes into the registry; a new platform
- * is just a new bean. Until the first concrete provider exists (#30 to #34) the registry is empty and
- * linking any platform answers {@code PROVIDER_UNAVAILABLE}.
+ * is just a new bean. A platform without a provider yet (#31 to #34)
+ * answers {@code PROVIDER_UNAVAILABLE} when linked.
  */
 @Configuration
 class ActivityConfig {
+
+    /** Letterboxd reads a public RSS feed: no key, fixed origin. */
+    @Bean
+    ActivityProvider letterboxdProvider() {
+        return new LetterboxdProvider();
+    }
 
     @Bean
     ActivityRegistry activityRegistry(ObjectProvider<ActivityProvider> providers) {
