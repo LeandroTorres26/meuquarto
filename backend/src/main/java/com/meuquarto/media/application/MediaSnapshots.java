@@ -2,7 +2,7 @@ package com.meuquarto.media.application;
 
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogRegistry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.media.domain.MediaItem;
 import com.meuquarto.media.infra.MediaItemRepository;
 import java.time.Clock;

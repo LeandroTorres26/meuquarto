@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
 import com.meuquarto.media.domain.CatalogRegistry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.support.RealCsrf;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;

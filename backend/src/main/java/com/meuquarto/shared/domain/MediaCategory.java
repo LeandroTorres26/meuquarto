@@ -1,4 +1,4 @@
-package com.meuquarto.media.domain;
+package com.meuquarto.shared.domain;
 
 /** The seven categories of the product. Each one has a canonical catalog (ADR 0005). */
 public enum MediaCategory {

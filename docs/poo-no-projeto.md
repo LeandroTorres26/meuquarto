@@ -14,9 +14,20 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); os outros quatro na issue #22 |
 | 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | planejado nas issues #24, #37 e #39 |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
-| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException` | feito |
+| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException` | feito |
 
 Opcional depois (issue #43): `RoomObject` (abstrata) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`.
+
+## Regras da coleção (issue #23)
+
+Não é uma hierarquia nova (o ADR 0018 não prevê uma), são regras de negócio em classes comuns, e é isso que o professor também quer ver: encapsulamento e composição.
+
+- Onde: `profile/domain/CollectionItem.java` (entidade com as regras), `ItemSource.java` (objeto de valor: `MANUAL` ou o nome da plataforma), `Note.java` (limpa e valida a nota), `CollectionSort.java`, `CollectionException.java`; serviço em `profile/application/ProfileCollection.java`. Testes: `profile/domain/CollectionItemTest.java` (sem Spring), `profile/CollectionApiTests.java`, `profile/CollectionSyncTests.java`.
+- Regras: BR-07 (um item por obra: adicionar de novo devolve o mesmo item e reexibe se estava oculto), FR-09 (item que veio de sync não pode ser removido, só ocultado; um sync novo nunca reexibe um item oculto), FR-10 (nota de até 140 caracteres, aparada, em texto puro).
+- Explicação: o `CollectionItem` não tem setters públicos; as mudanças são métodos com nome de regra (`addAgainByHand`, `seenBySync`, `hide`, `ensureRemovable`). Quem chama não faz `if` sobre as origens, pergunta `isRemovable()`.
+- Perguntas:
+  - Por que o item guarda `mediaItemId` e não um `MediaItem`? O módulo `profile` não pode importar o domínio do `media` (ADR 0001 e 0014, conferido por ArchUnit); a ligação é por id.
+  - Por que `ItemSource` é um `record`? É um valor: duas origens com os mesmos campos são a mesma origem.
 
 ## O que NÃO conta (não cite na entrega)
 
@@ -84,6 +95,8 @@ Uma observação honesta: `Slug` e `PasswordCandidate` são `record`, assunto qu
 
 ### Enums
 
+- Onde (kernel compartilhado): `shared/domain/MediaCategory.java` (as sete categorias), usado por `media`, `profile` e pelos futuros destaques e sync. Ficou em `shared/domain` para os módulos concordarem no vocabulário sem importar o domínio um do outro (ADR 0019). Também: `profile/domain/CollectionSort.java` (`RECENT`, `TITLE`, `YEAR`, com o método estático `parse`) e `profile/domain/CollectionException.java` (enum `Problem`, cada valor carrega o seu `ErrorKind`; `ErrorKind` ganhou `NOT_FOUND` e `UNAVAILABLE`).
+
 - Onde: `shared/domain/ErrorKind.java` (`INVALID`, `CONFLICT`, `TOO_MANY`); `identity/domain/AccountRuleException.java` (enum `Rule`); `profile/domain/Slug.java` (enum `Problem`).
 - Explicação: um enum é um conjunto fechado de valores. `ErrorKind` classifica o erro sem falar de HTTP; quem traduz para 400, 409 ou 429 é a camada de API (`shared/api/DomainErrors.java`). Como o `TipoProduto` das aulas 5 e 6.
 - Perguntas:
@@ -91,6 +104,8 @@ Uma observação honesta: `Slug` e `PasswordCandidate` são `record`, assunto qu
   - Por que o domínio não usa `HttpStatus` direto? Para o domínio não depender do Spring nem de HTTP.
 
 ### Composição
+
+- Onde (coleção): `profile/domain/CollectionItem.java` tem um `Set<ItemSource>` (as origens do item) e guarda o id do item de mídia, não o objeto: o `profile` não pode importar o domínio do `media`, então a ligação é por id e quem monta a tela é `profile/application/ProfileCollection.java`, que pergunta a `media/application/MediaSummaries.java`. `ProfileCollection` também tem (composição) o repositório, o `MediaSnapshots` e o `MediaSummaries`.
 
 - Onde: `identity/domain/PasswordPolicy.java` (tem uma `List<ValidationRule<PasswordCandidate, Rule>>`); `profile/domain/Slug.java` (tem a lista `RULES`); `identity/domain/PasswordCandidate.java` (tem uma `EmailAddress`).
 - Explicação: composição é "tem um" / "tem vários". `PasswordPolicy` não herda das regras, ela as possui e delega. Como o `Carrinho` que tem `Produto`s na aula 5.
@@ -201,10 +216,10 @@ final SlugLengthRule  final PasswordLengthRule
              ^
    +---------+------------+--------------------+-------------------------+
    |                      |                    |                         |
-final AccountRuleException  final InvalidSlugException  final SlugUnavailableException  final TooManyAttemptsException
+final AccountRuleException  final InvalidSlugException  final SlugUnavailableException  final TooManyAttemptsException  final CollectionException
 ```
 
-- Arquivos: `shared/domain/DomainException.java`, `shared/domain/ErrorKind.java`, as quatro subclasses, e `shared/api/DomainErrors.java`. Testes: `shared/domain/DomainExceptionTest.java`, `shared/api/DomainErrorsTest.java`, mais os testes de API existentes em `identity/` e `profile/` que conferem códigos e status.
+- Arquivos: `shared/domain/DomainException.java`, `shared/domain/ErrorKind.java`, as cinco subclasses (a quinta, `profile/domain/CollectionException.java`, cobre os erros da coleção: `ITEM_NOT_FOUND`, `CANNOT_REMOVE_SYNCED`, `CATALOG_UNAVAILABLE`, `NOTE_TOO_LONG`...), e `shared/api/DomainErrors.java`. Testes: `shared/domain/DomainExceptionTest.java`, `shared/api/DomainErrorsTest.java`, mais os testes de API existentes em `identity/` e `profile/` que conferem códigos e status.
 - Roteiro para explicar: (1) todo erro de regra de negócio é uma `DomainException` com código e tipo; (2) o tipo (`ErrorKind`) é nosso, o mapeamento para HTTP fica na API; (3) um handler só atende todos; (4) o caso especial (`Retry-After`) é um método sobrescrito, não um `if`.
 - Perguntas:
   - Por que `RuntimeException` como base? Erros de regra de negócio não precisam ser declarados em cada assinatura (`throws`); o handler da API os captura em um ponto.
@@ -232,7 +247,7 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
    (depois: AniList, Open Library, IGDB, Deezer)
 ```
 
-- Arquivos: `media/domain/CatalogProvider.java` (interface), `media/domain/CatalogRegistry.java`, `media/domain/CatalogEntry.java`, `media/domain/MediaCategory.java`; `media/infra/HttpCatalogProvider.java` (abstrata), `media/infra/TmdbCatalog.java` (final); `media/infra/CatalogConfig.java` só liga tudo no Spring, fora da hierarquia. Testes: `media/infra/HttpCatalogProviderTest.java` (a classe abstrata em ação, com uma subclasse mínima), `media/infra/TmdbCatalogTest.java`, `media/domain/CatalogDomainTest.java` (registro), `media/CatalogApiTests.java`.
+- Arquivos: `media/domain/CatalogProvider.java` (interface), `media/domain/CatalogRegistry.java`, `media/domain/CatalogEntry.java`, `shared/domain/MediaCategory.java`; `media/infra/HttpCatalogProvider.java` (abstrata), `media/infra/TmdbCatalog.java` (final); `media/infra/CatalogConfig.java` só liga tudo no Spring, fora da hierarquia. Testes: `media/infra/HttpCatalogProviderTest.java` (a classe abstrata em ação, com uma subclasse mínima), `media/infra/TmdbCatalogTest.java`, `media/domain/CatalogDomainTest.java` (registro), `media/CatalogApiTests.java`.
 - Roteiro para explicar: (1) a interface `CatalogProvider` diz o que todo catálogo faz: `id`, `serves(categoria)`, `isAvailable`, `search`, `fetch`; (2) `HttpCatalogProvider` é abstrata porque sabe o algoritmo mas não a plataforma; (3) `search` e `fetch` são `final` e formam o **template method**: checa disponibilidade, monta a URL (passo abstrato), chama com timeout de 5 s, usa cache de 10 min, converte qualquer falha em lista vazia mais um aviso no log, e entrega o corpo ao passo abstrato de interpretação; (4) `TmdbCatalog` (`final`) só preenche os passos: `searchUri`, `fetchUri`, `parseSearch`, `parseFetch`, e o gancho opcional `authorize` (coloca o token no cabeçalho); (5) `CatalogRegistry` recebe a lista, pergunta a cada um `serves(categoria)` e devolve o primeiro, como o loop do PetShop, sem `instanceof` nem `switch`.
 - Como funciona sem chave: sem `TMDB_API_KEY`, `isAvailable()` devolve `false`; a busca devolve `{available:false, results:[]}` e nenhuma requisição é feita.
 - Por que classe abstrata **e** interface? A interface é o contrato que o resto do código usa (`CatalogRegistry` e `CatalogSearch` só conhecem `CatalogProvider`); a classe abstrata guarda o código e o estado que todos os catálogos HTTP repetiriam (cliente, relógio, cache, tratamento de erro). Um catálogo que não fosse HTTP poderia implementar só a interface.

@@ -3,7 +3,7 @@ package com.meuquarto.media.application;
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
 import com.meuquarto.media.domain.CatalogRegistry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.media.domain.SearchQuery;
 import java.util.List;
 import org.springframework.stereotype.Service;

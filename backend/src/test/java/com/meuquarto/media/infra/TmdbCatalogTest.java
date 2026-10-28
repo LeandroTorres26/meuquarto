@@ -3,7 +3,7 @@ package com.meuquarto.media.infra;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.meuquarto.media.domain.CatalogEntry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import com.sun.net.httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetAddress;

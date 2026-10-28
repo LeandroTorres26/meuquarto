@@ -2,7 +2,7 @@ package com.meuquarto.media.infra;
 
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

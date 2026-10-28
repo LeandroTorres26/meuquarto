@@ -8,7 +8,7 @@ import com.meuquarto.media.application.MediaSnapshots.Snapshot;
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
 import com.meuquarto.media.domain.CatalogRegistry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.support.TestcontainersConfiguration;
 import java.util.List;
 import java.util.Optional;

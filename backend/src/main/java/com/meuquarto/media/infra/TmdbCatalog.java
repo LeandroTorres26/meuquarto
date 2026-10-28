@@ -1,7 +1,7 @@
 package com.meuquarto.media.infra;
 
 import com.meuquarto.media.domain.CatalogEntry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;

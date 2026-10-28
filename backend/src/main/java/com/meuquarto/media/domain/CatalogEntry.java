@@ -1,5 +1,7 @@
 package com.meuquarto.media.domain;
 
+import com.meuquarto.shared.domain.MediaCategory;
+
 /**
  * A work as a catalog describes it, already normalized: every provider answers with this same type,
  * so the rest of the code never sees a provider's JSON. {@code provider} is the canonical catalog

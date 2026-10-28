@@ -10,5 +10,9 @@ public enum ErrorKind {
     /** The input is fine but clashes with existing data (e-mail or slug already taken). */
     CONFLICT,
     /** Too many attempts in a short time; the caller must wait. */
-    TOO_MANY
+    TOO_MANY,
+    /** The thing asked for does not exist, or is not the caller's (the two look the same on purpose). */
+    NOT_FOUND,
+    /** An outside service we depend on cannot answer now; trying later may work. */
+    UNAVAILABLE
 }
