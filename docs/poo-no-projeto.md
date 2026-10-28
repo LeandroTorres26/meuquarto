@@ -14,7 +14,7 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); os outros quatro na issue #22 |
 | 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); `PackPlan` só passa a ser usado quando houver compra (issue #39) |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
-| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException` | feito |
+| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException` | feito |
 
 Opcional depois (issue #43): `RoomObject` (abstrata) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`.
 
@@ -287,6 +287,8 @@ final FreePlan   final PackPlan
 ## Destaques (issue #24)
 
 Regras de negócio em classes comuns: `profile/domain/HighlightList.java` (entidade com as regras: `highlight`, `unhighlight`, `dropItem`, `reorder`), `Highlight.java`, `HighlightException.java` (sexta subclasse de `DomainException`, com códigos como `HIGHLIGHT_LIMIT_REACHED`, `ALREADY_HIGHLIGHTED`, `INVALID_ORDER`); serviço em `profile/application/ProfileHighlights.java`.
+
+Leitura pública (issues #16 e #26): `profile/application/PublicProfiles.java` monta o modelo de leitura (`PublicProfile`, records imutáveis compostos: o perfil tem uma lista de `Section`, que tem uma lista de `PublicItem`) e `PublicProfileException.java` (sétima subclasse de `DomainException`, `PROFILE_NOT_FOUND` e `ITEM_NOT_FOUND`, sempre `NOT_FOUND`) é tratada pelo mesmo `DomainErrors`, sem `if` por tipo. `media/domain/MediaLinks.java` monta o link do catálogo a partir de uma lista fixa de hospedeiros.
 
 - BR-02 (limite pelo plano), BR-07 (uma obra uma vez por lista), FR-11 ("Favoritos de tudo" é a lista com categoria `null`, aceita qualquer categoria e usa o mesmo limite).
 - Esconder ou apagar um item da coleção tira o item dos destaques (`ProfileCollection.leaveHighlights`).

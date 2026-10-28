@@ -34,14 +34,16 @@ public class ProfileHighlights {
     private final HighlightListRepository lists;
     private final MediaSummaries summaries;
     private final PlanResolver plans;
+    private final PublicProfileCache publicProfiles;
 
     public ProfileHighlights(ProfileRepository profiles, CollectionItemRepository items, HighlightListRepository lists,
-            MediaSummaries summaries, PlanResolver plans) {
+            MediaSummaries summaries, PlanResolver plans, PublicProfileCache publicProfiles) {
         this.profiles = profiles;
         this.items = items;
         this.lists = lists;
         this.summaries = summaries;
         this.plans = plans;
+        this.publicProfiles = publicProfiles;
     }
 
     /** Every list (favorites first, then one per category, empty ones included) and the plan's limit. */
@@ -119,7 +121,9 @@ public class ProfileHighlights {
     /** Writers of one profile's lists go through the profile row lock, so the limit check cannot be raced. */
     private long lockedProfileIdOf(long userId) {
         long profileId = profileIdOf(userId);
-        profiles.lockById(profileId).orElseThrow(() -> new HighlightException(Problem.NOT_IN_COLLECTION));
+        Profile profile = profiles.lockById(profileId).orElseThrow(() -> new HighlightException(Problem.NOT_IN_COLLECTION));
+        // Every caller changes a list (add, remove, reorder), which changes the public page.
+        publicProfiles.evictAfterCommit(profile);
         return profileId;
     }
 

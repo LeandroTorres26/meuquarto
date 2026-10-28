@@ -14,6 +14,8 @@ public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
     Optional<Profile> findByUserId(long userId);
 
+    Optional<Profile> findBySlug(String slug);
+
     /**
      * Locks the profile row until the transaction ends. Writers of one collection (the owner adding,
      * a sync) go through this lock, so the check "is the work already here" and the insert cannot interleave.
