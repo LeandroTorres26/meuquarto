@@ -24,6 +24,13 @@ public interface CollectionItemRepository extends JpaRepository<CollectionItem, 
     Page<CollectionItem> findPage(@Param("profileId") long profileId, @Param("category") MediaCategory category,
             @Param("includeHidden") boolean includeHidden, Pageable pageable);
 
+    /** Every item of the profile that one linked account brought (FR-16). */
+    @Query("""
+            select distinct i from CollectionItem i join i.sources s
+            where i.profileId = :profileId and s.linkedAccountId = :accountId
+            """)
+    List<CollectionItem> findFromAccount(@Param("profileId") long profileId, @Param("accountId") long accountId);
+
     /** Only the ids, for sorts that depend on media metadata (title, year) and are resolved by the media module. */
     @Query("""
             select new com.meuquarto.profile.infra.ItemRef(i.id, i.mediaItemId) from CollectionItem i

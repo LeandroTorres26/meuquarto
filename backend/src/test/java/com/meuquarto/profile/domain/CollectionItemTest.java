@@ -167,6 +167,58 @@ class CollectionItemTest {
         assertThat(problemOf(() -> item.changeNote("nul\u0000"))).isEqualTo(Problem.NOTE_INVALID);
     }
 
+    // ---- FR-16: unlinking an account ----
+
+    @Test
+    void fr16AnItemOnlyFromTheAccountLeavesTheCollection() {
+        CollectionItem item = syncedItem();
+
+        assertThat(item.releaseAccount(5L, false, T1)).isTrue();
+    }
+
+    @Test
+    void fr16AHighlightedItemStaysAsManual() {
+        CollectionItem item = syncedItem();
+
+        assertThat(item.releaseAccount(5L, true, T1)).isFalse();
+        assertThat(item.sources()).extracting(ItemSource::source).containsExactly("MANUAL");
+        assertThat(item.isRemovable()).isTrue();
+    }
+
+    @Test
+    void fr16ANotedItemStaysAsManual() {
+        CollectionItem item = syncedItem();
+        item.changeNote("para rever");
+
+        assertThat(item.releaseAccount(5L, false, T1)).isFalse();
+        assertThat(item.sources()).extracting(ItemSource::source).containsExactly("MANUAL");
+    }
+
+    @Test
+    void fr16AnItemWithAnotherSourceKeepsIt() {
+        CollectionItem item = syncedItem();
+        item.addAgainByHand(T1);
+
+        assertThat(item.releaseAccount(5L, false, T1)).isFalse();
+        assertThat(item.sources()).extracting(ItemSource::source).containsExactly("MANUAL");
+    }
+
+    @Test
+    void fr16AnItemFromAnotherAccountIsNotTouched() {
+        CollectionItem item = syncedItem();
+
+        assertThat(item.releaseAccount(99L, false, T1)).isFalse();
+        assertThat(item.sources()).extracting(ItemSource::source).containsExactly("LETTERBOXD");
+    }
+
+    @Test
+    void fr16AManualItemIsNotTouched() {
+        CollectionItem item = manualItem();
+
+        assertThat(item.releaseAccount(5L, false, T1)).isFalse();
+        assertThat(item.sources()).extracting(ItemSource::source).containsExactly("MANUAL");
+    }
+
     @Test
     void sortParsingIsCaseInsensitiveAndDefaultsToRecent() {
         assertThat(CollectionSort.parse("title")).isEqualTo(CollectionSort.TITLE);

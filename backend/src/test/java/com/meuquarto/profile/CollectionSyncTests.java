@@ -64,6 +64,12 @@ class CollectionSyncTests {
         return jdbc.queryForObject("select id from profiles where user_id = ?", Long.class, userId);
     }
 
+    /** The source row points to a real linked account (foreign key), so each test links one. */
+    private long accountOf(long profileId) {
+        jdbc.update("insert into linked_accounts (profile_id, provider, username) values (?, 'LETTERBOXD', 'someone') on conflict do nothing", profileId);
+        return jdbc.queryForObject("select id from linked_accounts where profile_id = ?", Long.class, profileId);
+    }
+
     private ProfileCollection.Listing visible(long userId) {
         return collection.list(userId, MediaCategory.MOVIE, CollectionSort.RECENT, 0, 50, false);
     }
@@ -74,8 +80,8 @@ class CollectionSyncTests {
         long profileId = profileOf(userId);
         long mediaId = snapshots.snapshot(MATRIX).id();
 
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
 
         ProfileCollection.Listing listing = visible(userId);
         assertThat(listing.total()).isEqualTo(1);
@@ -88,12 +94,12 @@ class CollectionSyncTests {
         long userId = signUp();
         long profileId = profileOf(userId);
         long mediaId = snapshots.snapshot(MATRIX).id();
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
         long itemId = visible(userId).items().getFirst().id();
 
         collection.update(userId, itemId, null, true);
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
 
         assertThat(visible(userId).total()).isZero();
         ProfileCollection.Listing withHidden = collection.list(userId, MediaCategory.MOVIE, CollectionSort.RECENT, 0, 50, true);
@@ -110,7 +116,7 @@ class CollectionSyncTests {
         long itemId = jdbc.queryForObject("select id from collection_items", Long.class);
         jdbc.update("insert into collection_item_sources (collection_item_id, source) values (?, 'MANUAL')", itemId);
 
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
 
         ProfileCollection.Listing listing = visible(userId);
         assertThat(listing.total()).isEqualTo(1);
@@ -123,7 +129,7 @@ class CollectionSyncTests {
         long userId = signUp();
         long profileId = profileOf(userId);
         long mediaId = snapshots.snapshot(MATRIX).id();
-        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", 7L);
+        collection.recordSyncedItem(profileId, MediaCategory.MOVIE, mediaId, "LETTERBOXD", accountOf(profileId));
         long itemId = visible(userId).items().getFirst().id();
 
         long strangerUserId = userId + 1000;
