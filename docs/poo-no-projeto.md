@@ -11,7 +11,7 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 | # | Hierarquia | Situação |
 |---|---|---|
 | 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider`, `SteamProvider`, `LastFmProvider` implementam direto | planejado nas issues #28 a #34 |
-| 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | planejado nas issues #21 e #22 |
+| 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); os outros quatro na issue #22 |
 | 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | planejado nas issues #24, #37 e #39 |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
 | 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException` | feito |
@@ -220,11 +220,28 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
   - Por que AniList, Steam e Last.fm implementam a interface direto? Não compartilham nada com RSS (falam JSON).
   - O que muda se eu criar um novo provider? Uma classe nova; o `SyncService` não muda.
 
-### 2. CatalogProvider (planejado nas issues #21 e #22)
+### 2. CatalogProvider (interface, abstrata e `TmdbCatalog` feitos; demais catálogos na issue #22)
 
-- Onde: ainda não existe código. Interface e TMDB na issue #21; os outros quatro na issue #22.
-- Como vai ser explicado: `HttpCatalogProvider` é a classe abstrata com o template method (cache, timeout, tratamento de erro) e deixa abstratos os passos que mudam por plataforma. Mesmo raciocínio de `LengthRule`: o algoritmo fica na base, as folhas completam.
-- Pergunta: por que template method? Para o tratamento de falha e cache ficar escrito uma vez, não cinco.
+```
+          interface CatalogProvider
+                     ^
+          abstract HttpCatalogProvider
+ (template method: cache, timeout, erro)
+                     ^
+             final TmdbCatalog
+   (depois: AniList, Open Library, IGDB, Deezer)
+```
+
+- Arquivos: `media/domain/CatalogProvider.java` (interface), `media/domain/CatalogRegistry.java`, `media/domain/CatalogEntry.java`, `media/domain/MediaCategory.java`; `media/infra/HttpCatalogProvider.java` (abstrata), `media/infra/TmdbCatalog.java` (final); `media/infra/CatalogConfig.java` só liga tudo no Spring, fora da hierarquia. Testes: `media/infra/HttpCatalogProviderTest.java` (a classe abstrata em ação, com uma subclasse mínima), `media/infra/TmdbCatalogTest.java`, `media/domain/CatalogDomainTest.java` (registro), `media/CatalogApiTests.java`.
+- Roteiro para explicar: (1) a interface `CatalogProvider` diz o que todo catálogo faz: `id`, `serves(categoria)`, `isAvailable`, `search`, `fetch`; (2) `HttpCatalogProvider` é abstrata porque sabe o algoritmo mas não a plataforma; (3) `search` e `fetch` são `final` e formam o **template method**: checa disponibilidade, monta a URL (passo abstrato), chama com timeout de 5 s, usa cache de 10 min, converte qualquer falha em lista vazia mais um aviso no log, e entrega o corpo ao passo abstrato de interpretação; (4) `TmdbCatalog` (`final`) só preenche os passos: `searchUri`, `fetchUri`, `parseSearch`, `parseFetch`, e o gancho opcional `authorize` (coloca o token no cabeçalho); (5) `CatalogRegistry` recebe a lista, pergunta a cada um `serves(categoria)` e devolve o primeiro, como o loop do PetShop, sem `instanceof` nem `switch`.
+- Como funciona sem chave: sem `TMDB_API_KEY`, `isAvailable()` devolve `false`; a busca devolve `{available:false, results:[]}` e nenhuma requisição é feita.
+- Por que classe abstrata **e** interface? A interface é o contrato que o resto do código usa (`CatalogRegistry` e `CatalogSearch` só conhecem `CatalogProvider`); a classe abstrata guarda o código e o estado que todos os catálogos HTTP repetiriam (cliente, relógio, cache, tratamento de erro). Um catálogo que não fosse HTTP poderia implementar só a interface.
+- Perguntas:
+  - O que é o template method aqui? `search` fixa a ordem dos passos e deixa quatro deles abstratos; a subclasse não pode mudar a ordem (o método é `final`), só completar os passos.
+  - Qual a diferença entre método abstrato e gancho (hook)? Abstrato é obrigatório (a subclasse não compila sem ele); `authorize` tem corpo vazio por padrão e só quem precisa de chave sobrescreve.
+  - Por que `TmdbCatalog` é `final`? Nenhuma outra classe deve herdar dele; cada plataforma é uma folha.
+  - Por que o erro vira lista vazia e não exceção? Um provedor fora do ar não pode derrubar a tela nem os outros provedores; o aviso no log traz só o nome do provedor e o tipo de falha, nunca a URL nem o token.
+  - Como adiciono o AniList? Uma classe nova `AniListCatalog extends HttpCatalogProvider` e um `@Bean` em `CatalogConfig`; nada mais muda.
 
 ### 3. Plan (planejado nas issues #24, #37 e #39)
 
