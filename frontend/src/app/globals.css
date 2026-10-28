@@ -21,3 +21,10 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Panel nav items whose screens do not exist yet: visible, not interactive. */
+.pnav .tab--soon {
+  color: var(--ink-muted);
+  opacity: 0.6;
+  cursor: not-allowed;
+}

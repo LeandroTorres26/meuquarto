@@ -99,3 +99,8 @@ export const logIn = (input: { email: string; password: string }) =>
 export const logOut = () => postJson("/api/auth/logout");
 export const checkSlug = (slug: string, deps?: ClientDeps) =>
   getJson<SlugCheck>(`/api/slugs/${encodeURIComponent(slug)}/availability`, deps);
+
+export const changePassword = (input: { currentPassword: string; newPassword: string }) =>
+  postJson("/api/account/password", input);
+export const deleteAccount = (input: { password: string }) =>
+  postJson("/api/account/delete", input);
