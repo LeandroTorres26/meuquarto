@@ -28,11 +28,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
@@ -56,6 +59,7 @@ class SyncApiTests {
     static class FakeProviders {
 
         @Bean
+        @Order(Ordered.HIGHEST_PRECEDENCE) // ahead of the production Letterboxd bean, which shares the id
         ActivityProvider fakeActivityProvider() {
             return new FakeActivityProvider();
         }
@@ -68,6 +72,7 @@ class SyncApiTests {
     JdbcTemplate jdbc;
 
     @Autowired
+    @Qualifier("fakeActivityProvider")
     ActivityProvider provider;
 
     @Autowired

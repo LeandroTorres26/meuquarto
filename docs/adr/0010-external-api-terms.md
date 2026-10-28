@@ -22,7 +22,7 @@ The product will be monetized (cosmetics). Several data sources restrict commerc
 | Open Library | catalog books | – | – | – | pending |
 | IGDB (Twitch) | catalog games | – | – | – | pending |
 | Deezer | catalog music, 30s previews | – | – | – | pending |
-| Letterboxd RSS | activity films | – | – | – | pending |
+| Letterboxd RSS | activity films (public per-user RSS, implemented in #30) | pending: feed terms not yet confirmed from an authoritative source | pending (credit Letterboxd on the profile if required) | none published; fetched only on sync (15 min cooldown, backoff), 5 s timeout, no redirects | pending |
 | Last.fm | activity music | – | – | – | pending |
 | Steam Web API | activity games | – | – | – | pending |
 | Goodreads RSS | activity books | – | – | – | pending |

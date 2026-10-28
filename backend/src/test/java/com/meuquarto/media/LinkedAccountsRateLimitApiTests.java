@@ -21,8 +21,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 /**
  * POST /api/linked-accounts has its own per-address limit (ADR 0015) because every link sends a request
- * to a platform; here it is lowered to 2 per hour. No provider is registered in this context, so each
- * attempt answers 503, which still counts as a hit.
+ * to a platform; here it is lowered to 2 per hour. STEAM has no provider yet (and Letterboxd would reach the
+ * real platform, which no test may do), so each attempt answers 503, which still counts as a hit.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,6 +58,6 @@ class LinkedAccountsRateLimitApiTests {
 
     private MockHttpServletRequestBuilder link(Cookie session) throws Exception {
         return post("/api/linked-accounts").cookie(session).with(RealCsrf.token(mvc)).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"provider\":\"LETTERBOXD\",\"username\":\"leandro\"}");
+                .content("{\"provider\":\"STEAM\",\"username\":\"leandro\"}");
     }
 }
