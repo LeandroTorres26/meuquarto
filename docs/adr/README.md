@@ -22,6 +22,7 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | [0016](0016-same-origin-api-proxy.md) | Same-origin API through proxy.ts | Accepted |
 | [0017](0017-real-client-address-behind-proxies.md) | Real client address behind the web proxy and Caddy | Accepted |
 | [0018](0018-own-object-oriented-hierarchies.md) | Our own object-oriented hierarchies (course requirement) | Accepted |
+| [0019](0019-shared-kernel-for-cross-module-vocabulary.md) | Shared kernel for cross-module vocabulary | Accepted |
 
 ## Template
 

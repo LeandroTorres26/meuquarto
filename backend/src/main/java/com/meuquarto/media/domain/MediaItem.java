@@ -1,5 +1,6 @@
 package com.meuquarto.media.domain;
 
+import com.meuquarto.shared.domain.MediaCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

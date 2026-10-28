@@ -1,5 +1,6 @@
 package com.meuquarto.media.domain;
 
+import com.meuquarto.shared.domain.MediaCategory;
 import java.util.List;
 import java.util.Optional;
 

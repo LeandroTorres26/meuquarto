@@ -2,7 +2,7 @@ package com.meuquarto.media.api;
 
 import com.meuquarto.media.application.CatalogSearch;
 import com.meuquarto.media.domain.CatalogEntry;
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
