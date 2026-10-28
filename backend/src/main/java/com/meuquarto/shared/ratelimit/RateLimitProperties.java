@@ -13,6 +13,7 @@ public record RateLimitProperties(
         @DefaultValue Rule catalogSearch,
         @DefaultValue Rule collectionAdd,
         @DefaultValue Rule linkAccount,
+        @DefaultValue Rule manualSync,
         @DefaultValue Rule publicRead,
         @DefaultValue Rule anonymous) {
 
@@ -23,6 +24,7 @@ public record RateLimitProperties(
         catalogSearch = catalogSearch.orElse(60, Duration.ofMinutes(1));
         collectionAdd = collectionAdd.orElse(30, Duration.ofMinutes(1));
         linkAccount = linkAccount.orElse(10, Duration.ofMinutes(10));
+        manualSync = manualSync.orElse(30, Duration.ofMinutes(10));
         publicRead = publicRead.orElse(120, Duration.ofMinutes(1));
         anonymous = anonymous.orElse(300, Duration.ofMinutes(1));
     }
