@@ -56,7 +56,7 @@ class CollectionApiTests {
     private record FakeCatalog() implements CatalogProvider {
 
         @Override
-        public String id() {
+        public String catalogName() {
             return "FAKE";
         }
 

@@ -39,7 +39,7 @@ class CatalogApiTests {
     private record FakeCatalog(MediaCategory served, boolean available) implements CatalogProvider {
 
         @Override
-        public String id() {
+        public String catalogName() {
             return "FAKE";
         }
 

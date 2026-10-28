@@ -11,8 +11,8 @@ import java.util.Optional;
  */
 public interface CatalogProvider {
 
-    /** Canonical catalog name stored in {@code media_items.canonical_provider}, e.g. {@code TMDB}. */
-    String id();
+    /** Canonical catalog name (not {@code id()}: a class that is also an {@link ActivityProvider} already has an {@code id()} of another type) stored in {@code media_items.canonical_provider}, e.g. {@code TMDB}. */
+    String catalogName();
 
     /** Whether this catalog is the canonical one for the category. */
     boolean serves(MediaCategory category);

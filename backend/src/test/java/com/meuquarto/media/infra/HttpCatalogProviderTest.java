@@ -38,7 +38,7 @@ class HttpCatalogProviderTest {
         }
 
         @Override
-        public String id() {
+        public String catalogName() {
             return "ECHO";
         }
 
@@ -67,12 +67,12 @@ class HttpCatalogProviderTest {
             if (body.equals("boom")) {
                 throw new IllegalStateException("cannot parse");
             }
-            return List.of(new CatalogEntry(category, id(), "1", body, null, null, false));
+            return List.of(new CatalogEntry(category, catalogName(), "1", body, null, null, false));
         }
 
         @Override
         protected Optional<CatalogEntry> parseFetch(MediaCategory category, String body) {
-            return Optional.of(new CatalogEntry(category, id(), "1", body, null, null, false));
+            return Optional.of(new CatalogEntry(category, catalogName(), "1", body, null, null, false));
         }
 
         @Override

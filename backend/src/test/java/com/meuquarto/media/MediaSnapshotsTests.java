@@ -40,7 +40,7 @@ class MediaSnapshotsTests {
         CatalogRegistry fakeRegistry() {
             return new CatalogRegistry(List.of(new CatalogProvider() {
                 @Override
-                public String id() {
+                public String catalogName() {
                     return "TMDB";
                 }
 

@@ -74,7 +74,7 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
         if (!isAvailable() || !serves(category)) {
             return List.of();
         }
-        return load(() -> searchUri(category, query)).map(body -> parse(() -> parseSearch(category, body), List.<CatalogEntry>of()))
+        return load(() -> new Call(searchUri(category, query), searchBody(category, query))).map(body -> parse(() -> parseSearch(category, body), List.<CatalogEntry>of()))
                 .orElse(List.of());
     }
 
@@ -83,9 +83,15 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
         if (!isAvailable() || !serves(category)) {
             return Optional.empty();
         }
-        return load(() -> fetchUri(category, externalId))
+        return load(() -> new Call(fetchUri(category, externalId), fetchBody(category, externalId)))
                 .flatMap(body -> parse(() -> parseFetch(category, body), Optional.<CatalogEntry>empty()));
     }
+
+    /** What to send: the address and, for a POST, the JSON body ({@code null} means a plain GET). */
+    private record Call(URI uri, String body) {}
+
+    /** What came back: the status and, only for a 200, the body (limited in size). */
+    protected record Reply(int status, String body) {}
 
     private interface Step<T> {
         T run();
@@ -102,20 +108,20 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
     }
 
     /** Body of a successful GET, from the cache or the network; empty on any failure. */
-    private Optional<String> load(Step<URI> uriStep) {
-        URI uri;
+    private Optional<String> load(Step<Call> callStep) {
+        Call call;
         try {
-            uri = uriStep.run();
+            call = callStep.run();
         } catch (RuntimeException e) {
             return failed("bad request (" + e.getClass().getSimpleName() + ")");
         }
-        String key = uri.toString();
+        String key = call.uri() + (call.body() == null ? "" : "\n" + call.body());
         Optional<String> hit = cached(key);
         if (hit.isPresent()) {
             return hit;
         }
         try {
-            Optional<String> body = download(uri);
+            Optional<String> body = download(call);
             body.ifPresent(text -> store(key, text));
             return body;
         } catch (InterruptedException e) {
@@ -126,27 +132,54 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
         }
     }
 
-    private Optional<String> download(URI uri) throws IOException, InterruptedException {
-        HttpRequest.Builder request = HttpRequest.newBuilder(uri)
-                .GET()
+    private Optional<String> download(Call call) throws IOException, InterruptedException {
+        HttpRequest.Builder request = HttpRequest.newBuilder(call.uri())
                 .timeout(requestTimeout)
                 .header("Accept", "application/json");
+        if (call.body() == null) {
+            request.GET();
+        } else {
+            request.header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(call.body()));
+        }
         authorize(request);
-        HttpResponse<InputStream> response = client.send(request.build(), HttpResponse.BodyHandlers.ofInputStream());
+        Reply reply = send(request.build());
+        if (reply.status() != 200) {
+            return failed("HTTP " + reply.status());
+        }
+        return Optional.of(reply.body());
+    }
+
+    /**
+     * One POST of a JSON body with the same safe limits as the catalog calls (connect and request
+     * timeouts, no redirects, body limited to {@link #MAX_BODY_BYTES}). For a subclass that talks to the
+     * same API for something other than the catalog (the AniList activity); it throws on I/O problems.
+     */
+    protected final Reply postJson(URI uri, String jsonBody) throws IOException, InterruptedException {
+        HttpRequest.Builder request = HttpRequest.newBuilder(uri)
+                .timeout(requestTimeout)
+                .header("Accept", "application/json")
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(jsonBody));
+        authorize(request);
+        return send(request.build());
+    }
+
+    private Reply send(HttpRequest request) throws IOException, InterruptedException {
+        HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
         try (InputStream in = response.body()) {
             if (response.statusCode() != 200) {
-                return failed("HTTP " + response.statusCode());
+                return new Reply(response.statusCode(), "");
             }
             byte[] bytes = in.readNBytes(MAX_BODY_BYTES + 1);
             if (bytes.length > MAX_BODY_BYTES) {
-                return failed("response too large");
+                throw new IOException("response too large");
             }
-            return Optional.of(new String(bytes, StandardCharsets.UTF_8));
+            return new Reply(200, new String(bytes, StandardCharsets.UTF_8));
         }
     }
 
     private <T> Optional<T> failed(String reason) {
-        log.warn("Catalog {} failed: {}", id(), reason);
+        log.warn("Catalog {} failed: {}", catalogName(), reason);
         return Optional.empty();
     }
 
@@ -182,6 +215,19 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
 
     /** Turns a detail response into one entry. May throw; the template turns that into "not found". */
     protected abstract Optional<CatalogEntry> parseFetch(MediaCategory category, String body);
+
+    /**
+     * Optional step: the JSON body of a search that must be a POST (GraphQL). The default {@code null}
+     * keeps the plain GET, so the catalogs that use a query string do not change.
+     */
+    protected String searchBody(MediaCategory category, String query) {
+        return null;
+    }
+
+    /** Optional step, like {@link #searchBody}, for the detail request. */
+    protected String fetchBody(MediaCategory category, String externalId) {
+        return null;
+    }
 
     /** Optional step with a default that does nothing: platforms that need a key override it. */
     protected void authorize(HttpRequest.Builder request) {

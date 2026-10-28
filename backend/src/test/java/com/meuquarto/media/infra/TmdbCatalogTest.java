@@ -149,6 +149,6 @@ class TmdbCatalogTest {
             }
         }
         assertThat(served).containsExactly(MediaCategory.MOVIE, MediaCategory.SERIES);
-        assertThat(tmdb.id()).isEqualTo("TMDB");
+        assertThat(tmdb.catalogName()).isEqualTo("TMDB");
     }
 }
