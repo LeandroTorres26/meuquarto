@@ -10,11 +10,11 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 
 | # | Hierarquia | Situação |
 |---|---|---|
-| 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider`, `SteamProvider`, `LastFmProvider` implementam direto | planejado nas issues #28 a #34 |
+| 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider`, `SteamProvider`, `LastFmProvider` implementam direto | base feita (issue #28: interface, abstrata, registro); provedores concretos nas issues #30 a #34 |
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); os outros quatro na issue #22 |
 | 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); `PackPlan` só passa a ser usado quando houver compra (issue #39) |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
-| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException` | feito |
+| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException` | feito |
 
 Opcional depois (issue #43): `RoomObject` (abstrata) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`.
 
@@ -226,14 +226,35 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
   - Por que a `DomainException` não conhece HTTP? O domínio não pode depender da camada de API (ArchUnit confere); o `ErrorKind` é a ponte neutra.
   - Onde um novo erro precisa ser registrado? Em lugar nenhum além da própria classe.
 
-### 1. ActivityProvider (planejado nas issues #28 a #34)
+### 1. ActivityProvider (base feita na issue #28; os cinco provedores concretos nas issues #30 a #34)
 
-- Onde: ainda não existe código. Desenho no ADR 0018 e na issue #28 (interface), #30 (`LetterboxdProvider`), #34 (`GoodreadsProvider`), #29, #31 a #33 para os demais.
-- Como vai ser explicado: igual ao `Animal` da aula 9. A interface `ActivityProvider` é o contrato; `RssActivityProvider` é uma classe abstrata com o que Letterboxd e Goodreads têm em comum (ler o feed RSS com timeout, converter o XML); `LetterboxdProvider` e `GoodreadsProvider` são `final` e só definem a URL e o mapeamento. `SyncService` percorre `List<ActivityProvider>` e chama o mesmo método em todos, como o `PetShop.gritaria()`.
-- Perguntas prováveis (respostas quando implementado):
-  - Por que `RssActivityProvider` é abstrata e não só interface? Porque tem código e campos compartilhados.
+```
+              interface ActivityProvider
+                         ^
+        +----------------+------------------+----------------+
+        |                |                  |                |
+ abstract RssActivityProvider   AniListProvider   SteamProvider   LastFmProvider
+     ^              ^              (#31)            (#32)          (#33)
+     |              |
+final LetterboxdProvider   final GoodreadsProvider
+        (#30)                    (#34)
+```
+
+- Arquivos: `media/domain/ActivityProvider.java` (interface), `media/domain/ActivityRegistry.java`, `media/domain/ProviderId.java` (enum), `media/domain/ActivityEntry.java`, `ActivitySnapshot.java`, `ActivityType.java`, `AccountCheck.java` (tipos que a interface usa), `UsernameProblem.java`, `UsernameLengthRule.java`, `UsernamePatternRule.java`, `UsernameRules.java` (regras de formato do username, reaproveitando a hierarquia 4); `media/infra/RssActivityProvider.java` (abstrata), `media/infra/ActivityConfig.java` (só liga no Spring, fora da hierarquia). Contas ligadas: `media/domain/LinkedAccount.java`, `LinkedAccountException.java`, `media/application/LinkedAccounts.java`, `media/api/LinkedAccountController.java`. Testes: `media/domain/ActivityProviderTest.java` (contrato, regras e registro, sem Spring), `media/infra/RssActivityProviderTest.java` (a abstrata em ação com uma subclasse mínima e um servidor local), `media/LinkedAccountsApiTests.java` (com um `FakeActivityProvider`).
+- O que existe hoje: a interface, a classe abstrata com o template method, o registro e o CRUD de contas ligadas. Como ainda não há provedor concreto, ligar qualquer plataforma responde `PROVIDER_UNAVAILABLE`; nos testes um `FakeActivityProvider` faz o papel de provedor. `LetterboxdProvider` e `GoodreadsProvider` chegam nas issues #30 e #34 e só preenchem os três passos abstratos.
+- Roteiro para explicar (igual ao `Animal`/`Cachorro` da aula 9): (1) `ActivityProvider` é o contrato: `id`, `categories`, `usernameRules`, `checkAccountExists`, `fetchActivity` e dois métodos `default` (`normalizeUsername` apara o texto, `validateUsernameFormat` roda as regras); (2) `RssActivityProvider` é abstrata porque conhece o algoritmo (montar a URL com segurança, baixar com limites, ler o XML sem confiar nele, mapear os itens) mas não a plataforma; (3) `fetchActivity` e `checkAccountExists` são `final` e formam o **template method**; (4) a folha só diz **onde** fica o feed (`baseUri`, `feedPath`) e **como** um `<item>` vira um `ActivityEntry` (`toEntry`); (5) `ActivityRegistry` guarda a lista e acha o provedor perguntando `provider.id() == id` a cada um, como o loop do PetShop, sem `instanceof` nem `switch`; (6) `LinkedAccounts` e, depois, o `SyncService` só conhecem `ActivityProvider`.
+- Comparação com a aula 9: `ActivityProvider` é o `Animal` (o que todos fazem); `RssActivityProvider` é uma classe intermediária com código compartilhado (como se `Cachorro` e `Gato` herdassem de `Mamifero`); `LetterboxdProvider` e `GoodreadsProvider` são os `Cachorro` e `Gato`; o registro e o `SyncService` são o `PetShop`, que percorre `List<Animal>` e chama o mesmo método em todos.
+- Detalhes de Java para saber explicar: `default` na interface (o corpo vem da interface e a classe pode sobrescrever, como o `normalizeUsername` em minúsculas do Letterboxd); genéricos em `List<ValidationRule<String, UsernameProblem>>`; `protected abstract` nos passos da folha; `static` em `RssActivityProvider.parse` (não depende de estado); `final` nos métodos template para a folha não mudar a ordem dos passos; construtor `protected` com sobrecarga (um com timeout padrão, outro para o teste usar timeout curto).
+- Perguntas prováveis:
+  - Por que `RssActivityProvider` é abstrata e não só interface? Porque tem código e campos compartilhados (cliente HTTP, timeout, parser).
   - Por que AniList, Steam e Last.fm implementam a interface direto? Não compartilham nada com RSS (falam JSON).
-  - O que muda se eu criar um novo provider? Uma classe nova; o `SyncService` não muda.
+  - O que é o template method aqui? `fetchActivity` fixa a ordem (validar o username, montar a URL, baixar, ler o XML, mapear os itens) e deixa três passos abstratos; a subclasse não consegue mudar a ordem porque o método é `final`.
+  - O que muda se eu criar um novo provedor? Uma classe nova e um `@Bean`; o registro, o `LinkedAccounts` e o `SyncService` não mudam.
+  - Por que `checkAccountExists` devolve um enum (`AccountCheck`) e não lança exceção? Plataforma fora do ar é um resultado esperado, não um erro de programação; o chamador decide (ligar a conta responde 503, o sync registra a falha daquela conta e segue com as outras).
+  - Por que a interface está em `domain` se o provedor usa HTTP? A interface e os tipos são regras e vocabulário (sem Spring nem HTTP); só a classe abstrata, que usa o `HttpClient`, fica em `infra`.
+  - Como evitar que o username vire ataque (SSRF)? As regras do provedor aceitam só ASCII no formato da plataforma; o texto é codificado na URL e só preenche o caminho; o host é fixo na folha (`baseUri`) e a URL montada é conferida (mesmo esquema, host e porta, sem userinfo, query ou fragmento). Nada é enviado antes da validação.
+  - O que é XXE e como a classe evita? Um XML pode declarar uma entidade externa que faz o parser ler um arquivo local ou chamar uma URL. A classe recusa qualquer `DOCTYPE`, então nenhuma entidade (nem expansão em cadeia) existe.
+  - Por que existe a interface `AccountOwners` em `media/application`? Para `media` usar o perfil do usuário e a coleção sem importar o módulo `profile` (o `profile` já depende de `media`; importar de volta criaria um ciclo, que o ArchUnit proíbe). Está no ADR 0020.
 
 ### 2. CatalogProvider (interface, abstrata e `TmdbCatalog` feitos; demais catálogos na issue #22)
 

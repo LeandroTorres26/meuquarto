@@ -103,6 +103,24 @@ public class CollectionItem {
         lastActivityAt = now;
     }
 
+    /**
+     * FR-16: the owner unlinked the account {@code linkedAccountId}. Its source goes away. If nothing else
+     * keeps the item (no manual source, no other platform), it leaves, unless the owner highlighted or
+     * noted it: then it stays and becomes manual. Returns true when the item must be deleted.
+     */
+    public boolean releaseAccount(long linkedAccountId, boolean highlighted, Instant now) {
+        boolean wasFromIt = sources.removeIf(
+                source -> source.linkedAccountId() != null && source.linkedAccountId() == linkedAccountId);
+        if (!wasFromIt || !sources.isEmpty()) {
+            return false;
+        }
+        if (highlighted || note != null) {
+            sources.add(ItemSource.manual(now));
+            return false;
+        }
+        return true;
+    }
+
     public void hide() {
         hidden = true;
     }

@@ -134,7 +134,10 @@ class CollectionApiTests {
 
     /** Pretends a sync brought the work in, the way the sync code will (provider + linked account). */
     private void markAsSynced(long itemId) {
-        jdbc.update("insert into collection_item_sources (collection_item_id, source, linked_account_id) values (?, 'LETTERBOXD', 7)", itemId);
+        long profileId = jdbc.queryForObject("select profile_id from collection_items where id = ?", Long.class, itemId);
+        jdbc.update("insert into linked_accounts (profile_id, provider, username) values (?, 'LETTERBOXD', 'someone') on conflict do nothing", profileId);
+        long accountId = jdbc.queryForObject("select id from linked_accounts where profile_id = ?", Long.class, profileId);
+        jdbc.update("insert into collection_item_sources (collection_item_id, source, linked_account_id) values (?, 'LETTERBOXD', ?)", itemId, accountId);
     }
 
     /** Asserts the titles of the page, in order. */

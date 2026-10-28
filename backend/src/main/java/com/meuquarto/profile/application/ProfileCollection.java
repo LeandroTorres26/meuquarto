@@ -103,6 +103,26 @@ public class ProfileCollection {
         }
     }
 
+    /**
+     * FR-16, called when the owner unlinks an account: the items it brought leave the collection, except
+     * highlighted or noted ones, which become manual. Runs inside the unlink transaction.
+     */
+    @Transactional
+    public void releaseLinkedAccount(long profileId, long linkedAccountId) {
+        Profile profile = profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+        publicProfiles.evictAfterCommit(profile);
+        Instant now = clock.instant();
+        for (CollectionItem item : items.findFromAccount(profileId, linkedAccountId)) {
+            boolean highlighted = !highlightLists.findContainingItem(item.id(), profileId).isEmpty();
+            if (item.releaseAccount(linkedAccountId, highlighted, now)) {
+                items.delete(item);
+            } else {
+                items.save(item);
+            }
+        }
+        items.flush();
+    }
+
     /** One page of a category. Hidden items are listed only when the owner asks for them. */
     @Transactional(readOnly = true)
     public Listing list(long userId, MediaCategory category, CollectionSort sort, int page, int size,
