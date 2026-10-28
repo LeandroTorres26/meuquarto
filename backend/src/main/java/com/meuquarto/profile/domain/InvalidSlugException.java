@@ -1,11 +1,14 @@
 package com.meuquarto.profile.domain;
 
-public class InvalidSlugException extends IllegalArgumentException {
+import com.meuquarto.shared.domain.DomainException;
+import com.meuquarto.shared.domain.ErrorKind;
+
+public final class InvalidSlugException extends DomainException {
 
     private final Slug.Problem problem;
 
     public InvalidSlugException(Slug.Problem problem) {
-        super("Invalid slug: " + problem);
+        super("SLUG_" + problem.name(), ErrorKind.INVALID);
         this.problem = problem;
     }
 

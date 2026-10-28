@@ -1,6 +1,5 @@
 package com.meuquarto.identity.application;
 
-import com.meuquarto.identity.application.Accounts.TooManyAttemptsException;
 import com.meuquarto.identity.domain.AccountRuleException;
 import com.meuquarto.identity.domain.AccountRuleException.Rule;
 import com.meuquarto.identity.domain.EmailAddress;

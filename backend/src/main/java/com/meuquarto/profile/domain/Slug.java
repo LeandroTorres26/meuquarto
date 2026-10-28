@@ -1,9 +1,9 @@
 package com.meuquarto.profile.domain;
 
+import com.meuquarto.shared.domain.ValidationRule;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Public address of a profile, as in {@code meuquarto.com.br/<slug>} (BR-01).
@@ -15,20 +15,12 @@ public record Slug(String value) {
     public static final int MIN_LENGTH = 3;
     public static final int MAX_LENGTH = 30;
 
-    private static final Pattern FORMAT = Pattern.compile("[a-z0-9]+(-[a-z0-9]+)*");
-    private static final Pattern CHARACTERS = Pattern.compile("[a-z0-9-]*");
-
-    /** Routes and names a profile must never shadow. */
-    static final Set<String> RESERVED = Set.of(
-            // app routes
-            "api", "painel", "entrar", "sair", "cadastro", "esqueci-senha", "redefinir-senha",
-            "termos", "privacidade", "loja", "compras", "conta", "quarto", "item", "obra", "busca",
-            // framework and infrastructure paths
-            "static", "assets", "public", "favicon", "robots", "sitemap", "manifest", "health", "status",
-            // identity and support
-            "meuquarto", "admin", "administrador", "root", "suporte", "ajuda", "sobre", "contato",
-            "login", "logout", "signup", "signin", "register", "settings", "config", "dashboard",
-            "www", "mail", "email", "blog", "app", "null", "undefined");
+    /** Asked in this order; the first broken rule is the problem reported (polymorphism over the list). */
+    private static final List<ValidationRule<String, Problem>> RULES = List.of(
+            new SlugLengthRule(),
+            new SlugCharactersRule(),
+            new SlugHyphenRule(),
+            new SlugReservedRule());
 
     public Slug {
         Problem problem = check(value).orElse(null);
@@ -48,22 +40,7 @@ public record Slug(String value) {
 
     /** Why an already normalized value is not a valid slug, if it isn't. */
     public static Optional<Problem> check(String normalized) {
-        if (normalized == null || normalized.length() < MIN_LENGTH) {
-            return Optional.of(Problem.TOO_SHORT);
-        }
-        if (normalized.length() > MAX_LENGTH) {
-            return Optional.of(Problem.TOO_LONG);
-        }
-        if (!CHARACTERS.matcher(normalized).matches()) {
-            return Optional.of(Problem.INVALID_CHARACTERS);
-        }
-        if (!FORMAT.matcher(normalized).matches()) {
-            return Optional.of(Problem.INVALID_HYPHEN);
-        }
-        if (RESERVED.contains(normalized)) {
-            return Optional.of(Problem.RESERVED);
-        }
-        return Optional.empty();
+        return ValidationRule.firstProblem(RULES, normalized);
     }
 
     @Override

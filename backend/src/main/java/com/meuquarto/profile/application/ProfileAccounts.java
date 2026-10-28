@@ -39,18 +39,4 @@ public class ProfileAccounts {
     public Optional<String> slugOf(long userId) {
         return profiles.findByUserId(userId).map(Profile::slug);
     }
-
-    public static class SlugUnavailableException extends RuntimeException {
-
-        private final SlugAvailability.Reason reason;
-
-        public SlugUnavailableException(SlugAvailability.Reason reason) {
-            super("Slug unavailable: " + reason);
-            this.reason = reason;
-        }
-
-        public SlugAvailability.Reason reason() {
-            return reason;
-        }
-    }
 }
