@@ -6,9 +6,11 @@ import com.meuquarto.profile.domain.CollectionException;
 import com.meuquarto.profile.domain.CollectionException.Problem;
 import com.meuquarto.profile.domain.CollectionItem;
 import com.meuquarto.profile.domain.CollectionSort;
+import com.meuquarto.profile.domain.HighlightList;
 import com.meuquarto.profile.domain.ItemSource;
 import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.infra.CollectionItemRepository;
+import com.meuquarto.profile.infra.HighlightListRepository;
 import com.meuquarto.profile.infra.ItemRef;
 import com.meuquarto.profile.infra.ProfileRepository;
 import com.meuquarto.shared.domain.MediaCategory;
@@ -37,15 +39,18 @@ public class ProfileCollection {
 
     private final ProfileRepository profiles;
     private final CollectionItemRepository items;
+    private final HighlightListRepository highlightLists;
     private final MediaSnapshots snapshots;
     private final MediaSummaries summaries;
     private final TransactionTemplate transaction;
     private final Clock clock = Clock.systemUTC();
 
-    public ProfileCollection(ProfileRepository profiles, CollectionItemRepository items, MediaSnapshots snapshots,
-            MediaSummaries summaries, PlatformTransactionManager transactionManager) {
+    public ProfileCollection(ProfileRepository profiles, CollectionItemRepository items,
+            HighlightListRepository highlightLists, MediaSnapshots snapshots, MediaSummaries summaries,
+            PlatformTransactionManager transactionManager) {
         this.profiles = profiles;
         this.items = items;
+        this.highlightLists = highlightLists;
         this.snapshots = snapshots;
         this.summaries = summaries;
         this.transaction = new TransactionTemplate(transactionManager);
@@ -135,6 +140,7 @@ public class ProfileCollection {
         if (hidden != null) {
             if (hidden) {
                 item.hide();
+                leaveHighlights(item);
             } else {
                 item.unhide();
             }
@@ -147,11 +153,25 @@ public class ProfileCollection {
     public void remove(long userId, long itemId) {
         CollectionItem item = ownedItem(userId, itemId);
         item.ensureRemovable();
+        leaveHighlights(item);
         items.delete(item);
     }
 
+    /**
+     * A hidden or deleted item leaves every highlight list (ADR 0011) and the lists close the gap.
+     * Flushed here so the highlight rows are gone before the item itself is deleted.
+     */
+    private void leaveHighlights(CollectionItem item) {
+        List<HighlightList> containing = highlightLists.findContainingItem(item.id(), item.profileId());
+        containing.forEach(list -> list.dropItem(item.id()));
+        highlightLists.saveAllAndFlush(containing);
+    }
+
     private CollectionItem ownedItem(long userId, long itemId) {
-        return items.findByIdAndProfileId(itemId, profileIdOf(userId))
+        long profileId = profileIdOf(userId);
+        // Same lock as highlighting: hiding or deleting cannot interleave with "Destacar" of the same item.
+        profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
+        return items.findByIdAndProfileId(itemId, profileId)
                 .orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
     }
 
