@@ -18,7 +18,7 @@ The product will be monetized (cosmetics). Several data sources restrict commerc
 | Source | Use | Commercial use | Attribution | Rate limit | Reviewed |
 |---|---|---|---|---|---|
 | TMDB | catalog films/series | license needed for commercial | required | – | pending |
-| AniList | catalog + activity anime/manga | – | – | – | pending |
+| AniList | catalog + activity anime/manga (public GraphQL, no key, implemented in #31) | pending: terms not yet confirmed from an authoritative source | pending (credit AniList on the profile) | documented 90 requests/min, 30 while degraded (the live response header showed 30 on 2026-10-28); we use 1 call per search or link check and 2 per sync, 5 s timeout, no redirects | pending |
 | Open Library | catalog books | – | – | – | pending |
 | IGDB (Twitch) | catalog games | – | – | – | pending |
 | Deezer | catalog music, 30s previews | – | – | – | pending |

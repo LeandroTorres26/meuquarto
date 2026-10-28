@@ -64,6 +64,13 @@ Rule: only ready-made, maintained components; no hand-written cryptography, toke
 - Structured logs without passwords, tokens, cookies or full e-mails.
 - Least-privilege database user for the app (no superuser); Flyway runs with the same or a migration user.
 
+### AniList integration (issue #31)
+- One fixed endpoint (`POST https://graphql.anilist.co`); the address is never read from configuration or user input (a package-private constructor lets tests point at a local stub). No key is needed for public data, so there is no secret to leak.
+- GraphQL injection: the query texts are constants and every user value (search text, media id, username) travels only in the JSON `variables`, which the server types as `String`/`Int`/enum. Tests assert that nothing typed by the user appears in the query or the URL. Usernames also pass the platform's format rules (2 to 20 of `[a-z0-9_]`) before any request, and ids must be digits.
+- Covers are accepted only as `https` URLs on `s4.anilist.co` (no user info, port or fragment); anything else becomes "no cover". Titles are kept as plain text; the UI never renders HTML from a provider.
+- Limits: connect and request timeouts, no redirects, response body capped at 2 MB, at most 500 entries per sync, at most 20 search results. Rate limit of the platform (90/min, 30 degraded): one call per search or link check, two per sync, searches cached for 10 minutes; a 429 or any other failure becomes an empty result (catalog) or `PROVIDER_UNAVAILABLE` (sync), logged as provider name and kind of failure only, never the body, URL or username.
+- BR-08: adult works are excluded in the query (`isAdult: false`), dropped again when mapping, and dropped by the sync for every platform.
+
 ### Public profile read API (issues #16 and #26)
 - Three GET-only routes are open (`permitAll`): `/api/public/profiles/{slug}`, `/api/public/profiles/{slug}/items/{ref}` and `/api/public/profiles/{slug}/collection`. Any other method on `/api/public/**` needs a session (401). They share one per-IP limit (120/min, `meuquarto.rate-limit.public-read.*`), 404s included, because probing slugs is the abuse to slow down. No session or `SESSION` cookie is created for these reads (tested).
 - Built only from local data (snapshot in `media_items`, ADR 0006) and a Caffeine cache of the profile home (60 s TTL, at most 2000 profiles, evicted after commit by every use case that changes the collection or highlights). No provider is called on these paths (tested with a counting fake catalog).

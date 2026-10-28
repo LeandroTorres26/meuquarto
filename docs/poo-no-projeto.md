@@ -10,8 +10,8 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 
 | # | Hierarquia | Situação |
 |---|---|---|
-| 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider`, `SteamProvider`, `LastFmProvider` implementam direto | base feita (issue #28: interface, abstrata, registro); `SyncService`, que percorre os provedores, feito (issue #29); `LetterboxdProvider` feito (issue #30); Goodreads, AniList, Steam e Last.fm nas issues #31 a #34 |
-| 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListCatalog`, `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); os outros quatro na issue #22 |
+| 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider` (estende `HttpCatalogProvider` **e** implementa `ActivityProvider`), `SteamProvider`, `LastFmProvider` implementam direto | base feita (issue #28: interface, abstrata, registro); `SyncService`, que percorre os provedores, feito (issue #29); `LetterboxdProvider` feito (issue #30); `AniListProvider` feito (issue #31, junto com a parte AniList da #22); Goodreads, Steam e Last.fm nas issues #32 a #34 |
+| 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListProvider` (a mesma classe da hierarquia 1), `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); `AniListProvider` feito (issue #31); os outros três na issue #22 |
 | 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); `PackPlan` só passa a ser usado quando houver compra (issue #39) |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
 | 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException` | feito |
@@ -169,13 +169,36 @@ Uma observação honesta: `Slug` e `PasswordCandidate` são `record`, assunto qu
   - Preciso sobrescrever um `default`? Não é obrigatório (o abstrato é); pode sobrescrever se quiser, como o `Cachorro` faz com `foo()`.
   - Por que `ValidationRule` é interface e `LengthRule` abstrata? Interface define o que toda regra faz; a abstrata reaproveita código de um subgrupo (as regras de tamanho).
 
-### Várias interfaces (múltiplas)
+### Várias interfaces (múltiplas): o `AniListProvider`
 
-- Onde: no código atual, cada classe implementa uma interface (`ValidationRule`). O exemplo de várias interfaces ao mesmo tempo não existe ainda em código nosso. Na hierarquia 1 isso pode aparecer se algum provider precisar de um segundo contrato; até lá, não cite como exemplo do projeto.
-- Explicação: em Java uma classe estende uma única classe, mas implementa várias interfaces, como `Cachorro extends Animal implements Brincavel, Nadavel` na aula 9. Neste projeto o que existe de real é a classe que combina uma superclasse e uma interface: `SlugLengthRule extends LengthRule`, e `LengthRule implements ValidationRule`.
+- Onde: `media/infra/AniListProvider.java` (a classe), `media/infra/AniListConfig.java` (um único `@Bean`, só liga no Spring). Testes: `media/infra/AniListProviderTest.java` (a classe sem Spring, contra um servidor local), `media/infra/AniListSyncTests.java` (pilha completa com banco), `media/infra/AniListWiringTests.java` (a mesma instância nos dois registros).
+- A declaração, uma linha só, igual ao `Cachorro` da aula 9:
+
+```
+Cachorro      extends Animal              implements Brincavel, Nadavel
+AniListProvider extends HttpCatalogProvider implements ActivityProvider      (e a mãe implements CatalogProvider)
+```
+
+- Por que o AniList é as duas coisas: é o catálogo canônico de anime e mangá (ADR 0005: buscar "frieren" e adicionar à mão) **e** a fonte do que o usuário assistiu e leu (BR-10: sincronizar a conta). Duas responsabilidades reais, então dois contratos reais, na mesma classe e no mesmo objeto.
+- O que vem de onde (o `Cachorro` herda `dormir()` do `Animal`, e escreve `brincar()` e `nadar()` porque as interfaces exigem):
+  - **Herdado da classe abstrata `HttpCatalogProvider`** (e por ela do contrato `CatalogProvider`), sem escrever nada: `search` e `fetch` (os `final` do template method: checar disponibilidade, montar a chamada, timeout, cache de 10 min, falha vira lista vazia mais um aviso), o `postJson` (POST seguro: timeout, sem redirecionamento, corpo limitado a 2 MB). A classe só preenche os passos abstratos: `searchUri`, `fetchUri`, `parseSearch`, `parseFetch`, e os ganchos opcionais `searchBody` e `fetchBody` (o corpo JSON do POST, porque o AniList fala GraphQL e o TMDB fala GET).
+  - **Implementado por causa do contrato `CatalogProvider`**: `catalogName()` (`ANILIST`), `serves(categoria)` (só `ANIME` e `MANGA`), `isAvailable()` (sempre `true`: dado público não precisa de chave).
+  - **Implementado por causa do segundo contrato, `ActivityProvider`** (escrito na própria classe, é o `brincar()` e o `nadar()`): `id()` (`ProviderId.ANILIST`), `categories()` (`ANIME` e `MANGA`), `usernameRules()` (2 a 20 caracteres de `[a-z0-9_]`), `normalizeUsername` (sobrescreve o `default` para pôr em minúsculas, reaproveitando o dele), `checkAccountExists` e `fetchActivity`. O `validateUsernameFormat` é um `default` da interface e vem pronto.
+- Como a mesma instância está nos dois registros: `AniListConfig` declara **um** `@Bean` do tipo `AniListProvider`. O Spring entrega esse mesmo objeto a quem pede uma lista de `CatalogProvider` (o `CatalogRegistry` pergunta `serves(categoria)` a cada um) e a quem pede uma lista de `ActivityProvider` (o `ActivityRegistry` pergunta `id() == ...`). Não há duas cópias: o teste `AniListWiringTests` confere com `isSameAs`. Cada registro enxerga o objeto só pela interface que lhe interessa, que é o polimorfismo de subtipo da aula 9: o `PetShop` vê um `Animal`, a `Piscina` veria um `Nadavel`, e é o mesmo `Cachorro`.
+- Um conflito de nomes de verdade: as duas interfaces tinham um método `id()` com tipos de retorno diferentes (`String` no catálogo, `ProviderId` na atividade). Uma classe não consegue implementar os dois, não compila. A solução foi renomear o do catálogo para `catalogName()` (o do `ActivityProvider` ficou, porque o `ActivityRegistry` e a conta ligada já usam o `ProviderId`). É o mesmo problema que a aula 9 mostra com `default` de mesmo nome em duas interfaces: a classe que junta os contratos precisa de nomes que não colidam.
+- Como se parece com o `Cachorro`: `Brincavel` e `Nadavel` não têm nada a ver um com o outro, e o `Cachorro` pode ser usado como um ou como outro (`Brincavel b = new Cachorro(...)`). Aqui, `CatalogProvider c = anilist;` e `ActivityProvider a = anilist;` apontam para o mesmo objeto. O `CatalogSearch` usa `c` sem saber que existe sincronização; o `SyncService` usa `a` sem saber que existe busca.
 - Perguntas:
-  - Por que Java não tem herança múltipla de classes? Para evitar ambiguidade (qual implementação herdar); interfaces são contratos e `default` em conflito exige que a classe resolva.
-  - Dá para mostrar `extends` e `implements` juntos no projeto? Sim: `LengthRule<T, P> implements ValidationRule<T, P>` (e, pela cadeia, `SlugLengthRule` é uma `LengthRule` e é uma `ValidationRule`).
+  - Uma classe pode estender e implementar ao mesmo tempo? Pode, nessa ordem: `extends` primeiro (uma classe só), `implements` depois (quantas quiser, separadas por vírgula). É o caso do `AniListProvider`, e da cadeia `SlugLengthRule extends LengthRule`, `LengthRule implements ValidationRule`.
+  - Por que Java não tem herança múltipla de classes? Para evitar ambiguidade (o "problema do diamante": se duas mães têm o mesmo método com corpo diferente, qual herdar?). Interface é só contrato (e `default` em conflito obriga a classe a escolher), então implementar várias é seguro. No AniList é exatamente isso: uma mãe só (`HttpCatalogProvider`, que traz código) e um contrato extra (`ActivityProvider`, que só pede métodos).
+  - Por que o AniList não estende `RssActivityProvider`, como o Letterboxd? Porque fala GraphQL em JSON, não RSS em XML, e uma classe só pode ter uma mãe. Estende a abstrata do catálogo porque é onde está o POST seguro, o cache e o tratamento de falha que ele reaproveita.
+  - Como a mesma instância está nos dois registros? Um `@Bean` só, do tipo da classe concreta; o Spring injeta o mesmo objeto em qualquer lista cujo tipo de elemento o objeto satisfaça (é um `CatalogProvider` e é um `ActivityProvider`). Teste: `AniListWiringTests`.
+  - O que acontece se as duas interfaces tiverem o mesmo método? Se a assinatura for igual, uma implementação serve para as duas. Se só o tipo de retorno mudar, não compila (foi o `id()`), e é preciso renomear um deles. Se forem dois `default` iguais, a classe precisa sobrescrever e escolher.
+  - Onde está o polimorfismo? `CatalogRegistry.forCategory` chama `serves` e `CatalogSearch` chama `search` em um `CatalogProvider`; `SyncService` chama `fetchActivity` em um `ActivityProvider`. Ninguém usa `instanceof` para saber se aquele objeto também é o outro.
+  - Como adiciono outra plataforma que seja catálogo e atividade? Outra classe `final ... extends HttpCatalogProvider implements ActivityProvider` (a Steam, por exemplo, poderia ser assim com o IGDB) e um `@Bean`; os registros, o `SyncService` e o `CatalogSearch` não mudam.
+- O que o `AniListProvider` faz (para explicar o conteúdo, além da forma):
+  - Catálogo: uma busca GraphQL (`Page(media(search, type, isAdult: false))`) e um detalhe (`Media(id, type)`), sempre `POST https://graphql.anilist.co`. O texto digitado vai só em `variables`, nunca dentro da query (que é constante), então não existe injeção de GraphQL. Título: `title.romaji`, com `title.english` se faltar (o romaji sempre existe e é o que o AniList mostra por padrão). Ano: `startDate.year`, ou `seasonYear`. Capa: só `https` em `s4.anilist.co`. Adulto: filtrado na busca e de novo na resposta (BR-08).
+  - Atividade: `checkAccountExists` faz uma requisição com `User(name)` mais uma sonda na lista (um usuário com lista privada responde 404, igual a um que não existe). `fetchActivity` faz duas requisições (`ANIME` e `MANGA`) com `MediaListCollection(userName, type, status_in: [COMPLETED, CURRENT, PAUSED, REPEATING])`, nunca `PLANNING` nem `DROPPED` (BR-10). `COMPLETED` e `REPEATING` viram `FINISHED`; `CURRENT` e `PAUSED` viram `IN_PROGRESS`. A obra é a mídia canônica do AniList, com a mesma chave da busca (`ANIME`, `ANILIST`, id), então adicionar à mão e sincronizar dão um item só (BR-04). Quando: a data de término (ou de início, para em andamento) se estiver completa, senão a última atualização; a data não muda a cada episódio, então sincronizar de novo não cria linhas novas. No máximo 500 entradas por sincronização (as mais recentes). Listas personalizadas (que repetem entradas) e entradas adultas são ignoradas.
+  - Limite do AniList: 90 requisições por minuto (30 quando degradado). Uma busca é 1 chamada, uma ligação é 1, uma sincronização são 2. Resposta 429 vira lista vazia (catálogo) ou `PROVIDER_UNAVAILABLE` (sincronização), com um aviso no log que não traz corpo nem URL.
 
 ### Polimorfismo de subtipo
 
@@ -226,7 +249,7 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
   - Por que a `DomainException` não conhece HTTP? O domínio não pode depender da camada de API (ArchUnit confere); o `ErrorKind` é a ponte neutra.
   - Onde um novo erro precisa ser registrado? Em lugar nenhum além da própria classe.
 
-### 1. ActivityProvider (base na issue #28; `LetterboxdProvider` na issue #30; os outros quatro nas issues #31 a #34)
+### 1. ActivityProvider (base na issue #28; `LetterboxdProvider` na issue #30; `AniListProvider` na issue #31; os outros três nas issues #32 a #34)
 
 ```
               interface ActivityProvider
@@ -234,14 +257,14 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
         +----------------+------------------+----------------+
         |                |                  |                |
  abstract RssActivityProvider   AniListProvider   SteamProvider   LastFmProvider
-     ^              ^              (#31)            (#32)          (#33)
-     |              |
-final LetterboxdProvider   final GoodreadsProvider
-        (feito, #30)             (#34)
+     ^              ^         (feito, #31)         (#32)          (#33)
+     |              |      extends HttpCatalogProvider
+final LetterboxdProvider   final GoodreadsProvider   + implements ActivityProvider
+        (feito, #30)             (#34)                (ver "Várias interfaces")
 ```
 
 - Arquivos: `media/domain/ActivityProvider.java` (interface), `media/domain/ActivityRegistry.java`, `media/domain/ProviderId.java` (enum), `media/domain/ActivityEntry.java`, `ActivitySnapshot.java`, `ActivityType.java`, `AccountCheck.java` (tipos que a interface usa), `UsernameProblem.java`, `UsernameLengthRule.java`, `UsernamePatternRule.java`, `UsernameRules.java` (regras de formato do username, reaproveitando a hierarquia 4); `media/infra/RssActivityProvider.java` (abstrata), `media/infra/ActivityConfig.java` (só liga no Spring, fora da hierarquia). Contas ligadas: `media/domain/LinkedAccount.java`, `LinkedAccountException.java`, `media/application/LinkedAccounts.java`, `media/api/LinkedAccountController.java`. Testes: `media/domain/ActivityProviderTest.java` (contrato, regras e registro, sem Spring), `media/infra/RssActivityProviderTest.java` (a abstrata em ação com uma subclasse mínima e um servidor local), `media/LinkedAccountsApiTests.java` (com um `FakeActivityProvider`).
-- O que existe hoje: a interface, a classe abstrata com o template method, o registro e o CRUD de contas ligadas. Plataformas sem provedor ainda respondem `PROVIDER_UNAVAILABLE` ao ligar; nos testes de API um `FakeActivityProvider` (com `@Order` mais alto que o bean de produção) faz o papel de provedor. O `LetterboxdProvider` (issue #30) já existe e o `GoodreadsProvider` chega na issue #34; ambos só preenchem os três passos abstratos.
+- O que existe hoje: a interface, a classe abstrata com o template method, o registro e o CRUD de contas ligadas. Plataformas sem provedor ainda (Steam, Last.fm e Goodreads) respondem `PROVIDER_UNAVAILABLE` ao ligar; nos testes de API um `FakeActivityProvider` (com `@Order` mais alto que o bean de produção) faz o papel de provedor. O `LetterboxdProvider` (issue #30) já existe e o `GoodreadsProvider` chega na issue #34; ambos só preenchem os três passos abstratos.
 - Roteiro para explicar (igual ao `Animal`/`Cachorro` da aula 9): (1) `ActivityProvider` é o contrato: `id`, `categories`, `usernameRules`, `checkAccountExists`, `fetchActivity` e dois métodos `default` (`normalizeUsername` apara o texto, `validateUsernameFormat` roda as regras); (2) `RssActivityProvider` é abstrata porque conhece o algoritmo (montar a URL com segurança, baixar com limites, ler o XML sem confiar nele, mapear os itens) mas não a plataforma; (3) `fetchActivity` e `checkAccountExists` são `final` e formam o **template method**; (4) a folha só diz **onde** fica o feed (`baseUri`, `feedPath`) e **como** um `<item>` vira um `ActivityEntry` (`toEntry`); (5) `ActivityRegistry` guarda a lista e acha o provedor perguntando `provider.id() == id` a cada um, como o loop do PetShop, sem `instanceof` nem `switch`; (6) `LinkedAccounts` e, depois, o `SyncService` só conhecem `ActivityProvider`.
 - Comparação com a aula 9: `ActivityProvider` é o `Animal` (o que todos fazem); `RssActivityProvider` é uma classe intermediária com código compartilhado (como se `Cachorro` e `Gato` herdassem de `Mamifero`); `LetterboxdProvider` e `GoodreadsProvider` são os `Cachorro` e `Gato`; o registro e o `SyncService` são o `PetShop`, que percorre `List<Animal>` e chama o mesmo método em todos.
 - Detalhes de Java para saber explicar: `default` na interface (o corpo vem da interface e a classe pode sobrescrever, como o `normalizeUsername` em minúsculas do Letterboxd); genéricos em `List<ValidationRule<String, UsernameProblem>>`; `protected abstract` nos passos da folha; `static` em `RssActivityProvider.parse` (não depende de estado); `final` nos métodos template para a folha não mudar a ordem dos passos; construtor `protected` com sobrecarga (um com timeout padrão, outro para o teste usar timeout curto).
@@ -270,7 +293,7 @@ final LetterboxdProvider   final GoodreadsProvider
   - Por que `FINISHED` também para rever? O enum e a restrição do banco têm quatro valores; o que distingue cada vez que o filme foi visto é a data na chave única. Um tipo `REWATCHED` exigiria migração sem ganho para o produto.
 - Perguntas prováveis:
   - Por que `RssActivityProvider` é abstrata e não só interface? Porque tem código e campos compartilhados (cliente HTTP, timeout, parser).
-  - Por que AniList, Steam e Last.fm implementam a interface direto? Não compartilham nada com RSS (falam JSON).
+  - Por que AniList, Steam e Last.fm não estendem `RssActivityProvider`? Não compartilham nada com RSS (falam JSON). O AniList é o caso especial: estende a abstrata do catálogo (`HttpCatalogProvider`) e implementa `ActivityProvider`; veja "Várias interfaces" acima.
   - O que é o template method aqui? `fetchActivity` fixa a ordem (validar o username, montar a URL, baixar, ler o XML, mapear os itens) e deixa três passos abstratos; a subclasse não consegue mudar a ordem porque o método é `final`.
   - O que muda se eu criar um novo provedor? Uma classe nova e um `@Bean`; o registro, o `LinkedAccounts` e o `SyncService` não mudam.
   - Por que `checkAccountExists` devolve um enum (`AccountCheck`) e não lança exceção? Plataforma fora do ar é um resultado esperado, não um erro de programação; o chamador decide (ligar a conta responde 503, o sync registra a falha daquela conta e segue com as outras).
@@ -287,12 +310,15 @@ final LetterboxdProvider   final GoodreadsProvider
           abstract HttpCatalogProvider
  (template method: cache, timeout, erro)
                      ^
-             final TmdbCatalog
-   (depois: AniList, Open Library, IGDB, Deezer)
+   +---------+---------+
+   |                   |
+ final TmdbCatalog  final AniListProvider
+                    (+ implements ActivityProvider)
+   (AniListProvider também está aqui; depois: Open Library, IGDB, Deezer)
 ```
 
-- Arquivos: `media/domain/CatalogProvider.java` (interface), `media/domain/CatalogRegistry.java`, `media/domain/CatalogEntry.java`, `shared/domain/MediaCategory.java`; `media/infra/HttpCatalogProvider.java` (abstrata), `media/infra/TmdbCatalog.java` (final); `media/infra/CatalogConfig.java` só liga tudo no Spring, fora da hierarquia. Testes: `media/infra/HttpCatalogProviderTest.java` (a classe abstrata em ação, com uma subclasse mínima), `media/infra/TmdbCatalogTest.java`, `media/domain/CatalogDomainTest.java` (registro), `media/CatalogApiTests.java`.
-- Roteiro para explicar: (1) a interface `CatalogProvider` diz o que todo catálogo faz: `id`, `serves(categoria)`, `isAvailable`, `search`, `fetch`; (2) `HttpCatalogProvider` é abstrata porque sabe o algoritmo mas não a plataforma; (3) `search` e `fetch` são `final` e formam o **template method**: checa disponibilidade, monta a URL (passo abstrato), chama com timeout de 5 s, usa cache de 10 min, converte qualquer falha em lista vazia mais um aviso no log, e entrega o corpo ao passo abstrato de interpretação; (4) `TmdbCatalog` (`final`) só preenche os passos: `searchUri`, `fetchUri`, `parseSearch`, `parseFetch`, e o gancho opcional `authorize` (coloca o token no cabeçalho); (5) `CatalogRegistry` recebe a lista, pergunta a cada um `serves(categoria)` e devolve o primeiro, como o loop do PetShop, sem `instanceof` nem `switch`.
+- Arquivos: `media/domain/CatalogProvider.java` (interface), `media/domain/CatalogRegistry.java`, `media/domain/CatalogEntry.java`, `shared/domain/MediaCategory.java`; `media/infra/HttpCatalogProvider.java` (abstrata), `media/infra/TmdbCatalog.java` (final), `media/infra/AniListProvider.java` (final, issue #31); `media/infra/CatalogConfig.java` e `media/infra/AniListConfig.java` só liga tudo no Spring, fora da hierarquia. Testes: `media/infra/HttpCatalogProviderTest.java` (a classe abstrata em ação, com uma subclasse mínima), `media/infra/TmdbCatalogTest.java`, `media/domain/CatalogDomainTest.java` (registro), `media/CatalogApiTests.java`.
+- Roteiro para explicar: (1) a interface `CatalogProvider` diz o que todo catálogo faz: `catalogName`, `serves(categoria)`, `isAvailable`, `search`, `fetch`; (2) `HttpCatalogProvider` é abstrata porque sabe o algoritmo mas não a plataforma; (3) `search` e `fetch` são `final` e formam o **template method**: checa disponibilidade, monta a URL (passo abstrato), chama com timeout de 5 s, usa cache de 10 min, converte qualquer falha em lista vazia mais um aviso no log, e entrega o corpo ao passo abstrato de interpretação; (4) `TmdbCatalog` (`final`) só preenche os passos: `searchUri`, `fetchUri`, `parseSearch`, `parseFetch`, e os ganchos opcionais `authorize` (coloca o token no cabeçalho) e `searchBody`/`fetchBody` (corpo JSON para quem usa POST, como o AniList; o padrão `null` mantém o GET); (5) `CatalogRegistry` recebe a lista, pergunta a cada um `serves(categoria)` e devolve o primeiro, como o loop do PetShop, sem `instanceof` nem `switch`.
 - Como funciona sem chave: sem `TMDB_API_KEY`, `isAvailable()` devolve `false`; a busca devolve `{available:false, results:[]}` e nenhuma requisição é feita.
 - Por que classe abstrata **e** interface? A interface é o contrato que o resto do código usa (`CatalogRegistry` e `CatalogSearch` só conhecem `CatalogProvider`); a classe abstrata guarda o código e o estado que todos os catálogos HTTP repetiriam (cliente, relógio, cache, tratamento de erro). Um catálogo que não fosse HTTP poderia implementar só a interface.
 - Perguntas:
@@ -300,7 +326,8 @@ final LetterboxdProvider   final GoodreadsProvider
   - Qual a diferença entre método abstrato e gancho (hook)? Abstrato é obrigatório (a subclasse não compila sem ele); `authorize` tem corpo vazio por padrão e só quem precisa de chave sobrescreve.
   - Por que `TmdbCatalog` é `final`? Nenhuma outra classe deve herdar dele; cada plataforma é uma folha.
   - Por que o erro vira lista vazia e não exceção? Um provedor fora do ar não pode derrubar a tela nem os outros provedores; o aviso no log traz só o nome do provedor e o tipo de falha, nunca a URL nem o token.
-  - Como adiciono o AniList? Uma classe nova `AniListCatalog extends HttpCatalogProvider` e um `@Bean` em `CatalogConfig`; nada mais muda.
+  - Como adiciono outro catálogo (Open Library, por exemplo)? Uma classe nova `final ... extends HttpCatalogProvider` e um `@Bean`; nada mais muda. O AniList já foi feito assim, com um detalhe: a mesma classe também implementa `ActivityProvider`.
+  - Por que o método se chama `catalogName()` e não `id()`? Porque o `AniListProvider` implementa as duas interfaces, e o `id()` do `ActivityProvider` devolve `ProviderId`; dois métodos com o mesmo nome e retornos diferentes não compilam na mesma classe.
 
 ### 3. Plan (feito na issue #24)
 
