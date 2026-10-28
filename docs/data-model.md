@@ -30,6 +30,7 @@ Notes
 - Free plan limits derive from `entitlements` (pack owned → 12, else 4). They apply to `highlights` only; `collection_items` is unlimited.
 - The public listing (S18) reads `collection_items` where `hidden = false`, paginated, with an index on (profile_id, category, last_activity_at).
 - `synced_entries` keeps the raw activity (dates, "assistido em"); sync upserts `collection_items` from it following BR-10.
+- `collection_items` is written only through `ProfileCollection` (profile module); it points to `media_items` by id and never copies metadata. `note` is at most 140 characters of plain text. `collection_item_sources.linked_account_id` has no foreign key yet; it is added with `linked_accounts` in the sync epic. Primary key of the sources table is (collection_item_id, source).
 - Account deletion cascades to profile, highlights, linked accounts, entries; `orders` rows are anonymized (user_id nulled).
 - Deleting a profile doesn't delete shared `media_items` (they are a global cache).
 - Entities: 19 tables plus the 2 Spring Session tables (requirement from the professor: ≥ 3).

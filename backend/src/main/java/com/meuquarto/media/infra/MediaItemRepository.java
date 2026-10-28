@@ -1,8 +1,10 @@
 package com.meuquarto.media.infra;
 
-import com.meuquarto.media.domain.MediaCategory;
+import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.media.domain.MediaItem;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,4 +31,10 @@ public interface MediaItemRepository extends JpaRepository<MediaItem, Long> {
     void upsert(@Param("category") String category, @Param("provider") String provider,
             @Param("externalId") String externalId, @Param("title") String title, @Param("year") Integer year,
             @Param("imageUrl") String imageUrl, @Param("adult") boolean adult, @Param("now") Instant now);
+
+    @Query("select m.id from MediaItem m where m.id in :ids order by lower(m.title), m.id")
+    List<Long> idsByTitle(@Param("ids") Collection<Long> ids);
+
+    @Query("select m.id from MediaItem m where m.id in :ids order by m.year desc nulls last, lower(m.title), m.id")
+    List<Long> idsByYearDesc(@Param("ids") Collection<Long> ids);
 }

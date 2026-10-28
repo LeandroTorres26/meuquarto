@@ -11,6 +11,7 @@ public record RateLimitProperties(
         @DefaultValue Rule login,
         @DefaultValue Rule slugAvailability,
         @DefaultValue Rule catalogSearch,
+        @DefaultValue Rule collectionAdd,
         @DefaultValue Rule anonymous) {
 
     public RateLimitProperties {
@@ -18,6 +19,7 @@ public record RateLimitProperties(
         login = login.orElse(30, Duration.ofMinutes(15));
         slugAvailability = slugAvailability.orElse(60, Duration.ofMinutes(1));
         catalogSearch = catalogSearch.orElse(60, Duration.ofMinutes(1));
+        collectionAdd = collectionAdd.orElse(30, Duration.ofMinutes(1));
         anonymous = anonymous.orElse(300, Duration.ofMinutes(1));
     }
 

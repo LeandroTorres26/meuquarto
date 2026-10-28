@@ -21,6 +21,8 @@ class DomainErrorsTest {
         assertThat(DomainErrors.statusOf(ErrorKind.INVALID)).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(DomainErrors.statusOf(ErrorKind.CONFLICT)).isEqualTo(HttpStatus.CONFLICT);
         assertThat(DomainErrors.statusOf(ErrorKind.TOO_MANY)).isEqualTo(HttpStatus.TOO_MANY_REQUESTS);
+        assertThat(DomainErrors.statusOf(ErrorKind.NOT_FOUND)).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(DomainErrors.statusOf(ErrorKind.UNAVAILABLE)).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE);
     }
 
     @Test

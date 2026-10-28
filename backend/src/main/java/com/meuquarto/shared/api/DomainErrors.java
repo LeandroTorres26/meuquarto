@@ -31,6 +31,8 @@ class DomainErrors {
             case INVALID -> HttpStatus.BAD_REQUEST;
             case CONFLICT -> HttpStatus.CONFLICT;
             case TOO_MANY -> HttpStatus.TOO_MANY_REQUESTS;
+            case NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case UNAVAILABLE -> HttpStatus.SERVICE_UNAVAILABLE;
         };
     }
 }
