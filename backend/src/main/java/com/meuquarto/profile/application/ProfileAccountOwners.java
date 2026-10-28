@@ -3,6 +3,8 @@ package com.meuquarto.profile.application;
 import com.meuquarto.media.application.AccountOwners;
 import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.infra.ProfileRepository;
+import com.meuquarto.shared.domain.MediaCategory;
+import java.time.Instant;
 import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +33,11 @@ class ProfileAccountOwners implements AccountOwners {
     @Override
     public void releaseCollectionItems(long profileId, long linkedAccountId) {
         collection.releaseLinkedAccount(profileId, linkedAccountId);
+    }
+
+    @Override
+    public void recordSyncedItem(long profileId, long linkedAccountId, String provider, MediaCategory category,
+            long mediaItemId, Instant occurredAt) {
+        collection.recordSyncedItem(profileId, category, mediaItemId, provider, linkedAccountId, occurredAt);
     }
 }

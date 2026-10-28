@@ -1,5 +1,7 @@
 package com.meuquarto.media.application;
 
+import com.meuquarto.shared.domain.MediaCategory;
+import java.time.Instant;
 import java.util.Optional;
 
 /**
@@ -17,4 +19,14 @@ public interface AccountOwners {
      * from this account leave the collection, except highlighted or noted ones, which become manual.
      */
     void releaseCollectionItems(long profileId, long linkedAccountId);
+
+    /**
+     * BR-10, called by the sync once per activity it applies: the work enters the owner's collection
+     * visible, or, if it is already there, only gets the source and the activity time. A hidden item
+     * stays hidden (FR-09). Idempotent: the same call twice leaves the same collection.
+     *
+     * @param provider the platform name, stored as the item's source
+     */
+    void recordSyncedItem(long profileId, long linkedAccountId, String provider, MediaCategory category,
+            long mediaItemId, Instant occurredAt);
 }

@@ -42,6 +42,15 @@ public class LinkedAccount {
     @Column(name = "last_error", length = 200)
     private String lastError;
 
+    @Column(name = "last_sync_started_at")
+    private Instant lastSyncStartedAt;
+
+    @Column(name = "consecutive_failures", nullable = false)
+    private int consecutiveFailures;
+
+    @Column(name = "next_attempt_at")
+    private Instant nextAttemptAt;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -91,6 +100,47 @@ public class LinkedAccount {
 
     public String lastError() {
         return lastError;
+    }
+
+    /** When the last sync began (manual or scheduled); the BR-03 cooldown counts from here. */
+    public Instant lastSyncStartedAt() {
+        return lastSyncStartedAt;
+    }
+
+    public int consecutiveFailures() {
+        return consecutiveFailures;
+    }
+
+    /** The scheduler leaves the account alone until this moment (backoff); null when it is not backing off. */
+    public Instant nextAttemptAt() {
+        return nextAttemptAt;
+    }
+
+    /** BR-03: when the owner can sync by hand again; null if it was never synced. */
+    public Instant nextManualSyncAt() {
+        return SyncPolicy.nextManualSyncAt(lastSyncStartedAt);
+    }
+
+    /** A run worked: the account is healthy again and the failure streak ends. */
+    public void syncSucceeded(Instant now) {
+        lastSyncedAt = now;
+        status = LinkStatus.ACTIVE;
+        lastError = null;
+        consecutiveFailures = 0;
+        nextAttemptAt = null;
+    }
+
+    /** A run failed: only our error code is kept, and the next scheduled attempt moves back (ADR 0007). */
+    public void syncFailed(String errorCode, Instant now) {
+        status = LinkStatus.ERROR;
+        lastError = errorCode;
+        consecutiveFailures++;
+        nextAttemptAt = now.plus(SyncPolicy.backoff(consecutiveFailures));
+    }
+
+    /** A run had nothing to do (no provider): try again after the normal stale period, without marking an error. */
+    public void syncSkipped(Instant now) {
+        nextAttemptAt = now.plus(SyncPolicy.STALE_AFTER);
     }
 
     public Instant createdAt() {

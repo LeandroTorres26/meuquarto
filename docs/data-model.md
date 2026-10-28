@@ -14,10 +14,10 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 | `collection_item_sources` | collection_item_id, source (MANUAL / provider), linked_account_id (nullable), first_seen_at | why an item is in the collection; drives unlink (FR-16) and the S17 origin |
 | `highlight_lists` | id, profile_id, category (nullable = "Favoritos de tudo") | unique (profile_id, category) `NULLS NOT DISTINCT`, so there is one favorites list per profile; created on first use |
 | `highlights` | id, list_id, collection_item_id, position | the subset shown on the profile home; unique (list_id, collection_item_id); count limited by BR-02 (a domain rule, from the user's `Plan`); positions are 0..n-1; deleting the collection item cascades, hiding removes it in the domain |
-| `linked_accounts` | id, profile_id, provider (LETTERBOXD, ANILIST, STEAM, LASTFM, GOODREADS), username, status (ACTIVE, ERROR), last_synced_at, last_error, created_at | unique (profile_id, provider); profile deletion cascades; no token is stored (ADR 0004) |
-| `synced_entries` | id, linked_account_id, media_item_id, activity_type, occurred_at | recent activity from providers |
+| `linked_accounts` | id, profile_id, provider (LETTERBOXD, ANILIST, STEAM, LASTFM, GOODREADS), username, status (ACTIVE, ERROR), last_synced_at, last_error, last_sync_started_at, consecutive_failures, next_attempt_at, created_at | unique (profile_id, provider); profile deletion cascades; no token is stored (ADR 0004). `last_sync_started_at` is what the BR-03 cooldown counts from; `consecutive_failures` and `next_attempt_at` are the backoff (V9) |
+| `synced_entries` | id, linked_account_id, media_item_id, activity_type (FINISHED, IN_PROGRESS, OWNED, LOVED), occurred_at, created_at | recent activity from providers; unique (linked_account_id, media_item_id, activity_type, occurred_at) makes a repeated sync insert nothing; cascades with the account (V9) |
 | `now_entries` | id, profile_id, category, media_item_id, source (AUTO/MANUAL), hidden | one per (profile, category) (BR-06) |
-| `sync_runs` | id, linked_account_id, started_at, finished_at, status, items_count, error | observability |
+| `sync_runs` | id, linked_account_id, started_at, finished_at, status (SUCCESS, FAILED, SKIPPED), items_count, error | observability; `error` is one of our codes (e.g. `PROVIDER_UNAVAILABLE`, `SYNC_FAILED`), never provider text; cascades with the account (V9) |
 | `products` | id, sku, name, type (THEME/PACK), price_cents, active, stripe_price_ref | seeded by Flyway |
 | `themes` | id, product_id (nullable = free), name, tokens_json | `profiles.theme_id` |
 | `orders` | id, user_id, product_id, amount_cents, status, stripe_session_id, paid_at | financial record kept on account deletion, anonymized |
@@ -29,7 +29,7 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 Notes
 - Free plan limits derive from `entitlements` (pack owned → 12, else 4). They apply to `highlights` only; `collection_items` is unlimited.
 - The public listing (S18) reads `collection_items` where `hidden = false`, paginated, with an index on (profile_id, category, last_activity_at).
-- `synced_entries` keeps the raw activity (dates, "assistido em"); sync upserts `collection_items` from it following BR-10.
+- `synced_entries` keeps the raw activity (dates, "assistido em"); sync upserts `collection_items` from it following BR-10 (through the `AccountOwners` port, ADR 0020). The collection item's `last_activity_at` only moves forward to the activity time, so re-syncing the same activity changes nothing.
 - `collection_items` is written only through `ProfileCollection` (profile module); it points to `media_items` by id and never copies metadata. `note` is at most 140 characters of plain text. `collection_item_sources.linked_account_id` references `linked_accounts` (`ON DELETE SET NULL`, a safety net: unlinking releases the items first, FR-16; V8). Primary key of the sources table is (collection_item_id, source).
 - Account deletion cascades to profile, highlights, linked accounts, entries; `orders` rows are anonymized (user_id nulled).
 - Deleting a profile doesn't delete shared `media_items` (they are a global cache).

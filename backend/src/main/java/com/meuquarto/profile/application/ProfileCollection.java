@@ -84,22 +84,31 @@ public class ProfileCollection {
         });
     }
 
-    /**
-     * What a sync calls for each work it finds (BR-10): a new item is created visible; an existing one
-     * only gets the source and the activity time. A hidden item stays hidden (FR-09).
-     */
+    /** Same as the overload below, with "now" as the activity time. */
     @Transactional
     public void recordSyncedItem(long profileId, MediaCategory category, long mediaItemId, String provider,
             Long linkedAccountId) {
+        recordSyncedItem(profileId, category, mediaItemId, provider, linkedAccountId, clock.instant());
+    }
+
+    /**
+     * What a sync calls for each work it finds (BR-10): a new item is created visible; an existing one
+     * only gets the source and the activity time (the later of the two, so repeating a run changes
+     * nothing). A hidden item stays hidden (FR-09).
+     */
+    @Transactional
+    public void recordSyncedItem(long profileId, MediaCategory category, long mediaItemId, String provider,
+            Long linkedAccountId, Instant occurredAt) {
         Profile profile = profiles.lockById(profileId).orElseThrow(() -> new CollectionException(Problem.ITEM_NOT_FOUND));
         publicProfiles.evictAfterCommit(profile);
         Instant now = clock.instant();
         Optional<CollectionItem> existing = items.findByProfileIdAndMediaItemId(profileId, mediaItemId);
         if (existing.isPresent()) {
-            existing.get().seenBySync(provider, linkedAccountId, now);
+            existing.get().seenBySync(provider, linkedAccountId, occurredAt, now);
             items.saveAndFlush(existing.get());
         } else {
-            items.saveAndFlush(CollectionItem.foundBySync(profileId, mediaItemId, category, provider, linkedAccountId, now));
+            items.saveAndFlush(CollectionItem.foundBySync(profileId, mediaItemId, category, provider, linkedAccountId,
+                    occurredAt, now));
         }
     }
 

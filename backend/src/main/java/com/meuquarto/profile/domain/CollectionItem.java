@@ -65,11 +65,16 @@ public class CollectionItem {
     }
 
     private CollectionItem(long profileId, long mediaItemId, MediaCategory category, ItemSource first, Instant now) {
+        this(profileId, mediaItemId, category, first, now, now);
+    }
+
+    private CollectionItem(long profileId, long mediaItemId, MediaCategory category, ItemSource first, Instant now,
+            Instant lastActivityAt) {
         this.profileId = profileId;
         this.mediaItemId = mediaItemId;
         this.category = category;
         this.addedAt = now;
-        this.lastActivityAt = now;
+        this.lastActivityAt = lastActivityAt;
         this.sources.add(first);
     }
 
@@ -81,7 +86,14 @@ public class CollectionItem {
     /** A new item brought by a sync. It starts visible; only the owner hides things. */
     public static CollectionItem foundBySync(long profileId, long mediaItemId, MediaCategory category,
             String provider, Long linkedAccountId, Instant now) {
-        return new CollectionItem(profileId, mediaItemId, category, ItemSource.synced(provider, linkedAccountId, now), now);
+        return foundBySync(profileId, mediaItemId, category, provider, linkedAccountId, now, now);
+    }
+
+    /** Same, with the time the user did it on the platform: the item is "recent" from then, not from the sync. */
+    public static CollectionItem foundBySync(long profileId, long mediaItemId, MediaCategory category,
+            String provider, Long linkedAccountId, Instant occurredAt, Instant now) {
+        return new CollectionItem(profileId, mediaItemId, category, ItemSource.synced(provider, linkedAccountId, now),
+                now, occurredAt);
     }
 
     /**
@@ -99,8 +111,18 @@ public class CollectionItem {
      * {@code hidden}: an item the owner hid stays hidden after every later sync.
      */
     public void seenBySync(String provider, Long linkedAccountId, Instant now) {
+        seenBySync(provider, linkedAccountId, now, now);
+    }
+
+    /**
+     * Same, with the time of the activity on the platform. The item's last activity only moves forward,
+     * so seeing the same old activity again changes nothing.
+     */
+    public void seenBySync(String provider, Long linkedAccountId, Instant occurredAt, Instant now) {
         addSourceIfMissing(ItemSource.synced(provider, linkedAccountId, now));
-        lastActivityAt = now;
+        if (occurredAt.isAfter(lastActivityAt)) {
+            lastActivityAt = occurredAt;
+        }
     }
 
     /**
