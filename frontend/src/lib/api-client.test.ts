@@ -1,5 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApiError, checkSlug, deleteRequest, postJson, type ClientDeps } from "./api-client";
+import {
+  addToCollection,
+  ApiError,
+  checkSlug,
+  deleteRequest,
+  patchJson,
+  postJson,
+  putJson,
+  type ClientDeps,
+} from "./api-client";
 
 const json = (status: number, body?: unknown, headers: Record<string, string> = {}) =>
   new Response(body === undefined ? null : JSON.stringify(body), { status, headers });
@@ -94,5 +103,31 @@ describe("deleteRequest", () => {
     await deleteRequest("/api/linked-accounts/7", deps);
     expect(calls[0].init?.method).toBe("DELETE");
     expect(headerOf(calls[0], "X-XSRF-TOKEN")).toBe("cached");
+  });
+});
+
+describe("patchJson and putJson", () => {
+  it("send the method, the JSON body and the CSRF header", async () => {
+    const { deps, calls } = setup([json(200, { id: 1 }), json(200, { items: [] })], {
+      "XSRF-TOKEN": "t",
+    });
+    await patchJson("/api/collection/1", { note: "x" }, deps);
+    await putJson("/api/highlights/order", { category: null, ids: [2, 1] }, deps);
+    expect(calls[0].init?.method).toBe("PATCH");
+    expect(calls[0].init?.body).toBe(JSON.stringify({ note: "x" }));
+    expect(calls[1].init?.method).toBe("PUT");
+    expect(headerOf(calls[1], "X-XSRF-TOKEN")).toBe("t");
+  });
+});
+
+describe("addToCollection", () => {
+  it("tells a new item (201) from one that was already there (200)", async () => {
+    const { deps } = setup([json(201, { id: 1 }), json(200, { id: 1 })], { "XSRF-TOKEN": "t" });
+    expect((await addToCollection({ category: "ANIME", externalId: "1" }, deps)).created).toBe(
+      true,
+    );
+    expect((await addToCollection({ category: "ANIME", externalId: "1" }, deps)).created).toBe(
+      false,
+    );
   });
 });
