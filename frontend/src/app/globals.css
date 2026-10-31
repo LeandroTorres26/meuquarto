@@ -28,3 +28,8 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Profile header without the polaroid (the API has no avatar yet): a single column. */
+.mq-profile--solo {
+  grid-template-columns: minmax(0, 1fr);
+}
