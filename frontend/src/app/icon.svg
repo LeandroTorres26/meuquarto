@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="meuquarto">
+  <polygon points="32,6 32,34 8,46 8,18" fill="hsl(14, 100%, 62%)"/>
+  <polygon points="32,6 56,18 56,46 32,34" fill="hsl(14, 100%, 44%)"/>
+  <polygon points="32,34 56,46 32,58 8,46" fill="hsl(36, 87%, 62%)"/>
+  <g transform="translate(20 26) matrix(1 -0.5 0 1 0 0)">
+    <rect x="-9" y="-10" width="7" height="7.5" fill="hsl(36, 87%, 62%)"/>
+    <rect x="0" y="-10" width="7" height="7.5" fill="hsl(225, 41%, 18%)"/>
+    <rect x="-9" y="-0.5" width="7" height="7.5" fill="hsl(225, 41%, 18%)"/>
+    <rect x="0" y="-0.5" width="7" height="7.5" fill="hsl(225, 41%, 18%)"/>
+  </g>
+</svg>

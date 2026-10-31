@@ -11,6 +11,7 @@ import {
   fetchHighlights,
 } from "@/lib/collection-server";
 import { getSession } from "@/lib/session";
+import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = { title: "Destaques e coleção, painel do meuquarto" };
 
@@ -68,9 +69,7 @@ function DestaquesShell({ children }: { children: ReactNode }) {
     <div className="page">
       <header className="topbar">
         <div className="wrap topbar__in">
-          <Link href="/" className="wordmark">
-            meuquarto
-          </Link>
+          <Logo href="/" />
           <Suspense fallback={null}>
             <ProfileLink />
           </Suspense>

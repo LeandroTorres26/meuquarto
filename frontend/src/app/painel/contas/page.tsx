@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { AlertBox } from "@/components/AlertBox";
@@ -10,6 +9,7 @@ import { PanelNav } from "@/components/PanelNav";
 import { comingSoonProviders, linkableProviders, nowMs } from "@/lib/linked-accounts";
 import { fetchLinkedAccounts } from "@/lib/linked-accounts-server";
 import { getSession } from "@/lib/session";
+import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = { title: "Contas vinculadas, painel do meuquarto" };
 
@@ -98,9 +98,7 @@ export default function LinkedAccountsPage() {
     <div className="page">
       <header className="topbar">
         <div className="wrap topbar__in">
-          <Link href="/" className="wordmark">
-            meuquarto
-          </Link>
+          <Logo href="/" />
         </div>
       </header>
       <div className="wrap pshell">

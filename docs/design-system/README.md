@@ -67,7 +67,15 @@ Icons are Lucide (ISC license), 24px grid, 2px stroke, `currentColor`, shown at 
 
 ## Marks
 
-No logo exists yet. Set the wordmark `meuquarto` in `display-xl`, uppercase, in `ink`. Do not draw a symbol. Provider attribution (TMDB and others) goes in the profile footer in `caption` and `ink-muted`.
+The symbol is the corner of a room seen from inside: two walls and the floor, top open, lines rising 1 for every 2 like the isometric room. The light wall has a four-pane window and only the top-left pane is lit. It reads as a room with the light on and as "um quarto" (a quarter). Files, in `assets/Logo/`: `meuquarto-symbol.svg` (color) and `meuquarto-symbol-mono.svg` (one color, `currentColor`: planes split by thin gaps, the three dark panes cut out, the lit pane filled).
+
+- Colors are fixed and do not follow the theme: light wall `hsl(14 100% 62%)`, dark wall `hsl(14 100% 44%)`, floor and lit pane `hsl(36 87% 62%)`, unlit panes `hsl(225 41% 18%)`. On a profile with a premium theme, use the one-color version in `ink`.
+- Lockup: the symbol at about 1.4 times the wordmark's font size, then the wordmark `meuquarto` in Big Shoulders Display 900, uppercase, `ink`. The header keeps the current 24px wordmark with a 32px symbol, `space-2` (8px) apart.
+- Clear space: a quarter of the symbol's height on every side. Minimum size: symbol 16px, lockup 120px wide.
+- Favicon set (Next app router files in `frontend/src/app`): `favicon.ico` (16, 32 and 48px), `icon.svg`, `apple-icon.png` (180px, the symbol on noite `surface-100`).
+- Do not light more than one pane, close the cube or add a roof, stretch it, recolor it with theme colors, or add shadows or gradients.
+
+Provider attribution (TMDB and others) goes in the profile footer in `caption` and `ink-muted`.
 
 ## Components
 

@@ -81,6 +81,8 @@ html,body{margin:0;background:var(--surface-100)}
 .topbar{border-bottom:1px solid var(--border)}
 .topbar__in{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);min-height:64px}
 .wordmark{font:900 24px/24px var(--font-display);letter-spacing:.02em;text-transform:uppercase;color:var(--ink) !important;text-decoration:none}
+.lockup{display:inline-flex;align-items:center;gap:var(--space-2)}
+.lockup__mark{flex:none;display:block}
 .footer{border-top:1px solid var(--border);padding-block:var(--l3) var(--l4)}
 .footer__in{display:grid;gap:var(--l2)}
 @media (min-width:1024px){.footer__in{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap)}.footer__in > :first-child{grid-column:span 4}.footer__in > :last-child{grid-column:7 / span 6}}
