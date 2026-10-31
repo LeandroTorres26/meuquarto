@@ -174,7 +174,6 @@ export function CollectionRow({
           autoComplete="off"
           aria-describedby={noteHint}
           aria-invalid={noteState?.kind === "error" || length > NOTE_MAX ? true : undefined}
-          disabled={savingNote}
           onChange={(event) => {
             setDraft(event.target.value);
             setNoteState(null);

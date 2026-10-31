@@ -100,9 +100,9 @@ export function DestaquesScreen({
   /** Guards against a second mutation; a ref because Desfazer buttons keep the closure of their toast. */
   const busyRef = useRef(false);
   /** What the list shows now, for callbacks created earlier (Desfazer) that must not reload an old view. */
-  const latest = useRef({ category: listCat, sort, includeHidden });
+  const latest = useRef({ category: listCat, sort, includeHidden, page: list.page });
   useEffect(() => {
-    latest.current = { category: listCat, sort, includeHidden };
+    latest.current = { category: listCat, sort, includeHidden, page: list.page };
   });
 
   const limit = overview?.limit ?? 4;
@@ -148,27 +148,36 @@ export function DestaquesScreen({
     }
   }
 
+  /**
+   * Loads the collection: the first page ("first"), the next one ("append"), or every page held now
+   * ("loaded", after something changed: offsets shift when a work leaves, so the pages are read again).
+   */
   async function loadList(
     next: { category: Category; sort: SortKey; includeHidden: boolean },
-    append = false,
+    mode: "first" | "append" | "loaded" = "first",
   ): Promise<void> {
     const mine = ++seq.current;
-    const page = append ? list.page + 1 : 0;
+    const from = mode === "append" ? latest.current.page + 1 : 0;
+    const to = mode === "loaded" ? latest.current.page : from;
     setList((current) => ({ ...current, status: "loading" }));
     try {
-      const result = await getCollection(collectionQuery({ ...next, page }));
-      if (mine !== seq.current) return; // a newer request owns the list now
+      const fetched: CollectionPage[] = [];
+      for (let page = from; page <= to; page++) {
+        fetched.push(await getCollection(collectionQuery({ ...next, page })));
+        if (mine !== seq.current) return; // a newer request owns the list now
+      }
+      const last = fetched[fetched.length - 1];
       setList((current) => ({
-        items: append ? [...current.items, ...result.items] : result.items,
-        total: result.total,
-        page: result.page,
+        items: [...(mode === "append" ? current.items : []), ...fetched.flatMap((p) => p.items)],
+        total: last.total,
+        page: last.page,
         status: "ready",
       }));
     } catch {
       if (mine === seq.current) setList((current) => ({ ...current, status: "error" }));
     }
   }
-  const reload = () => loadList(latest.current);
+  const reload = () => loadList(latest.current, "loaded");
 
   /** Runs a mutation with the controls disabled; errors become the page alert, and stale lists reload. */
   async function act(work: () => Promise<void>, focus?: string): Promise<void> {
@@ -312,21 +321,13 @@ export function DestaquesScreen({
   function setHidden(item: CollectionItem, hidden: boolean) {
     void act(async () => {
       await updateCollectionItem(item.id, { hidden });
-      if (!hidden && !latest.current.includeHidden) {
-        await reload(); // it was out of the list: bring it back where the sort puts it
+      if (latest.current.includeHidden) {
+        setList((current) => ({
+          ...current,
+          items: current.items.map((i) => (i.id === item.id ? { ...i, hidden } : i)),
+        }));
       } else {
-        setList((current) =>
-          latest.current.includeHidden
-            ? {
-                ...current,
-                items: current.items.map((i) => (i.id === item.id ? { ...i, hidden } : i)),
-              }
-            : {
-                ...current,
-                items: current.items.filter((i) => i.id !== item.id),
-                total: Math.max(0, current.total - 1),
-              },
-        );
+        await reload(); // the work left (or came back to) the list: read the pages again
       }
       await refreshOverview();
       toast(
@@ -348,11 +349,7 @@ export function DestaquesScreen({
   function remove(item: CollectionItem) {
     void act(async () => {
       await removeCollectionItem(item.id);
-      setList((current) => ({
-        ...current,
-        items: current.items.filter((i) => i.id !== item.id),
-        total: Math.max(0, current.total - 1),
-      }));
+      await reload();
       await refreshOverview();
       toast(
         <>
@@ -602,7 +599,7 @@ export function DestaquesScreen({
                 list.status === "loading" ? " is-loading" : ""
               }`}
               disabled={list.status === "loading"}
-              onClick={() => void loadList({ category: listCat, sort, includeHidden }, true)}
+              onClick={() => void loadList({ category: listCat, sort, includeHidden }, "append")}
             >
               Carregar mais
               {list.status === "loading" && <span className="mq-spinner" aria-hidden="true" />}

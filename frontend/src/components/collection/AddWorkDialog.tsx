@@ -60,6 +60,7 @@ export function AddWorkDialog({
     if (open && !element.open) {
       opener.current = document.activeElement as HTMLElement | null;
       element.showModal();
+      element.querySelector<HTMLElement>("[data-autofocus]")?.focus(); // the search field, not the close button
     } else if (!open && element.open) {
       element.close();
     }
@@ -193,7 +194,7 @@ function AddWorkPanel({
             placeholder={`Buscar ${CATEGORY_META[category].noun}`}
             autoComplete="off"
             maxLength={100}
-            autoFocus
+            data-autofocus
             aria-describedby={`${id}-help`}
             onChange={(event) => setQuery(event.target.value)}
           />
