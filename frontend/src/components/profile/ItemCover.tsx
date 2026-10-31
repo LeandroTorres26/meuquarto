@@ -12,6 +12,8 @@ type Props = {
   showTag?: boolean;
   /** Show the owner's note as a handwritten slip (cards only: the dialog prints it on paper). */
   showSlip?: boolean;
+  /** Same-origin cover from our own code (the landing page art). Never user or provider data. */
+  localSrc?: string;
 };
 
 /**
@@ -25,9 +27,10 @@ export function ItemCover({
   eager = false,
   showTag = false,
   showSlip = false,
+  localSrc,
 }: Props) {
   const meta = CATEGORY_META[item.category];
-  const src = safeImageUrl(item.imageUrl);
+  const src = localSrc ?? safeImageUrl(item.imageUrl);
   return (
     <figure className="mq-item__cover">
       {meta.shape === "dvd" ? <span className="mq-spine" aria-hidden="true" /> : null}
