@@ -36,7 +36,15 @@ public class PublicProfileCache {
      * Evicting before the commit would let a reader cache the old data again.
      */
     void evictAfterCommit(Profile profile) {
-        String slug = profile.slug();
+        evictAfterCommit(profile.slug());
+    }
+
+    /**
+     * Same, by slug: for callers that are about to delete the profile and will not have it afterwards.
+     * A reader that is still building the model holds the key's lock, so the eviction waits for it and
+     * then removes what it stored; a reader that starts after the commit finds no profile. No window is left.
+     */
+    void evictAfterCommit(String slug) {
         if (!TransactionSynchronizationManager.isSynchronizationActive()) {
             cache.invalidate(slug);
             return;

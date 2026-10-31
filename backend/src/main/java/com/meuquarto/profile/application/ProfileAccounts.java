@@ -15,10 +15,12 @@ public class ProfileAccounts {
 
     private final ProfileRepository profiles;
     private final SlugAvailability availability;
+    private final PublicProfileCache cache;
 
-    public ProfileAccounts(ProfileRepository profiles, SlugAvailability availability) {
+    public ProfileAccounts(ProfileRepository profiles, SlugAvailability availability, PublicProfileCache cache) {
         this.profiles = profiles;
         this.availability = availability;
+        this.cache = cache;
     }
 
     /** Runs inside the caller's transaction, so a failed sign-up leaves no profile behind. */
@@ -33,6 +35,15 @@ public class ProfileAccounts {
         } catch (DataIntegrityViolationException raceWithAnotherSignUp) {
             throw new SlugUnavailableException(SlugAvailability.Reason.TAKEN);
         }
+    }
+
+    /**
+     * Called by the account deletion, in its transaction (LGPD, FR-02): once it commits, the user's public
+     * profile is dropped from the cache so it stops being served at once, not when the TTL ends.
+     */
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void forgetPublicProfile(long userId) {
+        profiles.findByUserId(userId).ifPresent(profile -> cache.evictAfterCommit(profile.slug()));
     }
 
     @Transactional(readOnly = true)

@@ -8,6 +8,7 @@ import com.meuquarto.identity.domain.PasswordPolicy;
 import com.meuquarto.identity.domain.User;
 import com.meuquarto.identity.infra.UserRepository;
 import com.meuquarto.identity.infra.UserSessions;
+import com.meuquarto.profile.application.ProfileAccounts;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +25,11 @@ public class AccountSettings {
     private final PasswordPolicy passwordPolicy;
     private final LoginThrottle throttle;
     private final UserSessions sessions;
+    private final ProfileAccounts profiles;
 
     public AccountSettings(UserRepository users, PasswordEncoder passwordEncoder, PasswordPolicy passwordPolicy,
-            LoginThrottle throttle, UserSessions sessions) {
+            LoginThrottle throttle, UserSessions sessions, ProfileAccounts profiles) {
+        this.profiles = profiles;
         this.users = users;
         this.passwordEncoder = passwordEncoder;
         this.passwordPolicy = passwordPolicy;
@@ -45,11 +48,13 @@ public class AccountSettings {
 
     /**
      * Deletes the account (FR-02). The database cascades to the profile and everything under it;
-     * orders, once they exist (#38), are kept anonymized by their own foreign key rule.
+     * orders, once they exist (#38), are kept anonymized by their own foreign key rule. The public profile
+     * cache entry is dropped right after the commit.
      */
     @Transactional
     public void deleteAccount(long userId, String password) {
         User user = confirmed(userId, password);
+        profiles.forgetPublicProfile(userId); // evicts after the commit; needs the profile, so before the delete
         users.delete(user);
         sessions.endAllExcept(user.email(), null);
     }
