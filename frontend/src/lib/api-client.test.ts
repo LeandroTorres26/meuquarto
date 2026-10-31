@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ApiError, checkSlug, postJson, type ClientDeps } from "./api-client";
+import { ApiError, checkSlug, deleteRequest, postJson, type ClientDeps } from "./api-client";
 
 const json = (status: number, body?: unknown, headers: Record<string, string> = {}) =>
   new Response(body === undefined ? null : JSON.stringify(body), { status, headers });
@@ -85,5 +85,14 @@ describe("checkSlug", () => {
     const answer = await checkSlug("a/b", deps);
     expect(calls.map((c) => c.url)).toEqual(["/api/slugs/a%2Fb/availability"]);
     expect(answer.reason).toBe("INVALID_CHARACTERS");
+  });
+});
+
+describe("deleteRequest", () => {
+  it("sends DELETE with the CSRF header and accepts 204", async () => {
+    const { deps, calls } = setup([json(204)], { "XSRF-TOKEN": "cached" });
+    await deleteRequest("/api/linked-accounts/7", deps);
+    expect(calls[0].init?.method).toBe("DELETE");
+    expect(headerOf(calls[0], "X-XSRF-TOKEN")).toBe("cached");
   });
 });

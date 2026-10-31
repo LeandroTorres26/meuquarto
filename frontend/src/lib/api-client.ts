@@ -1,6 +1,8 @@
 // Browser-side API client. Talks only to this origin (/api/*, proxied to the backend by proxy.ts),
 // so it needs no API address and holds no secrets.
 
+import type { LinkedAccount, ProviderId, SyncResult } from "@/lib/linked-accounts";
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -54,16 +56,17 @@ async function toError(res: Response): Promise<ApiError> {
   return new ApiError(res.status, code, Number.isFinite(retry) && retry > 0 ? retry : undefined);
 }
 
-/** POST JSON with the CSRF header. Retries once with a fresh token if the API answers 403. */
-export async function postJson<T = void>(
+/** POST or DELETE with the CSRF header. Retries once with a fresh token if the API answers 403. */
+async function sendJson<T>(
+  method: "POST" | "DELETE",
   path: string,
-  body?: unknown,
-  deps: ClientDeps = defaultDeps(),
+  body: unknown,
+  deps: ClientDeps,
 ): Promise<T> {
   for (let attempt = 0; attempt < 2; attempt++) {
     const token = await ensureCsrfToken(deps, attempt > 0);
     const res = await deps.fetch(path, {
-      method: "POST",
+      method,
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
@@ -78,6 +81,17 @@ export async function postJson<T = void>(
   }
   throw new ApiError(403, undefined);
 }
+
+/** POST JSON with the CSRF header. Retries once with a fresh token if the API answers 403. */
+export const postJson = <T = void>(
+  path: string,
+  body?: unknown,
+  deps: ClientDeps = defaultDeps(),
+): Promise<T> => sendJson<T>("POST", path, body, deps);
+
+/** DELETE with the CSRF header (same retry as postJson). */
+export const deleteRequest = (path: string, deps: ClientDeps = defaultDeps()): Promise<void> =>
+  sendJson<void>("DELETE", path, undefined, deps);
 
 export async function getJson<T>(path: string, deps: ClientDeps = defaultDeps()): Promise<T> {
   const res = await deps.fetch(path, {
@@ -104,3 +118,10 @@ export const changePassword = (input: { currentPassword: string; newPassword: st
   postJson("/api/account/password", input);
 export const deleteAccount = (input: { password: string }) =>
   postJson("/api/account/delete", input);
+
+export const linkAccount = (input: { provider: ProviderId; username: string }) =>
+  postJson<LinkedAccount>("/api/linked-accounts", input);
+export const unlinkAccount = (id: number) =>
+  deleteRequest(`/api/linked-accounts/${encodeURIComponent(String(id))}`);
+export const syncAccount = (id: number) =>
+  postJson<SyncResult>(`/api/linked-accounts/${encodeURIComponent(String(id))}/sync`);

@@ -6,7 +6,12 @@ type Item = { label: string; href?: string };
 // Only routes that exist are links; the rest of the design's nav stays visible but disabled until
 // its screen is built, so nothing links to a 404.
 const GROUPS: Item[][] = [
-  [{ label: "Perfil" }, { label: "Destaques" }, { label: "Agora" }, { label: "Contas vinculadas" }],
+  [
+    { label: "Perfil" },
+    { label: "Destaques" },
+    { label: "Agora" },
+    { label: "Contas vinculadas", href: "/painel/contas" },
+  ],
   [{ label: "Loja" }, { label: "Compras" }, { label: "Conta", href: "/painel/conta" }],
 ];
 
