@@ -8,6 +8,7 @@ import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.LinkedAccount;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.LinkedAccountException.Problem;
+import com.meuquarto.media.domain.MetadataSource;
 import com.meuquarto.media.domain.SyncCooldownException;
 import com.meuquarto.media.domain.SyncOutcome;
 import com.meuquarto.media.domain.SyncPolicy;
@@ -179,7 +180,7 @@ public class SyncService {
             if (work.adult() || !provider.categories().contains(work.category())) {
                 continue; // BR-08: adult works never enter; a category the platform cannot feed is not trusted
             }
-            MediaSnapshots.Snapshot media = snapshots.snapshot(work);
+            MediaSnapshots.Snapshot media = snapshots.snapshot(work, MetadataSource.activity(account.provider()));
             int inserted = entries.insertIfNew(account.id(), media.id(), entry.type().name(), entry.occurredAt());
             if (inserted == 1) {
                 owners.recordSyncedItem(account.profileId(), account.id(), account.provider().name(),

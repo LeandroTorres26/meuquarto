@@ -48,6 +48,9 @@ public class MediaItem {
     @Column(name = "fetched_at", nullable = false)
     private Instant fetchedAt;
 
+    @Column(name = "metadata_source", nullable = false)
+    private String metadataSource;
+
     protected MediaItem() {
         // for JPA
     }
@@ -78,5 +81,10 @@ public class MediaItem {
 
     public Instant fetchedAt() {
         return fetchedAt;
+    }
+
+    /** Who wrote the metadata last: a canonical catalog name, or the activity source that created the row. */
+    public String metadataSource() {
+        return metadataSource;
     }
 }
