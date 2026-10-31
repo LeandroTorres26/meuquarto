@@ -38,17 +38,19 @@
     var sign = (x >>> 10) & 1 ? 1 : -1;
     return Math.round(sign * mag * 1000) / 1000; /* in [-1,-0.36] or [0.36,1]; angle = factor * tilt-max */
   }
-  /* Finish variant (README, "Media finish"). Other bit ranges of the same hash than the tilt (x % 1000 and bit 10):
-     bits 12-23 pick about 1 item in 3, bits 24-27 the poster corner, bits 28-31 the poster peel size (14% to 20%).
+  /* Finish variant (README, "Media finish"). The tilt reads the FNV-1a hash as it is (x % 1000 and bit 10). FNV-1a keeps the
+     high bits of neighbouring ids equal, so the finish first runs the hash through a 32-bit mixer (murmur3 fmix32): bits 0-11
+     pick about 1 item in 3, bits 12-15 the poster corner, bits 16-19 the poster peel size (14% to 20%).
      Returns null for the clean default and for games; the top-left corner is never used (it holds the sticker). */
+  function mix(x) { x ^= x >>> 16; x = Math.imul(x, 0x85ebca6b); x ^= x >>> 13; x = Math.imul(x, 0xc2b2ae35); x ^= x >>> 16; return x >>> 0; }
   var VARIANT = { poster: 'peel', vinyl: 'worn', book: 'ribbon', manga: 'gloss' };
   var CORNERS = ['br', 'bl', 'tr'];
   function finish(id, category) {
     var kind = VARIANT[(CATEGORIES[category] || {}).shape];
-    var x = hash(id);
-    if (!kind || ((x >>> 12) & 4095) % 3 !== 0) return null;
+    var x = mix(hash(id));
+    if (!kind || (x & 4095) % 3 !== 0) return null;
     if (kind !== 'peel') return { kind: kind };
-    return { kind: kind, corner: CORNERS[((x >>> 24) & 15) % 3], size: Math.round((14 + 6 * (x >>> 28) / 15) * 10) / 10 };
+    return { kind: kind, corner: CORNERS[((x >>> 12) & 15) % 3], size: Math.round((14 + 6 * ((x >>> 16) & 15) / 15) * 10) / 10 };
   }
 
   function CategoryTag(props) {

@@ -46,7 +46,7 @@ function tiltFactor(id){const x=hash(id),u=(x%1000)/999,mag=0.9/2.5+(1-0.9/2.5)*
 
 ## Finish (default and variant)
 
-Every item shows its medium's clean default. About one in three also gets the variant, chosen from the id: `Meuquarto.finish(id, category)` returns `null` (default) or `{ kind, corner?, size? }`. It uses the same FNV-1a hash as the tilt, on other bits: bits 12 to 23 pick the item (`% 3 === 0`), bits 24 to 27 the poster corner, bits 28 to 31 the poster size. Same id, same finish, on server and client.
+Every item shows its medium's clean default. About one in three also gets the variant, chosen from the id: `Meuquarto.finish(id, category)` returns `null` (default) or `{ kind, corner?, size? }`. It starts from the same FNV-1a hash as the tilt and runs it through a 32-bit mixer (murmur3 `fmix32`), because FNV-1a leaves the high bits of neighbouring ids equal and runs of consecutive ids would otherwise all get (or all miss) the variant. On the mixed value, bits 0 to 11 pick the item (`% 3 === 0`), bits 12 to 15 the poster corner and bits 16 to 19 the poster size. The tilt keeps reading the plain hash, so tilt and finish are independent. Same id, same finish, on server and client.
 
 | `category` | Variant (`kind`) | Classes on `mq-item` | How it is built |
 | --- | --- | --- | --- |
@@ -64,8 +64,9 @@ Reference implementation for server code (uses `hash` above; `shape` is the medi
 
 ```js
 const VARIANT={poster:'peel',vinyl:'worn',book:'ribbon',manga:'gloss'},CORNERS=['br','bl','tr'];
-function finish(id,shape){const kind=VARIANT[shape],x=hash(id);if(!kind||((x>>>12)&4095)%3!==0)return null;
-if(kind!=='peel')return{kind};return{kind,corner:CORNERS[((x>>>24)&15)%3],size:Math.round((14+6*(x>>>28)/15)*10)/10}}
+function mix(x){x^=x>>>16;x=Math.imul(x,0x85ebca6b);x^=x>>>13;x=Math.imul(x,0xc2b2ae35);x^=x>>>16;return x>>>0}
+function finish(id,shape){const kind=VARIANT[shape],x=mix(hash(id));if(!kind||(x&4095)%3!==0)return null;
+if(kind!=='peel')return{kind};return{kind,corner:CORNERS[((x>>>12)&15)%3],size:Math.round((14+6*((x>>>16)&15)/15)*10)/10}}
 ```
 
 ## States

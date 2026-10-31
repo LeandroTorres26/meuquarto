@@ -111,15 +111,16 @@
     return { id: id, cat: r[0], title: r[1], year: r[2], sub: r[3], cover: cover(r[4]), tilt: r[5], note: r[7], origin: r[8] };
   }
 
-  /* Finish variant of the work (design system README, "Media finish"): same FNV-1a hash as the tilt, other bits.
+  /* Finish variant of the work (design system README, "Media finish"): same FNV-1a hash as the tilt, mixed (fmix32) so neighbouring ids differ.
      Mirrors Meuquarto.finish in docs/design-system/components/bundle.js; the prototype passes the shape, not the category. */
   function hash(id) { var s = String(id), x = 2166136261; for (var i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 16777619) >>> 0; } return x >>> 0; }
+  function mix(x) { x ^= x >>> 16; x = Math.imul(x, 0x85ebca6b); x ^= x >>> 13; x = Math.imul(x, 0xc2b2ae35); x ^= x >>> 16; return x >>> 0; }
   var VARIANT = { poster: 'peel', vinyl: 'worn', book: 'ribbon', manga: 'gloss' }, CORNERS = ['br', 'bl', 'tr'];
   function finish(id, shape) {
-    var kind = VARIANT[shape], x = hash(id);
-    if (!kind || ((x >>> 12) & 4095) % 3 !== 0) return null;
+    var kind = VARIANT[shape], x = mix(hash(id));
+    if (!kind || (x & 4095) % 3 !== 0) return null;
     if (kind !== 'peel') return { kind: kind };
-    return { kind: kind, corner: CORNERS[((x >>> 24) & 15) % 3], size: Math.round((14 + 6 * (x >>> 28) / 15) * 10) / 10 };
+    return { kind: kind, corner: CORNERS[((x >>> 12) & 15) % 3], size: Math.round((14 + 6 * ((x >>> 16) & 15) / 15) * 10) / 10 };
   }
   /* classes and inline style that carry the variant; the ribbon is the only extra element */
   function finishAttrs(fin) {
