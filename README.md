@@ -28,6 +28,17 @@ Optional: block commits that contain secrets (uses a local `gitleaks` or Docker)
 git config core.hooksPath .githooks
 ```
 
+## Demo
+
+`scripts/demo.sh` fills a running local stack with a demo profile through the public API, the same way the browser does: it signs up (or signs in when the account exists), links the accounts you give, runs a manual sync for each, highlights the first 4 items of every category and prints the profile address. Run it from Git Bash, WSL or any POSIX shell with `curl`.
+
+```bash
+DEMO_PASSWORD='a-long-throwaway-password' scripts/demo.sh   --email demo@example.com --slug demo   --anilist SomePublicAniListUser --letterboxd SomePublicLetterboxdUser
+# optional: --add ANIME:frieren (catalog search, adds the first result), --base http://localhost:3000
+```
+
+`BASE` (or `--base`) defaults to http://localhost:3000. Use a throwaway password: the one you pass is only sent to your local stack, and nothing is stored (the cookie jar is a temp file removed on exit). A sync inside its 15-minute cooldown, a rate limit (HTTP 429) or an unknown platform user is reported and the script carries on with the rest. Open the printed address afterwards, for example http://localhost:3000/demo, and `?item=<id>` on it opens an item.
+
 ## Documentation
 
 Start at [docs/briefing.md](docs/briefing.md), then [requirements](docs/requirements.md), [architecture](docs/architecture.md), [decisions](docs/adr/README.md) and [security](docs/security.md).
