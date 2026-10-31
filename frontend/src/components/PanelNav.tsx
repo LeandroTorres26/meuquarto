@@ -8,7 +8,7 @@ type Item = { label: string; href?: string };
 const GROUPS: Item[][] = [
   [
     { label: "Perfil" },
-    { label: "Destaques" },
+    { label: "Destaques", href: "/painel/destaques" },
     { label: "Agora" },
     { label: "Contas vinculadas", href: "/painel/contas" },
   ],
