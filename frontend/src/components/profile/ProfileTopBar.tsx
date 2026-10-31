@@ -7,7 +7,7 @@ export function ProfileTopBar() {
         <Link href="/" className="wordmark">
           meuquarto
         </Link>
-        <Link href="/cadastro" className="mq-btn mq-btn--ghost mq-btn--sm">
+        <Link href="/cadastro" prefetch={false} className="mq-btn mq-btn--ghost mq-btn--sm">
           Crie o seu
         </Link>
       </div>

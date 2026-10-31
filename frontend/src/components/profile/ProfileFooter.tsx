@@ -10,7 +10,10 @@ export function ProfileFooter() {
             meuquarto
           </Link>
           <p className="t-sm">
-            Seu gosto num endereço só. <Link href="/cadastro">Crie o seu</Link>
+            Seu gosto num endereço só.{" "}
+            <Link href="/cadastro" prefetch={false}>
+              Crie o seu
+            </Link>
           </p>
         </div>
         <div className="pair-2">
