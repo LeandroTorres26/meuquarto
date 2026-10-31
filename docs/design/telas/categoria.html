@@ -95,7 +95,7 @@
     return l;
   }
   function skeletons(n) {
-    var shape = { movie: 'poster', series: 'poster', anime: 'dvd', manga: 'manga mq-item--volume', book: 'book mq-item--volume', game: 'game', music: 'vinyl' }[C.cat];
+    var shape = { movie: 'poster', series: 'poster', anime: 'poster', manga: 'manga', book: 'book mq-item--volume', game: 'game', music: 'vinyl' }[C.cat];
     var one = '<li aria-hidden="true"><div class="mq-item mq-item--' + shape + ' mq-item--loading"><div class="mq-item__cover"><span class="mq-art"></span></div><div class="mq-item__meta"><span class="mq-sk"></span><span class="mq-sk"></span></div></div></li>';
     return new Array(n + 1).join(one);
   }

@@ -4,7 +4,7 @@
    the loading slot. An id that is not in the table shows the "saiu do quarto" state. */
 (function () {
   var OWNER = 'Leandro';
-  var CAT = { movie: ['Filme', 'clapperboard', 'poster'], series: ['Série', 'tv', 'poster'], anime: ['Anime', 'sparkles', 'dvd'], manga: ['Mangá', 'book-copy', 'manga'], book: ['Livro', 'book-open', 'book'], game: ['Game', 'gamepad-2', 'game'], music: ['Música', 'disc-3', 'vinyl'] };
+  var CAT = { movie: ['Filme', 'clapperboard', 'poster'], series: ['Série', 'tv', 'poster'], anime: ['Anime', 'sparkles', 'poster'], manga: ['Mangá', 'book-copy', 'manga'], book: ['Livro', 'book-open', 'book'], game: ['Game', 'gamepad-2', 'game'], music: ['Música', 'disc-3', 'vinyl'] };
   /* [activity platform, only for synced items; catalog] */
   var SRC = { movie: ['Letterboxd', 'TMDB'], series: [null, 'TMDB'], anime: ['AniList', 'AniList'], manga: ['AniList', 'AniList'], book: ['Goodreads', 'Open Library'], game: ['Steam', 'IGDB'], music: ['Last.fm', 'Deezer'] };
   var PLAT = {
@@ -18,7 +18,7 @@
     'Last.fm': ['no', function (q) { return 'https://www.last.fm/search?q=' + q; }],
     'Deezer': ['na', function (q) { return 'https://www.deezer.com/search/' + q; }]
   };
-  /* id: [category, title, year, subtitle, cover, tilt factor, tape or pin, owner note, origin ('' = chosen by hand)] */
+  /* id: [category, title, year, subtitle, cover, tilt factor, former tape or pin (unused), owner note, origin ('' = chosen by hand)] */
   var ROWS = {
     'perfect-days': ['movie', 'Perfect Days', 2023, 'de Wim Wenders', 1, 0.883, 't', 'assisti 3 vezes. o final no carro me pega toda vez', 'Assistido em 11 out. 2026 no Letterboxd'],
     'frieren': ['anime', 'Frieren', 2023, 'estúdio Madhouse', 12, 0.516, 'p', '', 'Assistindo agora no AniList'],
@@ -55,7 +55,7 @@
   };
 
   /* ---------- collection: every item of a category (sync + manual, no limit); highlights are the items marked in it ----------
-     Order = most recent first (the "Recentes" sort). Items not on the profile get their tilt, tack and cover from their id,
+     Order = most recent first (the "Recentes" sort). Items not on the profile get their tilt and cover from their id,
      and an origin from their place in the list (series are always by hand). */
   function slug(t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/&/g, 'e').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function hash(s) { var h = 2166136261; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -108,26 +108,44 @@
 
   function get(id) {
     var r = ROWS[id]; if (!r) return null;
-    return { id: id, cat: r[0], title: r[1], year: r[2], sub: r[3], cover: cover(r[4]), tilt: r[5], fix: r[6], note: r[7], origin: r[8] };
+    return { id: id, cat: r[0], title: r[1], year: r[2], sub: r[3], cover: cover(r[4]), tilt: r[5], note: r[7], origin: r[8] };
   }
 
-  /* cover in the media's own shape; the only place with tilt, sticker and tape or pin */
+  /* Finish variant of the work (design system README, "Media finish"): same FNV-1a hash as the tilt, other bits.
+     Mirrors Meuquarto.finish in docs/design-system/components/bundle.js; the prototype passes the shape, not the category. */
+  function hash(id) { var s = String(id), x = 2166136261; for (var i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 16777619) >>> 0; } return x >>> 0; }
+  var VARIANT = { poster: 'peel', vinyl: 'worn', book: 'ribbon', manga: 'gloss' }, CORNERS = ['br', 'bl', 'tr'];
+  function finish(id, shape) {
+    var kind = VARIANT[shape], x = hash(id);
+    if (!kind || ((x >>> 12) & 4095) % 3 !== 0) return null;
+    if (kind !== 'peel') return { kind: kind };
+    return { kind: kind, corner: CORNERS[((x >>> 24) & 15) % 3], size: Math.round((14 + 6 * (x >>> 28) / 15) * 10) / 10 };
+  }
+  /* classes and inline style that carry the variant; the ribbon is the only extra element */
+  function finishAttrs(fin) {
+    if (!fin) return { cls: '', style: '', lead: '' };
+    if (fin.kind === 'peel') return { cls: ' mq-item--peel mq-item--peel-' + fin.corner, style: ';--peel-size:' + fin.size + '%', lead: '' };
+    return { cls: ' mq-item--' + fin.kind, style: '', lead: fin.kind === 'ribbon' ? '<span class="mq-ribbon" aria-hidden="true"></span>' : '' };
+  }
+
+  /* cover in the media's own shape; the only place with tilt, sticker and the medium's finish variant */
   function coverHtml(it, loading, preview) {
     var c = CAT[it.cat], shape = c[2];
-    var cls = shape === 'book' || shape === 'manga' ? 'mq-item--' + shape + ' mq-item--volume' : 'mq-item--' + shape;
-    var lead = { dvd: '<span class="mq-spine" aria-hidden="true"></span>', vinyl: '<span class="mq-record" aria-hidden="true"></span>', game: '<span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span>' }[shape] || '';
+    var cls = shape === 'book' ? 'mq-item--' + shape + ' mq-item--volume' : 'mq-item--' + shape;
+    var fa = finishAttrs(loading ? null : finish(it.id, shape));
+    var lead = { vinyl: '<span class="mq-record" aria-hidden="true"></span>', game: '<span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span>' }[shape] || '';
+    lead += fa.lead;
     var inner = loading
       ? (shape === 'vinyl' ? '' : lead) + '<span class="mq-art"></span>'
       : lead + '<img class="mq-art" src="' + it.cover + '" alt="">' +
-        '<span class="mq-tag mq-tag--' + it.cat + '">' + icon(c[1]).replace('class="icon"', 'class="mq-icon icon"') + c[0] + '</span>' +
-        (it.fix === 't' ? '<span class="mq-tape" aria-hidden="true"></span>' : '<span class="mq-pin" aria-hidden="true"></span>');
+        '<span class="mq-tag mq-tag--' + it.cat + '">' + icon(c[1]).replace('class="icon"', 'class="mq-icon icon"') + c[0] + '</span>';
     /* music: the 30s Deezer preview plays from a button on the sleeve itself */
     var play = shape === 'vinyl' && !loading && preview
       ? '<button type="button" class="detail__play" data-preview aria-label="Ouvir prévia de 30 segundos de ' + esc(it.title) + '">' +
         '<svg class="detail__ring" viewBox="0 0 56 56" aria-hidden="true"><circle cx="28" cy="28" r="26"/></svg>' + icon('play') + '</button>'
       : '';
     return '<div class="detail__cover' + (shape === 'vinyl' ? ' detail__cover--wide' : '') + '"' + (loading ? ' aria-hidden="true"' : '') + '>' +
-      '<div class="mq-item ' + cls + (loading ? ' mq-item--loading' : '') + '" style="--tilt-f:' + (loading ? 0 : it.tilt) + '"><figure class="mq-item__cover">' + inner + '</figure>' + play + '</div>' +
+      '<div class="mq-item ' + cls + fa.cls + (loading ? ' mq-item--loading' : '') + '" style="--tilt-f:' + (loading ? 0 : it.tilt) + fa.style + '"><figure class="mq-item__cover">' + inner + '</figure>' + play + '</div>' +
       (play ? '<p class="t-cap detail__credit">Prévia de 30 segundos, pela Deezer.</p>' : '') + '</div>';
   }
 
@@ -191,17 +209,19 @@
   document.addEventListener('animationend', function (e) {
     if (e.target.classList && e.target.classList.contains('detail__ring')) setPlaying(e.target.closest('.detail__play'), false);
   }, true);
-  /* a HighlightCard (static markup) for grids: the shape of the medium, tape or tack, optional sticker and "Destaque" seal */
+  /* a HighlightCard (static markup) for grids: the shape of the medium, finish variant from the id, optional sticker and "Destaque" seal */
   function card(id, opts) {
     opts = opts || {};
     var it = get(id), c = CAT[it.cat], shape = c[2];
-    var cls = shape === 'book' || shape === 'manga' ? 'mq-item--' + shape + ' mq-item--volume' : 'mq-item--' + shape;
-    var lead = { dvd: '<span class="mq-spine" aria-hidden="true"></span>', vinyl: '<span class="mq-record" aria-hidden="true"></span>', game: '<span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span>' }[shape] || '';
+    var cls = shape === 'book' ? 'mq-item--' + shape + ' mq-item--volume' : 'mq-item--' + shape;
+    var fa = finishAttrs(finish(it.id, shape));
+    var lead = { vinyl: '<span class="mq-record" aria-hidden="true"></span>', game: '<span class="mq-gamebar" aria-hidden="true"><svg class="mq-icon icon"><use href="icons.svg#gamepad-2"/></svg></span>' }[shape] || '';
+    lead += fa.lead;
     var hl = opts.highlight ? '<span class="hl-seal"><svg class="icon" aria-hidden="true"><use href="icons.svg#star"/></svg>Destaque</span>' : '';
-    return '<article class="mq-item ' + cls + '" style="--tilt-f:' + it.tilt + '"><a class="mq-item__link" href="' + (opts.href || '?item=' + id) + '" aria-label="' + esc(it.title) + ', ' + it.year + (opts.highlight ? ', destaque' : '') + '">' +
+    return '<article class="mq-item ' + cls + fa.cls + '" style="--tilt-f:' + it.tilt + fa.style + '"><a class="mq-item__link" href="' + (opts.href || '?item=' + id) + '" aria-label="' + esc(it.title) + ', ' + it.year + (opts.highlight ? ', destaque' : '') + '">' +
       '<figure class="mq-item__cover">' + lead + '<img class="mq-art" src="' + it.cover + '" alt="" loading="lazy">' +
       (opts.tag ? '<span class="mq-tag mq-tag--' + it.cat + '">' + icon(c[1]).replace('class="icon"', 'class="mq-icon icon"') + c[0] + '</span>' : '') +
-      (it.fix === 't' ? '<span class="mq-tape" aria-hidden="true"></span>' : '<span class="mq-pin" aria-hidden="true"></span>') + '</figure>' +
+      '</figure>' +
       '<div class="mq-item__meta"><h3 class="mq-item__title">' + esc(it.title) + '</h3><p class="mq-item__sub">' + it.year + '</p>' + hl + '</div></a></article>';
   }
 
