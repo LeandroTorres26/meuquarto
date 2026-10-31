@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { Caveat, Figtree } from "next/font/google";
 import localFont from "next/font/local";
 import "@/styles/meuquarto.tokens.css";
 import "@/styles/components.css";
@@ -8,23 +7,23 @@ import "./globals.css";
 
 // Self-hosted by next/font (CSP font-src 'self'). The families are exposed as CSS
 // variables and globals.css points the design tokens (--font-display, --font-sans, --font-hand) at them.
-// Big Shoulders Display is no longer listed by next/font/google (Google merged it into "Big Shoulders"),
-// so the latin subset of the Display variable font (SIL OFL) is committed and self-hosted instead.
+// The latin subsets of the variable fonts (SIL OFL) are committed in src/fonts (see its README), so
+// builds never fetch from Google Fonts.
 const display = localFont({
   src: "../fonts/BigShouldersDisplay-latin-variable.woff2",
   weight: "700 900",
   variable: "--font-display-loaded",
   display: "swap",
 });
-const sans = Figtree({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+const sans = localFont({
+  src: "../fonts/Figtree-latin-variable.woff2",
+  weight: "400 700",
   variable: "--font-sans-loaded",
   display: "swap",
 });
-const hand = Caveat({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+const hand = localFont({
+  src: "../fonts/Caveat-latin-variable.woff2",
+  weight: "500 700",
   variable: "--font-hand-loaded",
   display: "swap",
 });
