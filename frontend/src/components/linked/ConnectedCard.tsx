@@ -137,8 +137,8 @@ export function ConnectedCard({
             {outcome?.kind === "bad" ? outcome.message : stored}
           </p>
         ) : (
-          <p className="status status--ok">
-            <Check className="icon" aria-hidden="true" />
+          <p className={`status${account.lastSyncedAt ? " status--ok" : ""}`}>
+            {account.lastSyncedAt && <Check className="icon" aria-hidden="true" />}
             {syncedLabel}
           </p>
         )}
