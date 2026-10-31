@@ -18,7 +18,7 @@
   var CATEGORIES = {
     movie:  { label: 'Filme',  icon: 'clapperboard', shape: 'poster' },
     series: { label: 'Série',  icon: 'tv',           shape: 'poster' },
-    anime:  { label: 'Anime',  icon: 'sparkles',     shape: 'dvd' },
+    anime:  { label: 'Anime',  icon: 'sparkles',     shape: 'poster' },
     manga:  { label: 'Mangá',  icon: 'book-copy',    shape: 'manga' },
     book:   { label: 'Livro',  icon: 'book-open',    shape: 'book' },
     game:   { label: 'Game',   icon: 'gamepad-2',    shape: 'game' },
@@ -38,7 +38,18 @@
     var sign = (x >>> 10) & 1 ? 1 : -1;
     return Math.round(sign * mag * 1000) / 1000; /* in [-1,-0.36] or [0.36,1]; angle = factor * tilt-max */
   }
-  function fixKind(id) { return (hash(id) >>> 11) & 1 ? 'tape' : 'pin'; }
+  /* Finish variant (README, "Media finish"). Other bit ranges of the same hash than the tilt (x % 1000 and bit 10):
+     bits 12-23 pick about 1 item in 3, bits 24-27 the poster corner, bits 28-31 the poster peel size (14% to 20%).
+     Returns null for the clean default and for games; the top-left corner is never used (it holds the sticker). */
+  var VARIANT = { poster: 'peel', vinyl: 'worn', book: 'ribbon', manga: 'gloss' };
+  var CORNERS = ['br', 'bl', 'tr'];
+  function finish(id, category) {
+    var kind = VARIANT[(CATEGORIES[category] || {}).shape];
+    var x = hash(id);
+    if (!kind || ((x >>> 12) & 4095) % 3 !== 0) return null;
+    if (kind !== 'peel') return { kind: kind };
+    return { kind: kind, corner: CORNERS[((x >>> 24) & 15) % 3], size: Math.round((14 + 6 * (x >>> 28) / 15) * 10) / 10 };
+  }
 
   function CategoryTag(props) {
     var c = CATEGORIES[props.category] || CATEGORIES.music;
@@ -55,15 +66,17 @@
   }
 
   /* props: id, category, title, year, volume, cover (url), note, href, loading, error, disabled,
-     fix ('tape' | 'pin' | 'none'), showTag (default true), state ('hover' | 'focus' for documentation) */
+     showTag (default true), state ('hover' | 'focus' for documentation) */
   function HighlightCard(props) {
     var cat = CATEGORIES[props.category] || CATEGORIES.movie, shape = cat.shape;
     var loading = !!props.loading, error = !!props.error, empty = !props.cover && !loading && !error;
-    var fix = props.fix || fixKind(props.id);
-    var cls = 'mq-item mq-item--' + shape + (shape === 'book' || shape === 'manga' ? ' mq-item--volume' : '')
+    var fin = loading || props.disabled ? null : finish(props.id, props.category);
+    var cls = 'mq-item mq-item--' + shape + (shape === 'book' ? ' mq-item--volume' : '')
+      + (fin ? ' mq-item--' + (fin.kind === 'peel' ? 'peel mq-item--peel-' + fin.corner : fin.kind) : '')
       + (loading ? ' mq-item--loading' : '') + (props.disabled ? ' is-disabled' : '')
       + (props.state === 'hover' ? ' is-hover' : '');
     var style = { '--tilt-f': loading ? 0 : tiltFactor(props.id) };
+    if (fin && fin.kind === 'peel') style['--peel-size'] = fin.size + '%';
 
     var art;
     if (loading) art = h('div', { className: 'mq-art' });
@@ -76,11 +89,9 @@
     var cover = h('figure', { className: 'mq-item__cover' },
       shape === 'vinyl' ? h('span', { className: 'mq-record', 'aria-hidden': true }) : null,
       shape === 'game' ? h('span', { className: 'mq-gamebar', 'aria-hidden': true }, h(Icon, { name: 'gamepad-2' })) : null,
-      shape === 'dvd' ? h('span', { className: 'mq-spine', 'aria-hidden': true }) : null,
+      fin && fin.kind === 'ribbon' ? h('span', { className: 'mq-ribbon', 'aria-hidden': true }) : null,
       art,
       decorate && props.showTag !== false ? h(CategoryTag, { category: props.category }) : null,
-      decorate && fix === 'tape' ? h('span', { className: 'mq-tape', 'aria-hidden': true }) : null,
-      decorate && fix === 'pin' ? h('span', { className: 'mq-pin', 'aria-hidden': true }) : null,
       decorate && props.note ? h('p', { className: 'mq-slip' }, props.note) : null);
 
     var meta = loading
@@ -169,6 +180,6 @@
   window.Meuquarto = {
     Button: Button, NowCard: NowCard, Toast: Toast, LimitUpsell: LimitUpsell,
     HighlightCard: HighlightCard, HighlightSlot: HighlightSlot, HighlightGrid: HighlightGrid, CategoryTag: CategoryTag, Icon: Icon,
-    CATEGORIES: CATEGORIES, tiltFactor: tiltFactor, fixKind: fixKind, hash: hash
+    CATEGORIES: CATEGORIES, tiltFactor: tiltFactor, finish: finish, hash: hash
   };
 })();
