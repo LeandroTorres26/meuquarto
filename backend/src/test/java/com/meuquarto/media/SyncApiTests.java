@@ -13,6 +13,7 @@ import com.meuquarto.media.application.SyncScheduler;
 import com.meuquarto.media.application.SyncService;
 import com.meuquarto.media.domain.ActivityEntry;
 import com.meuquarto.media.domain.ActivityProvider;
+import com.meuquarto.media.application.MediaSnapshots;
 import com.meuquarto.media.domain.ActivitySnapshot;
 import com.meuquarto.media.domain.ActivityType;
 import com.meuquarto.media.domain.CatalogEntry;
@@ -84,6 +85,9 @@ class SyncApiTests {
     @Autowired
     ProfileCollection collection;
 
+    @Autowired
+    MediaSnapshots snapshots;
+
     private FakeActivityProvider fake;
 
     @BeforeEach
@@ -125,6 +129,19 @@ class SyncApiTests {
         assertThat(row.get("last_error")).isNull();
         assertThat(row.get("consecutive_failures")).isEqualTo(0);
         assertThat(row.get("next_attempt_at")).isNull();
+    }
+
+    @Test
+    void aSyncKeepsTheMetadataOfAWorkTheCatalogAlreadyOwns() throws Exception {
+        snapshots.snapshot(new CatalogEntry(MediaCategory.MOVIE, "FAKE", "9001", "Catalog title", 1999, null, false));
+        Cookie session = signUp("a@example.com", "ana");
+        long account = linkLetterboxd(session, "ana_l");
+        fake.activity.put("ana_l", snapshot(entry("9001", "Feed title", false)));
+
+        sync(session, account).andExpect(status().isOk()).andExpect(jsonPath("$.status").value("SUCCESS"));
+
+        assertThat(jdbc.queryForObject("select title from media_items where external_id = '9001'", String.class))
+                .isEqualTo("Catalog title");
     }
 
     @Test

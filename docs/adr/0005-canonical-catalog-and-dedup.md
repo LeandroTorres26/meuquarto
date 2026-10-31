@@ -17,3 +17,6 @@ Each category has one canonical catalog: films and series TMDB, anime and manga 
 ## Alternatives considered
 - Dedup by title + year: fails with remakes, translations and common titles.
 - No dedup: duplicates on the profile and broken business rules.
+
+## As built: who owns the metadata (issue #93)
+The canonical catalog owns title, year and image of a row. `MediaSnapshots.snapshot(entry, MetadataSource)` takes who is writing. A source is canonical for an entry when its name is the entry's canonical catalog name (`MetadataSource.overwrites`), so a manual add through TMDB or AniList, and also an AniList activity sync (AniList is the catalog and the feed for anime and manga), replace the stored title, year, image, adult flag and `fetched_at`. A non-canonical source (Letterboxd for films) creates the row when it does not exist, and on an existing row only fills a null year or image; it never changes the title. `media_items.metadata_source` records who wrote last (V10), so a Letterboxd-created row is visibly provisional until a catalog add refreshes it. It is one `INSERT ... ON CONFLICT DO UPDATE` with `CASE`/`COALESCE`, so it stays atomic under concurrency.

@@ -4,6 +4,7 @@ import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogRegistry;
 import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.media.domain.MediaItem;
+import com.meuquarto.media.domain.MetadataSource;
 import com.meuquarto.media.infra.MediaItemRepository;
 import java.time.Clock;
 import java.util.Optional;
@@ -35,11 +36,21 @@ public class MediaSnapshots {
                 .map(this::snapshot);
     }
 
-    /** Inserts the entry or refreshes the existing row with the same canonical key. */
+    /** A catalog writing its own entry (manual add): canonical, so it inserts or refreshes the row. */
     @Transactional
     public Snapshot snapshot(CatalogEntry entry) {
+        return snapshot(entry, MetadataSource.catalog(entry));
+    }
+
+    /**
+     * Inserts the entry, or updates the row with the same canonical key according to who writes (BR-04):
+     * the canonical catalog refreshes title, year and image; any other source only fills the nulls of an
+     * existing row. The returned snapshot shows what is stored, not what was offered.
+     */
+    @Transactional
+    public Snapshot snapshot(CatalogEntry entry, MetadataSource source) {
         items.upsert(entry.category().name(), entry.provider(), entry.externalId(), entry.title(), entry.year(),
-                entry.imageUrl(), entry.adult(), clock.instant());
+                entry.imageUrl(), entry.adult(), clock.instant(), source.name(), source.overwrites(entry));
         MediaItem item = items.findByCategoryAndCanonicalProviderAndExternalId(
                 entry.category(), entry.provider(), entry.externalId()).orElseThrow();
         return new Snapshot(item.id(), entry.category(), entry.provider(), entry.externalId(), item.title(),
