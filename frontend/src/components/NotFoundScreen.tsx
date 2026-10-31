@@ -17,9 +17,7 @@ export function NotFoundScreen({ kind }: { kind: "profile" | "route" }) {
             style={{ position: "relative", height: 300, borderBottom: "6px solid var(--border)" }}
           >
             <Frame left="4%" top={40} width="30%" ratio="2 / 3" rotate={-2} />
-            <span className="mq-tape" style={{ left: "12%", right: "auto", top: 30 }} />
             <Frame left="40%" top={16} width="26%" ratio="2 / 3" rotate={1.4} />
-            <span className="mq-pin" style={{ left: "58%", right: "auto", top: 8 }} />
             <Frame left="70%" top={150} width="26%" ratio="1 / 1" rotate={-1.2} />
             <p className="mq-slip" style={{ left: "6%", right: "auto", bottom: 40 }}>
               volto já

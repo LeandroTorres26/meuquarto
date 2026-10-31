@@ -1,5 +1,7 @@
 // Pure helpers for the public profile (S4) and the item dialog (S17): no React, no I/O, unit tested.
 
+import type { CSSProperties } from "react";
+
 export type Category = "MOVIE" | "SERIES" | "ANIME" | "MANGA" | "BOOK" | "GAME" | "MUSIC";
 
 /** GET /api/public/profiles/{slug}: items as an anonymous visitor sees them. */
@@ -30,7 +32,7 @@ export type ItemLink = { provider: string; url: string };
 export type PublicItemDetail = { item: PublicItem; origin: ItemOrigin[]; links: ItemLink[] };
 
 /** Shapes of the HighlightCard (docs/design-system/components/HighlightCard/README.md). */
-export type Shape = "poster" | "book" | "manga" | "vinyl" | "game" | "dvd";
+export type Shape = "poster" | "book" | "manga" | "vinyl" | "game";
 
 type CategoryMeta = {
   /** Section heading. */
@@ -80,9 +82,9 @@ export const CATEGORY_META: Record<Category, CategoryMeta> = {
     unit: ["anime", "animes"],
     noun: "anime",
     tag: "anime",
-    shape: "dvd",
+    shape: "poster",
     width: 200,
-    height: 280,
+    height: 300,
     route: "animes",
   },
   MANGA: {
@@ -131,10 +133,21 @@ export const CATEGORY_META: Record<Category, CategoryMeta> = {
   },
 };
 
-/** Modifier classes of `mq-item` for a medium. Books and mangás are "volumes". */
+/** Modifier classes of `mq-item` for a medium. Only books are "volumes" (mangás are flat). */
 export function shapeClasses(shape: Shape): string {
   const base = `mq-item--${shape}`;
-  return shape === "book" || shape === "manga" ? `${base} mq-item--volume` : base;
+  return shape === "book" ? `${base} mq-item--volume` : base;
+}
+
+/** murmur3 fmix32: spreads every input bit over the whole word. */
+function mix32(value: number): number {
+  let x = value;
+  x ^= x >>> 16;
+  x = Math.imul(x, 0x85ebca6b);
+  x ^= x >>> 13;
+  x = Math.imul(x, 0xc2b2ae35);
+  x ^= x >>> 16;
+  return x >>> 0;
 }
 
 function fnv1a(id: string): number {
@@ -157,9 +170,52 @@ export function tiltFactor(id: string | number): number {
   return Math.round(((hash >>> 10) & 1 ? 1 : -1) * magnitude * 1000) / 1000;
 }
 
-/** Tape or pin holding the card to the wall, also derived from the id. */
-export function fixKind(id: string | number): "tape" | "pin" {
-  return (fnv1a(String(id)) >>> 11) & 1 ? "tape" : "pin";
+/** Finish variant of a medium (README "Media finish"). The peel is the only one with a corner and a size. */
+export type Finish =
+  | { kind: "peel"; corner: "br" | "bl" | "tr"; size: number }
+  | { kind: "worn" | "ribbon" | "gloss" };
+
+const VARIANT_BY_SHAPE = { poster: "peel", vinyl: "worn", book: "ribbon", manga: "gloss" } as const;
+const PEEL_CORNERS = ["br", "bl", "tr"] as const;
+
+/**
+ * Deterministic finish of a work (HighlightCard README, "Finish"): about one item in three gets its
+ * medium's variant, the rest show the clean default (null). Starts from the same FNV-1a hash as the
+ * tilt, then mixes it (fmix32) because FNV-1a leaves the high bits of neighbouring ids equal. On
+ * the mixed value, bits 0 to 11 pick the item, bits 12 to 15 the poster corner (bottom-right,
+ * bottom-left or top-right, never the top-left sticker corner) and bits 16 to 19 the peel size,
+ * 14% to 20% of the width. Games never get a variant.
+ */
+export function finish(id: string | number, category: Category): Finish | null {
+  const shape = CATEGORY_META[category].shape;
+  if (shape === "game") return null;
+  const mixed = mix32(fnv1a(String(id)));
+  if ((mixed & 4095) % 3 !== 0) return null;
+  const kind = VARIANT_BY_SHAPE[shape];
+  if (kind !== "peel") return { kind };
+  return {
+    kind,
+    corner: PEEL_CORNERS[((mixed >>> 12) & 15) % 3],
+    size: Math.round((14 + (6 * ((mixed >>> 16) & 15)) / 15) * 10) / 10,
+  };
+}
+
+/** Classes of the `mq-item` article: the medium's shape plus its finish variant. */
+export function itemClasses(item: Pick<PublicItem, "ref" | "category">): string {
+  const base = `mq-item ${shapeClasses(CATEGORY_META[item.category].shape)}`;
+  const fin = finish(item.ref, item.category);
+  if (!fin) return base;
+  return fin.kind === "peel"
+    ? `${base} mq-item--peel mq-item--peel-${fin.corner}`
+    : `${base} mq-item--${fin.kind}`;
+}
+
+/** Inline custom properties of the `mq-item` article: the tilt and, for a peel, its size. */
+export function itemStyle(item: Pick<PublicItem, "ref" | "category">): CSSProperties {
+  const fin = finish(item.ref, item.category);
+  const style: Record<string, string | number> = { "--tilt-f": tiltFactor(item.ref) };
+  if (fin?.kind === "peel") style["--peel-size"] = `${fin.size}%`;
+  return style as CSSProperties;
 }
 
 /** "1 filme", "16 filmes", "1 álbum". */

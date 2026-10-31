@@ -1,4 +1,4 @@
-import { CATEGORY_META, fixKind, safeImageUrl, type PublicItem } from "@/lib/profile-view";
+import { CATEGORY_META, finish, safeImageUrl, type PublicItem } from "@/lib/profile-view";
 import { CategoryIcon } from "./CategoryIcon";
 import { CategoryTag } from "./CategoryTag";
 
@@ -18,7 +18,7 @@ type Props = {
 
 /**
  * The `mq-item__cover` figure of a HighlightCard: the physical object of the medium (spine, record,
- * console band), the cover or the "no cover" slot, sticker, tape or tack and slip. The CSS fixes the
+ * console band), the cover or the "no cover" slot, sticker, the ribbon of the book variant and slip. The CSS fixes the
  * ratio of each medium, so the slot never moves when the image arrives. Only https covers render.
  */
 export function ItemCover({
@@ -31,9 +31,10 @@ export function ItemCover({
 }: Props) {
   const meta = CATEGORY_META[item.category];
   const src = localSrc ?? safeImageUrl(item.imageUrl);
+  const ribbon = finish(item.ref, item.category)?.kind === "ribbon";
   return (
     <figure className="mq-item__cover">
-      {meta.shape === "dvd" ? <span className="mq-spine" aria-hidden="true" /> : null}
+      {ribbon ? <span className="mq-ribbon" aria-hidden="true" /> : null}
       {meta.shape === "vinyl" ? <span className="mq-record" aria-hidden="true" /> : null}
       {meta.shape === "game" ? (
         <span className="mq-gamebar" aria-hidden="true">
@@ -62,7 +63,6 @@ export function ItemCover({
         </span>
       )}
       {showTag ? <CategoryTag category={item.category} /> : null}
-      <span className={fixKind(item.ref) === "tape" ? "mq-tape" : "mq-pin"} aria-hidden="true" />
       {showSlip && item.note ? <p className="mq-slip">{item.note}</p> : null}
     </figure>
   );
