@@ -11,6 +11,7 @@ import { ExampleShelf } from "@/components/landing/ExampleShelf";
 import { CookieNotice } from "@/components/CookieNotice";
 import { CategoryTag } from "@/components/profile/CategoryTag";
 import { siteUrl } from "@/lib/public-profile";
+import { Logo } from "@/components/Logo";
 
 const TITLE = "meuquarto: seu gosto num quarto só";
 const DESCRIPTION =
@@ -51,9 +52,7 @@ export default function Landing() {
     <div className="page">
       <header className="topbar">
         <div className="wrap topbar__in">
-          <Link href="/" id="site-home" className="wordmark">
-            meuquarto
-          </Link>
+          <Logo href="/" id="site-home" />
           <nav className="actions" aria-label="Conta">
             <Suspense fallback={<SignedOutTopBarActions />}>
               <TopBarActions />

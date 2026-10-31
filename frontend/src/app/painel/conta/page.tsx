@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { ChangePasswordForm } from "@/components/ChangePasswordForm";
@@ -7,6 +6,7 @@ import { DeleteAccountForm } from "@/components/DeleteAccountForm";
 import { LogoutButton } from "@/components/LogoutButton";
 import { PanelNav } from "@/components/PanelNav";
 import { getSession } from "@/lib/session";
+import { Logo } from "@/components/Logo";
 
 export const metadata: Metadata = { title: "Conta, painel do meuquarto" };
 
@@ -49,9 +49,7 @@ export default function AccountPage() {
     <div className="page">
       <header className="topbar">
         <div className="wrap topbar__in">
-          <Link href="/" className="wordmark">
-            meuquarto
-          </Link>
+          <Logo href="/" />
         </div>
       </header>
       <div className="wrap pshell">
