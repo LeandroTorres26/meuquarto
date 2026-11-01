@@ -1,6 +1,19 @@
 // Browser-side API client. Talks only to this origin (/api/*, proxied to the backend by proxy.ts),
 // so it needs no API address and holds no secrets.
 
+import { catalogSearchPath } from "./collection";
+import type {
+  CatalogSearch,
+  CollectionItem,
+  CollectionPage,
+  Highlight,
+  HighlightList,
+  HighlightOverview,
+} from "@/lib/collection";
+import type { NowEntry, NowMode } from "@/lib/now";
+import type { LinkedAccount, ProviderId, SyncResult } from "@/lib/linked-accounts";
+import type { Category } from "@/lib/profile-view";
+
 export class ApiError extends Error {
   constructor(
     readonly status: number,
@@ -54,16 +67,19 @@ async function toError(res: Response): Promise<ApiError> {
   return new ApiError(res.status, code, Number.isFinite(retry) && retry > 0 ? retry : undefined);
 }
 
-/** POST JSON with the CSRF header. Retries once with a fresh token if the API answers 403. */
-export async function postJson<T = void>(
+type Method = "POST" | "PUT" | "PATCH" | "DELETE";
+
+/** A state-changing request with the CSRF header. Retries once with a fresh token if the API answers 403. */
+async function sendRaw<T>(
+  method: Method,
   path: string,
-  body?: unknown,
-  deps: ClientDeps = defaultDeps(),
-): Promise<T> {
+  body: unknown,
+  deps: ClientDeps,
+): Promise<{ status: number; data: T }> {
   for (let attempt = 0; attempt < 2; attempt++) {
     const token = await ensureCsrfToken(deps, attempt > 0);
     const res = await deps.fetch(path, {
-      method: "POST",
+      method,
       credentials: "same-origin",
       headers: {
         "Content-Type": "application/json",
@@ -74,10 +90,45 @@ export async function postJson<T = void>(
     });
     if (res.status === 403 && attempt === 0) continue;
     if (!res.ok) throw await toError(res);
-    return res.status === 204 ? (undefined as T) : ((await res.json()) as T);
+    return {
+      status: res.status,
+      data: res.status === 204 ? (undefined as T) : ((await res.json()) as T),
+    };
   }
   throw new ApiError(403, undefined);
 }
+
+const sendJson = async <T>(
+  method: Method,
+  path: string,
+  body: unknown,
+  deps: ClientDeps,
+): Promise<T> => (await sendRaw<T>(method, path, body, deps)).data;
+
+/** POST JSON with the CSRF header. Retries once with a fresh token if the API answers 403. */
+export const postJson = <T = void>(
+  path: string,
+  body?: unknown,
+  deps: ClientDeps = defaultDeps(),
+): Promise<T> => sendJson<T>("POST", path, body, deps);
+
+/** PUT JSON with the CSRF header (same retry as postJson). */
+export const putJson = <T = void>(
+  path: string,
+  body?: unknown,
+  deps: ClientDeps = defaultDeps(),
+): Promise<T> => sendJson<T>("PUT", path, body, deps);
+
+/** PATCH JSON with the CSRF header (same retry as postJson). */
+export const patchJson = <T = void>(
+  path: string,
+  body?: unknown,
+  deps: ClientDeps = defaultDeps(),
+): Promise<T> => sendJson<T>("PATCH", path, body, deps);
+
+/** DELETE with the CSRF header (same retry as postJson). */
+export const deleteRequest = (path: string, deps: ClientDeps = defaultDeps()): Promise<void> =>
+  sendJson<void>("DELETE", path, undefined, deps);
 
 export async function getJson<T>(path: string, deps: ClientDeps = defaultDeps()): Promise<T> {
   const res = await deps.fetch(path, {
@@ -99,3 +150,55 @@ export const logIn = (input: { email: string; password: string }) =>
 export const logOut = () => postJson("/api/auth/logout");
 export const checkSlug = (slug: string, deps?: ClientDeps) =>
   getJson<SlugCheck>(`/api/slugs/${encodeURIComponent(slug)}/availability`, deps);
+
+export const changePassword = (input: { currentPassword: string; newPassword: string }) =>
+  postJson("/api/account/password", input);
+export const deleteAccount = (input: { password: string }) =>
+  postJson("/api/account/delete", input);
+
+export const linkAccount = (input: { provider: ProviderId; username: string }) =>
+  postJson<LinkedAccount>("/api/linked-accounts", input);
+export const unlinkAccount = (id: number) =>
+  deleteRequest(`/api/linked-accounts/${encodeURIComponent(String(id))}`);
+export const syncAccount = (id: number) =>
+  postJson<SyncResult>(`/api/linked-accounts/${encodeURIComponent(String(id))}/sync`);
+
+// Collection, highlights and catalog (S7, S8). Ids are numbers from our own API; they still go through
+// encodeURIComponent like every path segment.
+const seg = (id: number) => encodeURIComponent(String(id));
+
+export const searchCatalog = (category: Category, term: string, deps?: ClientDeps) =>
+  getJson<CatalogSearch>(catalogSearchPath(category, term), deps);
+
+/** `created` is false when the work was already in the collection (the API answers 200 instead of 201). */
+export async function addToCollection(
+  input: { category: Category; externalId: string },
+  deps: ClientDeps = defaultDeps(),
+): Promise<{ created: boolean; item: CollectionItem }> {
+  const { status, data } = await sendRaw<CollectionItem>("POST", "/api/collection", input, deps);
+  return { created: status === 201, item: data };
+}
+export const getCollection = (path: string, deps?: ClientDeps) =>
+  getJson<CollectionPage>(path, deps);
+export const updateCollectionItem = (
+  id: number,
+  change: { note?: string; hidden?: boolean },
+  deps?: ClientDeps,
+) => patchJson<CollectionItem>(`/api/collection/${seg(id)}`, change, deps);
+export const removeCollectionItem = (id: number) => deleteRequest(`/api/collection/${seg(id)}`);
+
+export const getHighlights = (deps?: ClientDeps) =>
+  getJson<HighlightOverview>("/api/highlights", deps);
+export const addHighlight = (input: { category: Category | null; collectionItemId: number }) =>
+  postJson<Highlight>("/api/highlights", input);
+export const removeHighlight = (id: number) => deleteRequest(`/api/highlights/${seg(id)}`);
+export const reorderHighlights = (input: { category: Category | null; ids: number[] }) =>
+  putJson<HighlightList>("/api/highlights/order", input);
+
+// "Agora" (S10). One endpoint changes a category: automatic, pinned to a collection item, or hidden.
+export const getNow = (deps?: ClientDeps) => getJson<NowEntry[]>("/api/now", deps);
+export const changeNow = (category: Category, mode: NowMode, collectionItemId?: number) =>
+  putJson<NowEntry>(`/api/now/${encodeURIComponent(category)}`, {
+    mode,
+    ...(collectionItemId === undefined ? {} : { collectionItemId }),
+  });

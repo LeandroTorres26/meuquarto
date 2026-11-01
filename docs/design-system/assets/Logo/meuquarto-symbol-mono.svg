@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="currentColor" role="img" aria-label="meuquarto">
+  <g transform="translate(20 26) matrix(1 -0.5 0 1 0 0)">
+    <path fill-rule="evenodd" d="M-12,-14 H10.5 V12.5 H-12 Z M-9,-10 h7 v7.5 h-7 Z M0,-10 h7 v7.5 h-7 Z M-9,-0.5 h7 v7.5 h-7 Z M0,-0.5 h7 v7.5 h-7 Z"></path>
+    <rect x="-8" y="-9" width="5" height="5.5"></rect>
+  </g>
+  <polygon points="33.5,6.75 56,18 56,44.5 33.5,33.25"></polygon>
+  <polygon points="32,36.2 54,47.2 32,58 10,47.2"></polygon>
+</svg>

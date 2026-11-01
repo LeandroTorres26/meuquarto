@@ -1,7 +1,10 @@
 package com.meuquarto.identity.domain;
 
+import com.meuquarto.shared.domain.DomainException;
+import com.meuquarto.shared.domain.ErrorKind;
+
 /** A sign-up or credential rule was broken; {@link #rule()} says which one, for the API error code. */
-public class AccountRuleException extends RuntimeException {
+public final class AccountRuleException extends DomainException {
 
     public enum Rule {
         INVALID_EMAIL,
@@ -17,7 +20,7 @@ public class AccountRuleException extends RuntimeException {
     private final Rule rule;
 
     public AccountRuleException(Rule rule) {
-        super(rule.name());
+        super(rule.name(), rule == Rule.EMAIL_TAKEN ? ErrorKind.CONFLICT : ErrorKind.INVALID);
         this.rule = rule;
     }
 

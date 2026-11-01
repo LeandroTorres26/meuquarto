@@ -14,7 +14,7 @@ The session cookie is HttpOnly and SameSite=Lax, CSRF is cookie-to-header, CORS 
 
 ## Consequences
 - The API address and its port are never in the client bundle; CSP and cookies need no change.
-- Every request to the API passes through the web container, and the backend sees the web container as the client address. The per-IP limits (ADR 0015) are only meaningful once the API trusts `X-Forwarded-For` from the proxy chain (already listed in docs/security.md).
+- Every request to the API passes through the web container, and the backend sees the web container as the client address. The per-IP limits (ADR 0015) only work because the proxy rebuilds `X-Forwarded-For` and the API trusts it from private peers only (ADR 0017).
 - The proxy runs a short `GET /api/auth/me` for the pages above on every request (3 s timeout; failure counts as signed out).
 
 ## Alternatives considered

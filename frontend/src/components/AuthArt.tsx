@@ -5,25 +5,27 @@ import type { CSSProperties } from "react";
 // (docs/design-system/components/HighlightCard/README.md). The covers are abstract placeholders.
 
 type Cover = {
-  kind: "poster" | "dvd" | "vinyl" | "game" | "book";
+  kind: "poster" | "vinyl" | "game" | "book";
   tilt: number;
   src: string;
   title: string;
   year: string;
   slip?: string;
-  fix: "pin" | "tape";
+  /** Finish variant, set by hand here because the covers have no id: only the book carries one. */
+  variant?: "ribbon";
 };
 
 const tiltStyle = (tilt: number) => ({ "--tilt-f": tilt }) as CSSProperties;
 
-function ArtCard({ kind, tilt, src, title, year, slip, fix }: Cover) {
-  const modifier = kind === "book" ? "mq-item--book mq-item--volume" : `mq-item--${kind}`;
+function ArtCard({ kind, tilt, src, title, year, slip, variant }: Cover) {
+  const volume = kind === "book" ? " mq-item--volume" : "";
+  const modifier = `mq-item--${kind}${volume}${variant ? ` mq-item--${variant}` : ""}`;
   return (
     <li>
       <article className={`mq-item ${modifier}`} style={tiltStyle(tilt)}>
         <div className="mq-item__link">
           <figure className="mq-item__cover">
-            {kind === "dvd" && <span className="mq-spine" />}
+            {variant === "ribbon" && <span className="mq-ribbon" aria-hidden="true" />}
             {kind === "vinyl" && <span className="mq-record" />}
             {kind === "game" && (
               <span className="mq-gamebar">
@@ -33,7 +35,6 @@ function ArtCard({ kind, tilt, src, title, year, slip, fix }: Cover) {
             {/* Decorative SVG from /public: nothing for next/image to optimize. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="mq-art" src={src} alt="" />
-            <span className={fix === "pin" ? "mq-pin" : "mq-tape"} />
             {slip && <p className="mq-slip">{slip}</p>}
           </figure>
           <div className="mq-item__meta">
@@ -56,24 +57,9 @@ export function SignUpArt() {
         title="Central do Brasil"
         year="1998"
         slip="chorei no final"
-        fix="pin"
       />
-      <ArtCard
-        kind="dvd"
-        tilt={0.516}
-        src="/covers/c12.svg"
-        title="Frieren"
-        year="2023"
-        fix="pin"
-      />
-      <ArtCard
-        kind="vinyl"
-        tilt={0.619}
-        src="/covers/c06.svg"
-        title="Elis &amp; Tom"
-        year="1974"
-        fix="pin"
-      />
+      <ArtCard kind="poster" tilt={0.516} src="/covers/c12.svg" title="Frieren" year="2023" />
+      <ArtCard kind="vinyl" tilt={0.619} src="/covers/c06.svg" title="Elis &amp; Tom" year="1974" />
     </>
   );
 }
@@ -81,14 +67,7 @@ export function SignUpArt() {
 export function SignInArt() {
   return (
     <>
-      <ArtCard
-        kind="game"
-        tilt={0.685}
-        src="/covers/c01.svg"
-        title="Celeste"
-        year="2018"
-        fix="tape"
-      />
+      <ArtCard kind="game" tilt={0.685} src="/covers/c01.svg" title="Celeste" year="2018" />
       <ArtCard
         kind="book"
         tilt={-0.804}
@@ -96,16 +75,9 @@ export function SignInArt() {
         title="Grande Sertão"
         year="1956"
         slip="nonada"
-        fix="tape"
+        variant="ribbon"
       />
-      <ArtCard
-        kind="poster"
-        tilt={-0.603}
-        src="/covers/c07.svg"
-        title="Twin Peaks"
-        year="1990"
-        fix="pin"
-      />
+      <ArtCard kind="poster" tilt={-0.603} src="/covers/c07.svg" title="Twin Peaks" year="1990" />
     </>
   );
 }
