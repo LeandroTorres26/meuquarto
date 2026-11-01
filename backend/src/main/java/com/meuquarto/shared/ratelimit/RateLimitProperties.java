@@ -4,7 +4,7 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
-/** Per-IP limits ({@code meuquarto.rate-limit.*}). Defaults are the production values. */
+/** Per-IP limits (plus {@code password-reset-email}, per e-mail address) ({@code meuquarto.rate-limit.*}). Defaults are the production values. */
 @ConfigurationProperties("meuquarto.rate-limit")
 public record RateLimitProperties(
         @DefaultValue Rule signup,
@@ -15,6 +15,9 @@ public record RateLimitProperties(
         @DefaultValue Rule linkAccount,
         @DefaultValue Rule manualSync,
         @DefaultValue Rule publicRead,
+        @DefaultValue Rule passwordReset,
+        @DefaultValue Rule passwordResetConfirm,
+        @DefaultValue Rule passwordResetEmail,
         @DefaultValue Rule anonymous) {
 
     public RateLimitProperties {
@@ -26,6 +29,9 @@ public record RateLimitProperties(
         linkAccount = linkAccount.orElse(10, Duration.ofMinutes(10));
         manualSync = manualSync.orElse(30, Duration.ofMinutes(10));
         publicRead = publicRead.orElse(120, Duration.ofMinutes(1));
+        passwordReset = passwordReset.orElse(5, Duration.ofHours(1));
+        passwordResetConfirm = passwordResetConfirm.orElse(20, Duration.ofHours(1));
+        passwordResetEmail = passwordResetEmail.orElse(3, Duration.ofHours(1));
         anonymous = anonymous.orElse(300, Duration.ofMinutes(1));
     }
 

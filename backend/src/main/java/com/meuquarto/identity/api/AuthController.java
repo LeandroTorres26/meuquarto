@@ -1,6 +1,7 @@
 package com.meuquarto.identity.api;
 
 import com.meuquarto.identity.application.Accounts;
+import com.meuquarto.identity.application.PasswordReset;
 import com.meuquarto.identity.infra.AccountPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -34,12 +35,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final Accounts accounts;
+    private final PasswordReset passwordReset;
     private final SecurityContextRepository contextRepository;
     private final SecurityContextHolderStrategy contextHolder = SecurityContextHolder.getContextHolderStrategy();
     private final SessionAuthenticationStrategy sessionFixation = new ChangeSessionIdAuthenticationStrategy();
 
-    public AuthController(Accounts accounts, SecurityContextRepository contextRepository) {
+    public AuthController(Accounts accounts, PasswordReset passwordReset, SecurityContextRepository contextRepository) {
         this.accounts = accounts;
+        this.passwordReset = passwordReset;
         this.contextRepository = contextRepository;
     }
 
@@ -67,6 +70,20 @@ public class AuthController {
         return new MeResponse(principal.getUsername(), accounts.slugOf(principal.userId()).orElse(null));
     }
 
+    /** Always 202 with no body, whether or not the e-mail has an account (no account enumeration). */
+    @PostMapping("/password-reset")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void requestPasswordReset(@Valid @RequestBody PasswordResetRequest body) {
+        passwordReset.request(body.email());
+    }
+
+    /** Sets the new password. Every unusable token (unknown, tampered, expired, spent) gets the same 400. */
+    @PostMapping("/password-reset/confirm")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void confirmPasswordReset(@Valid @RequestBody PasswordResetConfirmRequest body) {
+        passwordReset.confirm(body.token(), body.password());
+    }
+
     @GetMapping("/me")
     public MeResponse me(@AuthenticationPrincipal AccountPrincipal principal) {
         return new MeResponse(principal.getUsername(), accounts.slugOf(principal.userId()).orElse(null));
@@ -89,6 +106,12 @@ public class AuthController {
 
     public record LoginRequest(
             @NotNull @Size(max = 254) String email,
+            @NotNull @Size(max = 128) String password) {}
+
+    public record PasswordResetRequest(@NotNull @Size(max = 254) String email) {}
+
+    public record PasswordResetConfirmRequest(
+            @NotNull @Size(max = 128) String token,
             @NotNull @Size(max = 128) String password) {}
 
     public record MeResponse(String email, String slug) {}
