@@ -71,6 +71,9 @@ export function LoginForm() {
             required
             aria-invalid={error?.credentials ? true : undefined}
           />
+          <p className="help">
+            <Link href="/esqueci-senha">Esqueci minha senha</Link>
+          </p>
         </div>
         <button
           type="submit"

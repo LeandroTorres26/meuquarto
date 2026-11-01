@@ -147,6 +147,10 @@ export const signUp = (input: { email: string; password: string; slug: string })
   postJson<Me>("/api/auth/signup", input);
 export const logIn = (input: { email: string; password: string }) =>
   postJson<Me>("/api/auth/login", input);
+export const requestPasswordReset = (input: { email: string }) =>
+  postJson("/api/auth/password-reset", input);
+export const confirmPasswordReset = (input: { token: string; password: string }) =>
+  postJson("/api/auth/password-reset/confirm", input);
 export const logOut = () => postJson("/api/auth/logout");
 export const checkSlug = (slug: string, deps?: ClientDeps) =>
   getJson<SlugCheck>(`/api/slugs/${encodeURIComponent(slug)}/availability`, deps);
