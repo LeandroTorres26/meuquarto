@@ -66,12 +66,15 @@ describe("providers", () => {
   });
 
   it("only offers linking for platforms with a backend provider that are not linked yet", () => {
-    expect(linkableProviders([]).map((p) => p.id)).toEqual(["LETTERBOXD", "ANILIST"]);
-    expect(linkableProviders([account("ANILIST")]).map((p) => p.id)).toEqual(["LETTERBOXD"]);
+    expect(linkableProviders([]).map((p) => p.id)).toEqual(["LETTERBOXD", "ANILIST", "GOODREADS"]);
+    expect(linkableProviders([account("ANILIST")]).map((p) => p.id)).toEqual([
+      "LETTERBOXD",
+      "GOODREADS",
+    ]);
   });
 
   it("lists the platforms still without a provider as coming soon", () => {
-    expect(comingSoonProviders().map((p) => p.id)).toEqual(["STEAM", "LASTFM", "GOODREADS"]);
+    expect(comingSoonProviders().map((p) => p.id)).toEqual(["STEAM", "LASTFM"]);
   });
 });
 

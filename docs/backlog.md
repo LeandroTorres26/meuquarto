@@ -74,7 +74,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - AniList activity adapter
 - Last.fm adapter (now playing, top tracks/artists)
 - Steam adapter (recently played; appid → IGDB mapping)
-- Goodreads RSS adapter
+- Goodreads RSS adapter (done, #34; provisional rows, see ADR 0005)
 - Sync upserts collection items per platform rules (BR-10); unlink keeps highlighted/noted items as manual (FR-16)
 - Sync scheduler + manual sync with cooldown (BR-03) + `sync_runs` + backoff
 - "Agora" block auto + override (BR-06) + adult filter (BR-08)

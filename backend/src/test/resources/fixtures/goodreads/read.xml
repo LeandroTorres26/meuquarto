@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Ana's bookshelf: read</title>
+    <link>https://www.goodreads.com/review/list/12345678-ana?shelf=read</link>
+    <description>Ana's bookshelf: read</description>
+    <!-- 1. A read book with a date read and a cover on the Goodreads CDN. -->
+    <item>
+      <guid>https://www.goodreads.com/review/show/9000001?utm_medium=api&amp;utm_source=rss</guid>
+      <pubDate>Mon, 26 Oct 2026 10:00:00 -0700</pubDate>
+      <title>Dune (Dune, #1)</title>
+      <link>https://www.goodreads.com/review/show/9000001</link>
+      <book_id>234225</book_id>
+      <book_image_url>https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1555447414l/44767458._SY75_.jpg</book_image_url>
+      <book_small_image_url>https://i.gr-assets.com/images/S/small.jpg</book_small_image_url>
+      <book_medium_image_url>https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1555447414l/44767458._SX98_.jpg</book_medium_image_url>
+      <book_large_image_url>https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1555447414l/44767458.jpg</book_large_image_url>
+      <book_description><![CDATA[<b>Bold</b> <script>alert(1)</script> A desert planet.]]></book_description>
+      <book id="234225"><num_pages>604</num_pages></book>
+      <author_name>Frank Herbert</author_name>
+      <isbn>0441172717</isbn>
+      <user_name>Ana</user_name>
+      <user_rating>5</user_rating>
+      <user_read_at><![CDATA[Sat, 10 Oct 2026 00:00:00 -0700]]></user_read_at>
+      <user_date_added><![CDATA[Mon, 05 Oct 2026 09:00:00 -0700]]></user_date_added>
+      <user_date_created><![CDATA[Mon, 05 Oct 2026 09:00:00 -0700]]></user_date_created>
+      <user_shelves></user_shelves>
+      <book_published>1965</book_published>
+    </item>
+    <!-- 2. No date read: the date added is used. Only a "nophoto" placeholder cover. -->
+    <item>
+      <guid>https://www.goodreads.com/review/show/9000002</guid>
+      <title>O Hobbit</title>
+      <book_id>5907</book_id>
+      <book_image_url>https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png</book_image_url>
+      <book_medium_image_url>https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png</book_medium_image_url>
+      <user_read_at></user_read_at>
+      <user_date_added><![CDATA[Sun, 04 Oct 2026 12:30:00 +0000]]></user_date_added>
+      <book_published></book_published>
+    </item>
+    <!-- 3. Hostile: markup in the title, covers off the allowlist, a bad year. -->
+    <item>
+      <title>&lt;script&gt;alert(1)&lt;/script&gt;&lt;b&gt;Bold&lt;/b&gt;</title>
+      <book_id>777</book_id>
+      <book_image_url>https://evil.example/c.jpg</book_image_url>
+      <book_medium_image_url>http://i.gr-assets.com/c.jpg</book_medium_image_url>
+      <book_large_image_url>https://i.gr-assets.com.evil.example/c.jpg</book_large_image_url>
+      <user_read_at><![CDATA[Fri, 02 Oct 2026 00:00:00 +0000]]></user_read_at>
+      <book_published>20x4</book_published>
+    </item>
+    <!-- 4. No book id: skipped. -->
+    <item>
+      <title>Mystery</title>
+      <user_read_at><![CDATA[Fri, 02 Oct 2026 00:00:00 +0000]]></user_read_at>
+    </item>
+    <!-- 5. Non-numeric book id: skipped. -->
+    <item>
+      <title>Broken</title>
+      <book_id>../../etc/passwd</book_id>
+      <user_read_at><![CDATA[Fri, 02 Oct 2026 00:00:00 +0000]]></user_read_at>
+    </item>
+    <!-- 6. No usable date at all: skipped. -->
+    <item>
+      <title>Undated</title>
+      <book_id>42</book_id>
+      <user_read_at>yesterday</user_read_at>
+    </item>
+  </channel>
+</rss>

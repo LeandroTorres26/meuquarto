@@ -52,7 +52,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 | BR-07 | A work appears once per collection (synced and manual merge into one item) and once per highlight list. |
 | BR-08 | Adult-flagged items are never shown on the public profile in P2. |
 | BR-09 | A purchase is granted only after a verified Stripe webhook, idempotent per event id. |
-| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList, entries with status completed, current, paused or repeating (never planning). Goodreads, shelves read and currently-reading. Steam, owned games with playtime > 0. Last.fm, loved tracks and albums with at least N scrobbles (N configured, start at 10), never each play. |
+| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList, entries with status completed, current, paused or repeating (never planning). Goodreads, shelves read (finished) and currently-reading (in progress); the books are provisional Goodreads rows until mapped to Open Library (ADR 0005). Steam, owned games with playtime > 0. Last.fm, loved tracks and albums with at least N scrobbles (N configured, start at 10), never each play. |
 
 ## Non-functional requirements
 - NFR-01 Modular monolith; each external platform is one `MediaProvider` implementation (Strategy/Adapter).
