@@ -209,7 +209,7 @@ export default function Landing() {
                 Termos
               </Link>{" "}
               e{" "}
-              <Link href="/termos" prefetch={false}>
+              <Link href="/privacidade" prefetch={false}>
                 privacidade
               </Link>
             </p>
