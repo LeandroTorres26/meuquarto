@@ -234,4 +234,16 @@ class CollectionItemTest {
         assertThat(new CollectionException(Problem.CATALOG_UNAVAILABLE).kind()).isEqualTo(ErrorKind.UNAVAILABLE);
         assertThat(new CollectionException(Problem.NOTE_TOO_LONG).code()).isEqualTo("NOTE_TOO_LONG");
     }
+
+    @Test
+    void theSyncedProviderIsTheMostRecentNonManualSourceAndEmptyForManualItems() {
+        assertThat(manualItem().syncedProvider()).isEmpty();
+
+        CollectionItem item = syncedItem();
+        item.addAgainByHand(T1);
+        assertThat(item.syncedProvider()).contains("LETTERBOXD");
+
+        item.seenBySync("TMDB_IMPORT", 6L, T1);
+        assertThat(item.syncedProvider()).contains("TMDB_IMPORT");
+    }
 }

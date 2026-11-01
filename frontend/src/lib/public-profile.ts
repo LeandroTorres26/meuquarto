@@ -18,6 +18,7 @@ function isProfile(value: unknown): value is PublicProfileData {
     !!v &&
     typeof v.slug === "string" &&
     typeof v.displayName === "string" &&
+    Array.isArray(v.now) &&
     Array.isArray(v.favorites) &&
     Array.isArray(v.categories)
   );

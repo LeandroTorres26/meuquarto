@@ -10,6 +10,7 @@ import type {
   HighlightList,
   HighlightOverview,
 } from "@/lib/collection";
+import type { NowEntry, NowMode } from "@/lib/now";
 import type { LinkedAccount, ProviderId, SyncResult } from "@/lib/linked-accounts";
 import type { Category } from "@/lib/profile-view";
 
@@ -193,3 +194,11 @@ export const addHighlight = (input: { category: Category | null; collectionItemI
 export const removeHighlight = (id: number) => deleteRequest(`/api/highlights/${seg(id)}`);
 export const reorderHighlights = (input: { category: Category | null; ids: number[] }) =>
   putJson<HighlightList>("/api/highlights/order", input);
+
+// "Agora" (S10). One endpoint changes a category: automatic, pinned to a collection item, or hidden.
+export const getNow = (deps?: ClientDeps) => getJson<NowEntry[]>("/api/now", deps);
+export const changeNow = (category: Category, mode: NowMode, collectionItemId?: number) =>
+  putJson<NowEntry>(`/api/now/${encodeURIComponent(category)}`, {
+    mode,
+    ...(collectionItemId === undefined ? {} : { collectionItemId }),
+  });

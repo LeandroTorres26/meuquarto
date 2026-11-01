@@ -3,6 +3,7 @@ import { cookies, headers } from "next/headers";
 import { apiUrl } from "@/lib/api";
 import { collectionQuery, type CollectionPage, type HighlightOverview } from "@/lib/collection";
 import { apiRequestHeaders, trustProxyHeaders } from "@/lib/forwarded-headers";
+import type { NowEntry } from "@/lib/now";
 import type { Category, PublicProfileData } from "@/lib/profile-view";
 
 /** GET `path` on the API as the signed-in owner: session cookie and visitor address forwarded (ADR 0017). Null on any failure. */
@@ -33,6 +34,9 @@ async function getAsOwner<T>(path: string): Promise<T | null> {
 
 /** Server components: the owner's highlight lists (GET /api/highlights). Null when the API cannot answer. */
 export const fetchHighlights = () => getAsOwner<HighlightOverview>("/api/highlights");
+
+/** Server components: the owner's "Agora" state, one entry per category (GET /api/now). */
+export const fetchNow = () => getAsOwner<NowEntry[]>("/api/now");
 
 /** Server components: the first page of one category's collection, newest first. */
 export const fetchCollectionPage = (category: Category) =>

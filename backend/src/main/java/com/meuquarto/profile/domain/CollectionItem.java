@@ -16,7 +16,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import java.time.Instant;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import org.hibernate.annotations.BatchSize;
 
@@ -159,6 +161,16 @@ public class CollectionItem {
     /** True when the item came only from the owner's hand. */
     public boolean isRemovable() {
         return sources.stream().allMatch(ItemSource::isManual);
+    }
+
+    /**
+     * The platform that saw this work most recently (the one "Agora" credits), empty when the item only
+     * came from the owner's hand.
+     */
+    public Optional<String> syncedProvider() {
+        return sources.stream().filter(source -> !source.isManual())
+                .max(Comparator.comparing(ItemSource::firstSeenAt).thenComparing(ItemSource::source))
+                .map(ItemSource::source);
     }
 
     /** FR-09: removing a synced item would bring it back at the next sync, so only hiding is allowed. */
