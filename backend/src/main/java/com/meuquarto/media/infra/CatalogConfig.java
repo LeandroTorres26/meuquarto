@@ -23,6 +23,17 @@ class CatalogConfig {
         return new TmdbCatalog(HttpCatalogProvider.newClient(), Clock.systemUTC(), Duration.ofMinutes(10), baseUrl, token);
     }
 
+    /** Open Library and Deezer need no key: fixed hosts, nothing to configure. */
+    @Bean
+    CatalogProvider openLibraryCatalog() {
+        return new OpenLibraryCatalog(Clock.systemUTC());
+    }
+
+    @Bean
+    CatalogProvider deezerCatalog() {
+        return new DeezerCatalog(Clock.systemUTC());
+    }
+
     /** Every {@link CatalogProvider} bean goes in; a new catalog is just a new bean. */
     @Bean
     CatalogRegistry catalogRegistry(List<CatalogProvider> providers) {
