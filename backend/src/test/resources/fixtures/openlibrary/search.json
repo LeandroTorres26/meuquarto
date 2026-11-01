@@ -1,0 +1,13 @@
+{
+  "numFound": 6,
+  "start": 0,
+  "numFoundExact": true,
+  "docs": [
+    {"key": "/works/OL45804W", "title": "Fantastic Mr Fox", "first_publish_year": 1970, "cover_i": 8739161},
+    {"key": "/works/OL262758W", "title": "Sem capa nem ano"},
+    {"key": "/works/OL1W", "title": "Capa invalida", "first_publish_year": 99999, "cover_i": -1},
+    {"key": "/authors/OL34184A", "title": "Not a work"},
+    {"key": "/works/OL5W/../../evil", "title": "Chave estranha", "cover_i": 1},
+    {"key": "/works/OL9W", "title": "   "}
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "data": [
+    {
+      "id": 302127,
+      "title": "Discovery",
+      "cover": "https://api.deezer.com/album/302127/image",
+      "cover_medium": "https://cdn-images.dzcdn.net/images/cover/2e018122cb56986277102d2041a592c8/250x250-000000-80-0-0.jpg",
+      "explicit_lyrics": false,
+      "artist": {"id": 27, "name": "Daft Punk", "type": "artist"},
+      "type": "album"
+    },
+    {
+      "id": 5,
+      "title": "Letras explicitas",
+      "cover_medium": "https://e-cdns-images.dzcdn.net/images/cover/abc/250x250-000000-80-0-0.jpg",
+      "explicit_lyrics": true,
+      "artist": {"id": 1, "name": "Rapper"},
+      "type": "album"
+    },
+    {
+      "id": 6,
+      "title": "Capa de fora",
+      "cover_medium": "https://evil.example/cover.jpg",
+      "artist": {"name": "X"}
+    },
+    {
+      "id": 7,
+      "title": "Sem artista nem capa"
+    },
+    {"title": "Sem id", "artist": {"name": "X"}}
+  ],
+  "total": 5
+}

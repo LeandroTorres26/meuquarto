@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 /**
  * Where a work lives on its canonical catalog (FR-10a). The hosts are fixed here and only a plain id
  * is appended, so a stored value can never turn into a link to somewhere else. A catalog that cannot
- * be linked by id (IGDB and Deezer need a slug or a kind) simply has no link yet.
+ * be linked by id (IGDB needs a slug) simply has no link yet.
  */
 public final class MediaLinks {
 
@@ -31,6 +31,7 @@ public final class MediaLinks {
                 default -> null;
             };
             case "OPENLIBRARY" -> category == MediaCategory.BOOK ? "https://openlibrary.org/works/" : null;
+            case "DEEZER" -> category == MediaCategory.MUSIC ? "https://www.deezer.com/album/" : null;
             default -> null;
         };
         return Optional.ofNullable(base).map(prefix -> prefix + externalId);

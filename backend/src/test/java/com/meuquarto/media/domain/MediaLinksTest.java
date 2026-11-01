@@ -13,6 +13,9 @@ class MediaLinksTest {
         assertThat(MediaLinks.urlFor(MediaCategory.SERIES, "TMDB", "1399")).contains("https://www.themoviedb.org/tv/1399");
         assertThat(MediaLinks.urlFor(MediaCategory.ANIME, "ANILIST", "1")).contains("https://anilist.co/anime/1");
         assertThat(MediaLinks.urlFor(MediaCategory.MANGA, "ANILIST", "30002")).contains("https://anilist.co/manga/30002");
+        assertThat(MediaLinks.urlFor(MediaCategory.BOOK, "OPENLIBRARY", "OL45804W")).contains("https://openlibrary.org/works/OL45804W");
+        assertThat(MediaLinks.urlFor(MediaCategory.MUSIC, "DEEZER", "302127")).contains("https://www.deezer.com/album/302127");
+        assertThat(MediaLinks.urlFor(MediaCategory.BOOK, "DEEZER", "302127")).isEmpty();
     }
 
     @Test
