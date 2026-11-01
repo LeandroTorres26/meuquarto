@@ -24,6 +24,7 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | [0018](0018-own-object-oriented-hierarchies.md) | Our own object-oriented hierarchies (course requirement) | Accepted |
 | [0019](0019-shared-kernel-for-cross-module-vocabulary.md) | Shared kernel for cross-module vocabulary | Accepted |
 | [0020](0020-media-reaches-profile-through-a-port.md) | Media reaches the profile through a port | Accepted |
+| [0021](0021-local-s3-server-and-avatar-serving.md) | Local S3 server and avatar serving through the API | Accepted |
 
 ## Template
 
