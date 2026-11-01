@@ -20,6 +20,7 @@ import com.meuquarto.profile.domain.PublicProfileException.Problem;
 import com.meuquarto.profile.domain.Slug;
 import com.meuquarto.profile.infra.CollectionItemRepository;
 import com.meuquarto.profile.infra.HighlightListRepository;
+import com.meuquarto.profile.infra.NowEntryRepository;
 import com.meuquarto.profile.infra.ProfileRepository;
 import com.meuquarto.profile.infra.VisibleRef;
 import com.meuquarto.shared.domain.MediaCategory;
@@ -57,17 +58,21 @@ public class PublicProfiles {
     private final HighlightListRepository lists;
     private final MediaSummaries summaries;
     private final PlanResolver plans;
+    private final NowBlocks nowBlocks;
+    private final NowEntryRepository nowEntries;
     private final PublicProfileCache cache;
     private final TransactionTemplate readOnly;
 
     public PublicProfiles(ProfileRepository profiles, CollectionItemRepository items, HighlightListRepository lists,
-            MediaSummaries summaries, PlanResolver plans, PublicProfileCache cache,
-            PlatformTransactionManager transactionManager) {
+            MediaSummaries summaries, PlanResolver plans, NowBlocks nowBlocks, NowEntryRepository nowEntries,
+            PublicProfileCache cache, PlatformTransactionManager transactionManager) {
         this.profiles = profiles;
         this.items = items;
         this.lists = lists;
         this.summaries = summaries;
         this.plans = plans;
+        this.nowBlocks = nowBlocks;
+        this.nowEntries = nowEntries;
         this.cache = cache;
         this.readOnly = new TransactionTemplate(transactionManager);
         this.readOnly.setReadOnly(true);
@@ -208,7 +213,9 @@ public class PublicProfiles {
                 mostRecent.contains(category),
                 ids.stream().map(loaded::get).map(item -> publicItem(item, media.get(item.mediaItemId()))).toList())));
         // The display name is edited in #15; until then the slug stands in for it.
-        return new PublicProfile(profile.slug(), profile.slug(), favorites, List.copyOf(sections));
+        List<PublicProfile.NowItem> now = List.copyOf(
+                nowBlocks.resolve(profile.id(), nowEntries.findByProfileId(profile.id())).values());
+        return new PublicProfile(profile.slug(), profile.slug(), now, favorites, List.copyOf(sections));
     }
 
     /** The list's items in the owner's order, keeping only those still shown (and of the category, if the list has one). */

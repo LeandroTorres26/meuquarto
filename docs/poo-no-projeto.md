@@ -14,7 +14,7 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListProvider` (a mesma classe da hierarquia 1), `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); `AniListProvider` feito (issue #31); os outros três na issue #22 |
 | 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); `PackPlan` só passa a ser usado quando houver compra (issue #39) |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
-| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException` | feito |
+| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException`, `NowException` | feito |
 
 Opcional depois (issue #43): `RoomObject` (abstrata) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`.
 
@@ -376,3 +376,7 @@ Leitura pública (issues #16 e #26): `profile/application/PublicProfiles.java` m
 - **O que é `Optional`/`Maybe`?** Um tipo genérico que representa "tem valor ou não tem", em vez de `null`.
 - **Mostre um construtor com `super`.** `AccountRuleException(Rule rule)` chama `super(rule.name(), ...)`.
 - **Mostre um método abstrato implementado.** `PasswordLengthRule.lengthOf` implementa o abstrato de `LengthRule`.
+
+## Agora (issue #35)
+
+Nenhuma hierarquia nova: `profile/domain/NowException.java` é a oitava subclasse de `DomainException` (códigos `NOT_IN_COLLECTION`, `ITEM_HIDDEN`, `CATEGORY_MISMATCH`, `ITEM_REQUIRED`, `UNEXPECTED_ITEM`), tratada pelo mesmo `DomainErrors`. A regra BR-06 fica em classes comuns do domínio: `NowEntry` (a escolha do dono para uma categoria: automático, fixado ou escondido; os três modos são exclusivos e `change` valida o pedido) e `NowBlock.shown(...)` (função pura: escondido vence, depois o item fixado, depois o último item sincronizado; Séries nunca tem automático). O teste é `BR06NowBlockTest`, sem Spring.

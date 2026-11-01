@@ -12,6 +12,7 @@ import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.infra.CollectionItemRepository;
 import com.meuquarto.profile.infra.HighlightListRepository;
 import com.meuquarto.profile.infra.ItemRef;
+import com.meuquarto.profile.infra.NowEntryRepository;
 import com.meuquarto.profile.infra.ProfileRepository;
 import com.meuquarto.shared.domain.MediaCategory;
 import java.time.Clock;
@@ -40,6 +41,7 @@ public class ProfileCollection {
     private final ProfileRepository profiles;
     private final CollectionItemRepository items;
     private final HighlightListRepository highlightLists;
+    private final NowEntryRepository nowEntries;
     private final MediaSnapshots snapshots;
     private final MediaSummaries summaries;
     private final PublicProfileCache publicProfiles;
@@ -47,11 +49,12 @@ public class ProfileCollection {
     private final Clock clock = Clock.systemUTC();
 
     public ProfileCollection(ProfileRepository profiles, CollectionItemRepository items,
-            HighlightListRepository highlightLists, MediaSnapshots snapshots, MediaSummaries summaries,
+            HighlightListRepository highlightLists, NowEntryRepository nowEntries, MediaSnapshots snapshots, MediaSummaries summaries,
             PublicProfileCache publicProfiles, PlatformTransactionManager transactionManager) {
         this.profiles = profiles;
         this.items = items;
         this.highlightLists = highlightLists;
+        this.nowEntries = nowEntries;
         this.snapshots = snapshots;
         this.summaries = summaries;
         this.publicProfiles = publicProfiles;
@@ -174,6 +177,7 @@ public class ProfileCollection {
             if (hidden) {
                 item.hide();
                 leaveHighlights(item);
+                leaveNow(item);
             } else {
                 item.unhide();
             }
@@ -198,6 +202,14 @@ public class ProfileCollection {
         List<HighlightList> containing = highlightLists.findContainingItem(item.id(), item.profileId());
         containing.forEach(list -> list.dropItem(item.id()));
         highlightLists.saveAllAndFlush(containing);
+    }
+
+    /** A hidden item cannot stay pinned in "Agora": that category goes back to automatic (BR-06). */
+    private void leaveNow(CollectionItem item) {
+        nowEntries.findByProfileIdAndCollectionItemId(item.profileId(), item.id()).ifPresent(entry -> {
+            entry.releaseItem(item.id());
+            nowEntries.saveAndFlush(entry);
+        });
     }
 
     private CollectionItem ownedItem(long userId, long itemId) {

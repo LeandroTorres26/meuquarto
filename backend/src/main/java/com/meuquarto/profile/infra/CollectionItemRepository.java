@@ -47,6 +47,19 @@ public interface CollectionItemRepository extends JpaRepository<CollectionItem, 
             """)
     List<VisibleRef> findVisibleRefs(@Param("profileId") long profileId);
 
+    /**
+     * The most recently active visible items of one category that a sync brought (at least one source other
+     * than MANUAL); "Agora" picks the first of them it may show (BR-06).
+     */
+    @Query("""
+            select i from CollectionItem i
+            where i.profileId = :profileId and i.category = :category and i.hidden = false
+              and exists (select 1 from i.sources s where s.source <> 'MANUAL')
+            order by i.lastActivityAt desc, i.id desc
+            """)
+    List<CollectionItem> findVisibleSynced(@Param("profileId") long profileId,
+            @Param("category") MediaCategory category, Pageable pageable);
+
     /** The visible items of one category, most recent activity first (index: profile_id, category, last_activity_at). */
     @Query("""
             select new com.meuquarto.profile.infra.VisibleRef(i.id, i.mediaItemId, i.category) from CollectionItem i

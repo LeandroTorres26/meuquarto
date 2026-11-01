@@ -8,7 +8,8 @@ import java.util.List;
  * What an anonymous visitor may see (FR-04), assembled from local data only. Immutable, so it can be
  * cached and shared. It deliberately holds no e-mail, user id, hidden or adult item.
  */
-public record PublicProfile(String slug, String displayName, List<PublicItem> favorites, List<Section> categories) {
+public record PublicProfile(String slug, String displayName, List<NowItem> now, List<PublicItem> favorites,
+        List<Section> categories) {
 
     /**
      * One category block of the home. {@code total} is the visible collection size ("Ver todos", FR-10b).
@@ -19,6 +20,14 @@ public record PublicProfile(String slug, String displayName, List<PublicItem> fa
     /** A work as the public sees it. {@code ref} is the collection item id: it only means something inside one profile. */
     public record PublicItem(long ref, MediaCategory category, String title, Integer year, String imageUrl,
             String note) {}
+
+    /**
+     * One entry of the "Agora" block (FR-15, BR-06). {@code ref} is the collection item id, like in {@link PublicItem}.
+     * {@code source} is {@code MANUAL} when the owner pinned it, else the platform name; {@code at} is when the
+     * activity happened on the platform (null for a pin).
+     */
+    public record NowItem(long ref, MediaCategory category, String title, Integer year, String imageUrl,
+            String source, Instant at) {}
 
     /** The details dialog (S17): the item, why it is in the collection and where to find it. */
     public record Detail(PublicItem item, List<Origin> origin, List<Link> links) {}

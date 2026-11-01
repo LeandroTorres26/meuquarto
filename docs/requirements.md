@@ -29,7 +29,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - FR-12 Link an external account by public username: Letterboxd (RSS), AniList (GraphQL, anime + manga), Last.fm, Steam, Goodreads (RSS). Validate that the account exists and is public.
 - FR-13 Scheduled sync (every ~6 h) plus manual "sync now" button (BR-03).
 - FR-14 Show sync status per account (last success, last error).
-- FR-15 "Agora" block: one item per category, automatic from sync, with manual override or hide (BR-06).
+- FR-15 "Agora" block: one item per category, automatic from sync, with manual override or hide (BR-06). Built (#35): `GET /api/now`, `PUT /api/now/{category}` (`mode` AUTOMATIC, PINNED with `collectionItemId`, or HIDDEN) and `now` in the public profile. Séries is manual only.
 - FR-16 Unlink an account: items that came only from it leave the collection, except those the owner highlighted or noted, which become manual.
 
 ### Monetization
