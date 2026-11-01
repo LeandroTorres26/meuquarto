@@ -1,6 +1,6 @@
 # 0013. Room rendering technology: CSS 3D in React
 
-- Status: Proposed (the owner accepts it; issue #42 closes then)
+- Status: Accepted (2026-11-01, by the owner, provisionally: revisit if the device check at the start of #43 fails)
 - Date: 2026-11-01
 
 ## Context
