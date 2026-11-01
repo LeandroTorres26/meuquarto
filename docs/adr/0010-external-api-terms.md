@@ -18,11 +18,11 @@ The product will be monetized (cosmetics). Several data sources restrict commerc
 | Source | Use | Commercial use | Attribution | Rate limit | Reviewed |
 |---|---|---|---|---|---|
 | TMDB | catalog films/series | license needed for commercial | required | – | pending |
-| AniList | catalog + activity anime/manga | – | – | – | pending |
-| Open Library | catalog books | – | – | – | pending |
+| AniList | catalog + activity anime/manga (public GraphQL, no key, implemented in #31) | pending: terms not yet confirmed from an authoritative source | pending (credit AniList on the profile) | documented 90 requests/min, 30 while degraded (the live response header showed 30 on 2026-10-28); we use 1 call per search or link check and 2 per sync, 5 s timeout, no redirects | pending |
+| Open Library | catalog books (public search and work APIs, no key, implemented in #22) | pending: terms not yet confirmed from an authoritative source | pending (credit Open Library on the profile; the footer already does) | asks clients to send an identifying User-Agent (we do) and to stay modest; one call per search, cached 10 minutes, 5 s timeout, no redirects | pending |
 | IGDB (Twitch) | catalog games | – | – | – | pending |
-| Deezer | catalog music, 30s previews | – | – | – | pending |
-| Letterboxd RSS | activity films | – | – | – | pending |
+| Deezer | catalog music, 30s previews (public album search, no key, implemented in #22; previews not used yet) | pending: public API terms not confirmed for commercial use | pending (credit Deezer on the profile; the footer already does) | documented quota of about 50 requests per 5 seconds per IP; one call per search, cached 10 minutes, 5 s timeout, no redirects | pending |
+| Letterboxd RSS | activity films (public per-user RSS, implemented in #30) | pending: feed terms not yet confirmed from an authoritative source | pending (credit Letterboxd on the profile if required) | none published; fetched only on sync (15 min cooldown, backoff), 5 s timeout, no redirects | pending |
 | Last.fm | activity music | – | – | – | pending |
 | Steam Web API | activity games | – | – | – | pending |
 | Goodreads RSS | activity books | – | – | – | pending |

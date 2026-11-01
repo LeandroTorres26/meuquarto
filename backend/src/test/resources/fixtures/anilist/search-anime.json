@@ -1,0 +1,9 @@
+{"data":{"Page":{"media":[
+  {"id":1,"isAdult":false,"title":{"romaji":"Cowboy Bebop","english":"Cowboy Bebop"},"startDate":{"year":1998},"seasonYear":1998,"coverImage":{"large":"https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1-GCsPm7waJ4kS.png"}},
+  {"id":2,"isAdult":false,"title":{"romaji":null,"english":"Only English Title"},"startDate":{"year":null},"seasonYear":2005,"coverImage":{"large":null}},
+  {"id":3,"isAdult":true,"title":{"romaji":"Adult Work","english":null},"startDate":{"year":2010},"seasonYear":2010,"coverImage":{"large":"https://s4.anilist.co/a.jpg"}},
+  {"id":4,"isAdult":false,"title":{"romaji":"Foreign Cover","english":null},"startDate":{"year":2011},"seasonYear":null,"coverImage":{"large":"https://evil.example/s4.anilist.co/x.jpg"}},
+  {"id":5,"isAdult":false,"title":{"romaji":"<script>alert(1)</script>","english":null},"startDate":{"year":null},"seasonYear":null,"coverImage":{"large":"http://s4.anilist.co/insecure.jpg"}},
+  {"isAdult":false,"title":{"romaji":"No id","english":null}},
+  {"id":7,"isAdult":false,"title":{"romaji":"  ","english":""}}
+]}}}

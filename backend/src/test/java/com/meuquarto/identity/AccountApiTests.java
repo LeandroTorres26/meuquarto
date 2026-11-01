@@ -82,6 +82,20 @@ class AccountApiTests {
     }
 
     @Test
+    void deletedAccountStopsBeingServedFromThePublicCacheAtOnce() throws Exception {
+        Cookie session = signUp("leandro@example.com", "gone-fast");
+        mvc.perform(get("/api/public/profiles/gone-fast")).andExpect(status().isOk());
+        mvc.perform(get("/api/public/profiles/gone-fast")).andExpect(status().isOk()); // from the cache
+
+        post(session, "/api/account/delete", "{\"password\":\"%s\"}".formatted(PASSWORD)).andExpect(status().isNoContent());
+
+        mvc.perform(get("/api/public/profiles/gone-fast")).andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value("PROFILE_NOT_FOUND"));
+        mvc.perform(get("/api/public/profiles/gone-fast/items/1")).andExpect(status().isNotFound());
+        mvc.perform(get("/api/public/profiles/gone-fast/collection?category=MOVIE")).andExpect(status().isNotFound());
+    }
+
+    @Test
     void anonymousAndCsrfLessRequestsAreRefused() throws Exception {
         mvc.perform(MockMvcRequestBuilders.post("/api/account/delete").with(RealCsrf.token(mvc))
                         .contentType(MediaType.APPLICATION_JSON).content("{\"password\":\"x\"}"))

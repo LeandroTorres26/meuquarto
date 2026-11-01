@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:letterboxd="https://letterboxd.com" xmlns:tmdb="https://themoviedb.org">
+  <channel>
+    <title>Letterboxd - ana_l</title>
+    <link>https://letterboxd.com/ana_l/</link>
+    <description>Letterboxd - Film diary of ana_l</description>
+    <!-- 1. A plain watch with a rating and a poster on the Letterboxd CDN. -->
+    <item>
+      <title>The Matrix, 1999 - ★★★★½</title>
+      <link>https://letterboxd.com/ana_l/film/the-matrix/</link>
+      <guid isPermaLink="false">letterboxd-review-100001</guid>
+      <pubDate>Sun, 11 Oct 2026 08:55:03 +1300</pubDate>
+      <letterboxd:watchedDate>2026-10-10</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>The Matrix</letterboxd:filmTitle>
+      <letterboxd:filmYear>1999</letterboxd:filmYear>
+      <letterboxd:memberRating>4.5</letterboxd:memberRating>
+      <tmdb:movieId>603</tmdb:movieId>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/5/1/5/1/51-matrix-0-230-0-345-crop.jpg?v=abc123"/></p> <p>Still holds up.</p> ]]></description>
+      <dc:creator>ana_l</dc:creator>
+    </item>
+    <!-- 2. The same film watched again on another day: a rewatch is its own activity. -->
+    <item>
+      <title>The Matrix, 1999 - ★★★★★</title>
+      <link>https://letterboxd.com/ana_l/film/the-matrix/1/</link>
+      <guid isPermaLink="false">letterboxd-watch-100002</guid>
+      <pubDate>Tue, 20 Oct 2026 21:10:00 +1300</pubDate>
+      <letterboxd:watchedDate>2026-10-19</letterboxd:watchedDate>
+      <letterboxd:rewatch>Yes</letterboxd:rewatch>
+      <letterboxd:filmTitle>The Matrix</letterboxd:filmTitle>
+      <letterboxd:filmYear>1999</letterboxd:filmYear>
+      <letterboxd:memberRating>5.0</letterboxd:memberRating>
+      <tmdb:movieId>603</tmdb:movieId>
+      <description><![CDATA[ <p><img src="https://a.ltrbxd.com/resized/film-poster/5/1/5/1/51-matrix-0-230-0-345-crop.jpg?v=abc123"/></p> <p>Watched on October 19, 2026.</p> ]]></description>
+      <dc:creator>ana_l</dc:creator>
+    </item>
+    <!-- 3. A log without a watched date: the publication time is used. No poster in the text. -->
+    <item>
+      <title>Alien, 1979</title>
+      <link>https://letterboxd.com/ana_l/film/alien/</link>
+      <guid isPermaLink="false">letterboxd-watch-100003</guid>
+      <pubDate>Wed, 07 Oct 2026 20:00:00 +0000</pubDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Alien</letterboxd:filmTitle>
+      <letterboxd:filmYear>1979</letterboxd:filmYear>
+      <tmdb:movieId>348</tmdb:movieId>
+      <description><![CDATA[ <p>Watched on Wednesday October 7, 2026.</p> ]]></description>
+      <dc:creator>ana_l</dc:creator>
+    </item>
+    <!-- 4. No TMDB id at all (Letterboxd could not match the film): skipped. -->
+    <item>
+      <title>Home Video, 2024</title>
+      <link>https://letterboxd.com/ana_l/film/home-video/</link>
+      <guid isPermaLink="false">letterboxd-watch-100004</guid>
+      <pubDate>Mon, 05 Oct 2026 20:00:00 +0000</pubDate>
+      <letterboxd:watchedDate>2026-10-05</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Home Video</letterboxd:filmTitle>
+      <letterboxd:filmYear>2024</letterboxd:filmYear>
+      <description><![CDATA[ <p>Watched on October 5, 2026.</p> ]]></description>
+    </item>
+    <!-- 5. A list: not a diary entry, skipped. -->
+    <item>
+      <title>Best of the nineties</title>
+      <link>https://letterboxd.com/ana_l/list/best-of-the-nineties/</link>
+      <guid isPermaLink="false">letterboxd-list-5001</guid>
+      <pubDate>Sun, 04 Oct 2026 12:00:00 +0000</pubDate>
+      <description><![CDATA[ <ul><li><a href="https://letterboxd.com/film/the-matrix/">The Matrix</a></li></ul> ]]></description>
+      <dc:creator>ana_l</dc:creator>
+    </item>
+    <!-- 6. A series (tmdb:tvId only): not a movie, skipped. -->
+    <item>
+      <title>Chernobyl, 2019</title>
+      <link>https://letterboxd.com/ana_l/film/chernobyl/</link>
+      <guid isPermaLink="false">letterboxd-watch-100006</guid>
+      <pubDate>Sat, 03 Oct 2026 20:00:00 +0000</pubDate>
+      <letterboxd:watchedDate>2026-10-03</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Chernobyl</letterboxd:filmTitle>
+      <letterboxd:filmYear>2019</letterboxd:filmYear>
+      <tmdb:tvId>87108</tmdb:tvId>
+      <description><![CDATA[ <p>Watched on October 3, 2026.</p> ]]></description>
+    </item>
+    <!-- 7. A poster on a host that is not allowed: the work is kept, the image is dropped. -->
+    <item>
+      <title>Parasite, 2019</title>
+      <link>https://letterboxd.com/ana_l/film/parasite-2019/</link>
+      <guid isPermaLink="false">letterboxd-watch-100007</guid>
+      <pubDate>Fri, 02 Oct 2026 20:00:00 +0000</pubDate>
+      <letterboxd:watchedDate>2026-10-02</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>Parasite</letterboxd:filmTitle>
+      <letterboxd:filmYear>2019</letterboxd:filmYear>
+      <tmdb:movieId>496243</tmdb:movieId>
+      <description><![CDATA[ <p><img src="https://evil.example/poster.jpg"/></p> ]]></description>
+    </item>
+    <!-- 8. Markup and a script in the title: kept as plain text, never interpreted. -->
+    <item>
+      <title>Hostile</title>
+      <link>https://letterboxd.com/ana_l/film/hostile/</link>
+      <guid isPermaLink="false">letterboxd-watch-100008</guid>
+      <pubDate>Thu, 01 Oct 2026 20:00:00 +0000</pubDate>
+      <letterboxd:watchedDate>2026-10-01</letterboxd:watchedDate>
+      <letterboxd:rewatch>No</letterboxd:rewatch>
+      <letterboxd:filmTitle>&lt;script&gt;alert(1)&lt;/script&gt;&lt;b&gt;Bold&lt;/b&gt;</letterboxd:filmTitle>
+      <letterboxd:filmYear>20x4</letterboxd:filmYear>
+      <tmdb:movieId>777</tmdb:movieId>
+      <description><![CDATA[ <p><img src="http://a.ltrbxd.com/insecure.jpg"/></p> ]]></description>
+    </item>
+    <!-- 9. A broken TMDB id: skipped without failing the sync. -->
+    <item>
+      <title>Broken, 2000</title>
+      <link>https://letterboxd.com/ana_l/film/broken/</link>
+      <guid isPermaLink="false">letterboxd-watch-100009</guid>
+      <pubDate>Wed, 30 Sep 2026 20:00:00 +0000</pubDate>
+      <letterboxd:watchedDate>2026-09-30</letterboxd:watchedDate>
+      <letterboxd:filmTitle>Broken</letterboxd:filmTitle>
+      <tmdb:movieId>../../etc/passwd</tmdb:movieId>
+    </item>
+  </channel>
+</rss>

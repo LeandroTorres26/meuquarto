@@ -26,6 +26,7 @@ services:
       DB_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
+      TMDB_API_KEY: ${TMDB_API_KEY:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -36,6 +37,9 @@ services:
     build: ../frontend
     environment:
       API_URL: http://api:8080
+      # false unless a reverse proxy that overwrites X-Forwarded-For (Caddy) is in front (ADR 0017).
+      TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-false}
+      SITE_URL: ${SITE_URL:-}
     depends_on:
       api:
         condition: service_healthy

@@ -75,13 +75,15 @@ html,body{margin:0;background:var(--surface-100)}
 .page-head{display:flex;flex-direction:column;gap:var(--l1);padding-top:var(--page-top)}
 /* section header: title (+ description) and an optional action on the same baseline */
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--l2)}
-.sec-head--media{margin-bottom:var(--space-6)}  /* stickers and tape overlap the top of covers */
+.sec-head--media{margin-bottom:var(--space-6)}  /* stickers overlap the top of covers */
 .sec-head .t-label{white-space:nowrap}
 
 /* ---------- top bar and footer ---------- */
 .topbar{border-bottom:1px solid var(--border)}
 .topbar__in{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);min-height:64px}
 .wordmark{font:900 24px/24px var(--font-display);letter-spacing:.02em;text-transform:uppercase;color:var(--ink) !important;text-decoration:none}
+.lockup{display:inline-flex;align-items:center;gap:var(--space-2)}
+.lockup__mark{flex:none;display:block}
 .footer{border-top:1px solid var(--border);padding-block:var(--l3) var(--l4)}
 .footer__in{display:grid;gap:var(--l2)}
 @media (min-width:1024px){.footer__in{grid-template-columns:repeat(12,minmax(0,1fr));column-gap:var(--col-gap)}.footer__in > :first-child{grid-column:span 4}.footer__in > :last-child{grid-column:7 / span 6}}
@@ -285,7 +287,7 @@ html:has(dialog.dialog[open]){overflow:hidden}
 /* ---------- S17 item details: one column in narrow containers (sheet, room panel), cover beside the text from 440px ---------- */
 .detail-wrap{container-type:inline-size}
 .detail{display:grid;gap:var(--l3);align-items:start}
-.detail__cover{justify-self:center;width:min(152px,46%);padding:var(--space-2) var(--space-2) 0;pointer-events:none}  /* room for sticker and tape */
+.detail__cover{justify-self:center;width:min(152px,46%);padding:var(--space-2) var(--space-2) 0;pointer-events:none}  /* room for sticker and finish variant */
 .detail__cover--wide{width:min(208px,64%)}
 .detail__info{display:flex;flex-direction:column;gap:var(--l3);min-width:0}
 .detail__head{display:flex;flex-direction:column;gap:var(--l1)}

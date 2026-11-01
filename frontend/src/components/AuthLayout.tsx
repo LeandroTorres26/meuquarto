@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { Logo } from "@/components/Logo";
 
 type Props = {
   /** Top bar action: the other auth screen. */
@@ -16,9 +17,7 @@ export function AuthLayout({ action, note, art, children }: Props) {
     <div className="page">
       <header className="topbar">
         <div className="wrap topbar__in" style={{ maxWidth: "none" }}>
-          <Link href="/" className="wordmark">
-            meuquarto
-          </Link>
+          <Logo href="/" />
           <Link href={action.href} className="mq-btn mq-btn--ghost mq-btn--sm">
             {action.label}
           </Link>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:x="https://example.test/ns">
+  <channel>
+    <title>Sample activity</title>
+    <item>
+      <title>The Matrix, 1999</title>
+      <x:id>603</x:id>
+      <pubDate>Mon, 05 Oct 2026 20:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>List: my favourites</title>
+    </item>
+    <item>
+      <title>Broken item</title>
+      <x:id>not-a-number</x:id>
+      <pubDate>Tue, 06 Oct 2026 20:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Alien, 1979</title>
+      <x:id>348</x:id>
+      <pubDate>Wed, 07 Oct 2026 20:00:00 +0000</pubDate>
+    </item>
+  </channel>
+</rss>

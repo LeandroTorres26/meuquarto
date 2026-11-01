@@ -87,18 +87,4 @@ public class Accounts {
     }
 
     public record SignedUp(AccountPrincipal principal, String slug) {}
-
-    public static class TooManyAttemptsException extends RuntimeException {
-
-        private final Duration retryAfter;
-
-        public TooManyAttemptsException(Duration retryAfter) {
-            super("Too many sign-in attempts");
-            this.retryAfter = retryAfter;
-        }
-
-        public Duration retryAfter() {
-            return retryAfter;
-        }
-    }
 }

@@ -19,9 +19,9 @@ for (const [source, target] of files) {
   writeFileSync(join(out, target), header + readFileSync(join(root, source), "utf8"));
 }
 
-// Decorative covers used by the sign-up and sign-in art panel.
+// Decorative covers used by the sign-up and sign-in art panel and the landing page shelf.
 const covers = join(root, "frontend", "public", "covers");
 mkdirSync(covers, { recursive: true });
-for (const name of ["c01", "c02", "c06", "c07", "c09", "c12"]) {
+for (const name of ["c01", "c02", "c06", "c07", "c09", "c10", "c11", "c12"]) {
   copyFileSync(join(root, "docs/design/telas/covers", `${name}.svg`), join(covers, `${name}.svg`));
 }
