@@ -16,7 +16,7 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | [0010](0010-external-api-terms.md) | External API terms and licensing | Accepted, review pending |
 | [0011](0011-collection-and-highlights.md) | Unlimited collection, limited highlights | Accepted |
 | [0012](0012-authentication-and-cryptography.md) | Authentication and cryptography stack | Accepted |
-| 0013 | Room rendering technology | To write in epic E6 |
+| [0013](0013-room-rendering-technology.md) | Room rendering technology: CSS 3D in React | Proposed |
 | [0014](0014-module-internal-structure.md) | Module internal structure: light layers | Accepted |
 | [0015](0015-csp-and-rate-limiting.md) | CSP without nonce and in-memory rate limiting | Accepted |
 | [0016](0016-same-origin-api-proxy.md) | Same-origin API through proxy.ts | Accepted |
