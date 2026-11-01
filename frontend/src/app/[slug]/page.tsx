@@ -3,11 +3,13 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CategoryShelf } from "@/components/profile/CategoryShelf";
 import { Favorites } from "@/components/profile/Favorites";
+import { NowBlock } from "@/components/profile/NowBlock";
 import { ItemDialog } from "@/components/profile/ItemDialog";
 import { ProfileFooter } from "@/components/profile/ProfileFooter";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileTopBar } from "@/components/profile/ProfileTopBar";
 import { CATEGORY_META, isProfileEmpty, visibleSections } from "@/lib/profile-view";
+import { nowMs } from "@/lib/linked-accounts";
 import { getPublicProfile, siteUrl } from "@/lib/public-profile";
 
 // S4 (docs/design/telas/perfil.html) and, through `?item=`, S17. Server-rendered from the public read
@@ -62,11 +64,13 @@ async function Profile({ params }: { params: Props["params"] }) {
 
   const { profile } = result;
   const sections = visibleSections(profile.categories);
+  const serverNow = nowMs();
   return (
     <>
       <section className="profile-top">
         <div className="wrap profile-top__in">
           <ProfileHeader profile={profile} />
+          <NowBlock items={profile.now} serverNow={serverNow} />
         </div>
       </section>
 

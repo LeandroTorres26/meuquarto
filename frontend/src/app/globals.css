@@ -118,3 +118,10 @@
 .add-result .t-poster {
   overflow-wrap: anywhere;
 }
+
+/* "Agora": a cover slot without an image keeps the thumb shape and shows the medium icon. */
+.thumb:not(img) {
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+}

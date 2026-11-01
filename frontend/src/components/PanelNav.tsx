@@ -9,7 +9,7 @@ const GROUPS: Item[][] = [
   [
     { label: "Perfil" },
     { label: "Destaques", href: "/painel/destaques" },
-    { label: "Agora" },
+    { label: "Agora", href: "/painel/agora" },
     { label: "Contas vinculadas", href: "/painel/contas" },
   ],
   [{ label: "Loja" }, { label: "Compras" }, { label: "Conta", href: "/painel/conta" }],

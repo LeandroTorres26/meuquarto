@@ -19,9 +19,23 @@ export type PublicSection = {
   mostRecent: boolean;
   items: PublicItem[];
 };
+/**
+ * An "Agora" entry (FR-15). `ref` is the collection item id, so the card opens S17 like any other.
+ * `source` is "MANUAL" for a pin, else the platform; `at` is when it happened there (null for a pin).
+ */
+export type PublicNowItem = {
+  ref: number;
+  category: Category;
+  title: string;
+  year: number | null;
+  imageUrl: string | null;
+  source: string;
+  at: string | null;
+};
 export type PublicProfileData = {
   slug: string;
   displayName: string;
+  now: PublicNowItem[];
   favorites: PublicItem[];
   categories: PublicSection[];
 };
