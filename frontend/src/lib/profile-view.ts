@@ -245,10 +245,10 @@ export const safeLinkUrl = safeImageUrl;
 
 /**
  * "Ver todos" only appears when the collection has more items than the section shows. It points to
- * the category listing (S18), which is not built yet: while CATEGORY_PAGE_READY is false the link
- * stays hidden instead of leading to a 404.
+ * the category listing (S18, `/{slug}/{categoria}`). The flag is kept so the link can be switched off
+ * without touching the callers.
  */
-export const CATEGORY_PAGE_READY = false;
+export const CATEGORY_PAGE_READY = true;
 
 export function showSeeAll(
   section: Pick<PublicSection, "total" | "items">,

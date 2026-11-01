@@ -187,8 +187,9 @@ describe("which Ver todos to show", () => {
     expect(showSeeAll(section(0, 0), true)).toBe(false);
   });
 
-  it("stays hidden while the listing page does not exist", () => {
-    expect(showSeeAll(section(24, 4))).toBe(false);
+  it("is on by default now that the listing page exists, and can be switched off", () => {
+    expect(showSeeAll(section(24, 4))).toBe(true);
+    expect(showSeeAll(section(24, 4), false)).toBe(false);
   });
 
   it("builds the listing address with an encoded slug", () => {
