@@ -53,4 +53,4 @@ Cross-cutting components: cookie banner, toasts, empty states (no highlights yet
 ## Design inputs
 - Brand: name "meuquarto"; metaphor of a personal room; Brazilian audience.
 - Profile themes are original (abstract/animated backgrounds, frames), never franchise assets.
-- Room view style open (isometric 2D vs minimal Three.js) — design decides, then ADR 0013 (proposed: CSS 3D in React, `adr/0013-room-rendering-technology.md`).
+- Room view style: CSS 3D in React ([ADR 0013](adr/0013-room-rendering-technology.md)).

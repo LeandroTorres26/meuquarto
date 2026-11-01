@@ -87,7 +87,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Stripe test→live checklist (MEI, account activation)
 
 ### E6 Room prototype (M4)
-- Design spike and ADR 0013 (technology): proposed in [ADR 0013](adr/0013-room-rendering-technology.md), pending acceptance
+- Design spike and ADR 0013 (technology): accepted in [ADR 0013](adr/0013-room-rendering-technology.md)
 - Scene from highlights (posters, shelf, vinyl, console, board)
 - "Ver quarto" entry from profile; lazy loading
 
