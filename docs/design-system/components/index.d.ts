@@ -3,7 +3,7 @@ declare namespace Meuquarto {
   type Category = 'movie' | 'series' | 'anime' | 'manga' | 'book' | 'game' | 'music';
 
   interface HighlightCardProps {
-    /** Stable id of the work. Drives the resting angle and the default fixing. */
+    /** Stable id of the work. Drives the resting angle and the finish variant. */
     id: string | number;
     category: Category;
     /** Shown below the cover, 2 lines max with an ellipsis. */
@@ -16,8 +16,6 @@ declare namespace Meuquarto {
     /** One handwritten line, about 28 characters. */
     note?: string;
     href?: string;
-    /** Defaults to a value derived from id. */
-    fix?: 'tape' | 'pin' | 'none';
     /** Hide the category sticker (default true). */
     showTag?: boolean;
     loading?: boolean;
@@ -96,6 +94,15 @@ declare namespace Meuquarto {
   const CATEGORIES: Record<Category, { label: string; icon: string; shape: string }>;
   /** Deterministic factor in [-1,-0.36] or [0.36,1]; angle = factor * tilt-max. */
   function tiltFactor(id: string | number): number;
-  function fixKind(id: string | number): 'tape' | 'pin';
+  interface Finish {
+    /** poster: peel, music: worn, book: ribbon, manga: gloss. */
+    kind: 'peel' | 'worn' | 'ribbon' | 'gloss';
+    /** Peel only: the folded corner. Never the top-left (sticker). */
+    corner?: 'br' | 'bl' | 'tr';
+    /** Peel only: size in percent of the width, 14 to 20. */
+    size?: number;
+  }
+  /** Finish variant of the work, or null for the clean default (about 2 in 3 items, and every game). Same id, same result. */
+  function finish(id: string | number, category: Category): Finish | null;
   function hash(id: string | number): number;
 }

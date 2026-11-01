@@ -5,8 +5,9 @@ import {
   linkLabel,
   originCaption,
   safeLinkUrl,
+  itemClasses,
+  itemStyle,
   shapeClasses,
-  tiltFactor,
   type Category,
   type PublicItemDetail,
 } from "@/lib/profile-view";
@@ -32,7 +33,6 @@ export function ItemDetailBody({
   ownerName: string;
 }) {
   const { item } = detail;
-  const meta = CATEGORY_META[item.category];
   const links = detail.links.flatMap((link) => {
     const href = safeLinkUrl(link.url);
     return href ? [{ provider: link.provider, href }] : [];
@@ -40,10 +40,7 @@ export function ItemDetailBody({
   return (
     <article className="detail">
       <CoverSlot category={item.category}>
-        <div
-          className={`mq-item ${shapeClasses(meta.shape)}`}
-          style={{ "--tilt-f": tiltFactor(item.ref) } as CSSProperties}
-        >
+        <div className={itemClasses(item)} style={itemStyle(item)}>
           <ItemCover item={item} alt={`Capa de ${item.title}`} eager showTag />
         </div>
       </CoverSlot>
@@ -98,7 +95,6 @@ export function ItemDetailLoading({ category }: { category: Category | null }) {
           aria-hidden="true"
         >
           <figure className="mq-item__cover">
-            {meta.shape === "dvd" ? <span className="mq-spine" /> : null}
             <span className="mq-art" />
           </figure>
         </div>

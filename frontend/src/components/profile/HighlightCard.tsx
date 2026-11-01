@@ -1,11 +1,4 @@
-import type { CSSProperties } from "react";
-import {
-  CATEGORY_META,
-  itemLabel,
-  shapeClasses,
-  tiltFactor,
-  type PublicItem,
-} from "@/lib/profile-view";
+import { itemClasses, itemLabel, itemStyle, type PublicItem } from "@/lib/profile-view";
 import { ItemCover } from "./ItemCover";
 
 /**
@@ -25,7 +18,6 @@ export function HighlightCard({
   /** False in the panel (S7): the card is only a preview, so the box is not a link. */
   interactive?: boolean;
 }) {
-  const meta = CATEGORY_META[item.category];
   const body = (
     <>
       <ItemCover item={item} showTag={showTag} showSlip eager={eager} />
@@ -36,10 +28,7 @@ export function HighlightCard({
     </>
   );
   return (
-    <article
-      className={`mq-item ${shapeClasses(meta.shape)}`}
-      style={{ "--tilt-f": tiltFactor(item.ref) } as CSSProperties}
-    >
+    <article className={itemClasses(item)} style={itemStyle(item)}>
       {interactive ? (
         <a
           className="mq-item__link"

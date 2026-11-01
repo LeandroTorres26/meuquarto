@@ -5,11 +5,12 @@ const S=(t,d,kids)=>e('section',{style:{margin:'0 0 36px'}},e('h2',{style:{font:
 const L=t=>e('p',{style:{font:'500 12px/16px var(--font-sans)',color:'var(--ink-muted)',margin:'6px 0 0'}},t);
 
 const c=(id,cat,title,year,cover,x)=>e(HC,Object.assign({id,category:cat,title,year,cover:U[cover],href:'#'},x||{}));
+const pickId=(cat,want,skip)=>{for(let i=0,n=0;i<5000;i++){const id='acab-'+cat+'-'+i,f=M.finish(id,cat);if(want===null?f===null:(f&&(f.kind===want||f.corner===want))){if(n++>=skip)return id}}return 'acab-'+cat};
 const P=[['p1','movie','Cidade Sem Sol','2019','posterDarkT'],['p2','series','Ronda 47','2023','posterDark'],['p3','movie','Ver\u00e3o em Marte','2021','posterLightT'],['p4','series','Cor de Casca','2018','posterLight']];
 ReactDOM.createRoot(document.getElementById('root')).render(e('div',null,
- S('Pôster, volume, disco, caixa e DVD','Capas claras e escuras, com e sem título impresso. O título e o ano ficam sempre abaixo da capa, nunca sobre ela.',[
+ S('Pôster (filme, série, anime), volume, disco e caixa','Capas claras e escuras, com e sem título impresso. O título e o ano ficam sempre abaixo da capa, nunca sobre ela.',[
   ...P.map(p=>W(150,c(...p))),
-  W(150,c('b1','book','Lombada Azul','2011','bookCreamT',{fix:'tape'})),W(150,c('b2','book','Anel de Ouro','2016','bookDark')),
+  W(150,c('b1','book','Lombada Azul','2011','bookCreamT')),W(150,c('b2','book','Anel de Ouro','2016','bookDark')),
   W(130,c('m1','manga','Tempestade de Giz','2020','mangaLightT',{volume:3})),W(130,c('m2','manga','Corte Rubro','2022','mangaDark',{volume:12})),
   W(190,c('v1','music','Noites de Ver\u00e3o','2021','vinylLightT')),W(190,c('v2','music','Arco-\u00cdris','2019','vinylDark')),
   W(150,c('g1','game','Ru\u00ednas M\u00f3veis','2022','gameDarkT')),W(150,c('g2','game','Pixel Parque','2015','gameLight')),
@@ -21,13 +22,19 @@ ReactDOM.createRoot(document.getElementById('root')).render(e('div',null,
   W(150,c('l4','book','Pneumoultramicroscopicossilicovulcanoconi\u00f3tico','1999','bookCreamT')),
   W(130,c('l5','manga','Cr\u00f4nicas do Reino de Fim de Mundo e Al\u00e9m','2020','mangaLightT',{volume:128})),
   W(190,c('l6','music','Um \u00c1lbum com Nome Muito, Muito Mais Comprido que a Capa','2021','vinylDark'))]),
- S('Elementos decorativos em capa clara e escura','Adesivo, fita, tachinha e nota têm contorno duplo e sombra para se destacar sobre qualquer arte. É tudo que pode aparecer sobre a capa.',[
-  W(150,c('d-a','movie','Capa clara, fita','2021','posterLightT',{fix:'tape',note:'melhor final'})),
-  W(150,c('d-b','series','Capa clara, tachinha','2018','posterLight',{fix:'pin',note:'reassistir'})),
-  W(150,c('d-c','movie','Capa escura, fita','2019','posterDarkT',{fix:'tape',note:'chorei no fim'})),
-  W(150,c('d-d','series','Capa escura, tachinha','2023','posterDark',{fix:'pin',note:'melhor série'})),
-  W(190,c('d-e','music','Sleeve clara','2021','vinylLightT',{fix:'tape',note:'repeat'})),
-  W(190,c('d-f','music','Sleeve escura','2019','vinylDark',{fix:'pin',note:'trilha da vida'}))]),
+ S('Adesivo e nota em capa clara e escura','Adesivo e nota têm contorno duplo e sombra para se destacar sobre qualquer arte. Com a variante de acabamento, é tudo que pode aparecer sobre a capa. Mídias nunca levam fita nem tachinha.',[
+  W(150,c('d-a','movie','Capa clara','2021','posterLightT',{note:'melhor final'})),
+  W(150,c('d-b','series','Capa clara, outra nota','2018','posterLight',{note:'reassistir'})),
+  W(150,c('d-c','movie','Capa escura','2019','posterDarkT',{note:'chorei no fim'})),
+  W(150,c('d-d','series','Capa escura, outra nota','2023','posterDark',{note:'melhor série'})),
+  W(190,c('d-e','music','Sleeve clara','2021','vinylLightT',{note:'repeat'})),
+  W(190,c('d-f','music','Sleeve escura','2019','vinylDark',{note:'trilha da vida'}))]),
+ S('Acabamento: padrão e variante','Sempre o padrão limpo; cerca de 1 em 3 itens também ganha a variante, escolhida pelo id (Meuquarto.finish). Esquerda de cada par: padrão. Direita: variante. O canto descolado do pôster pode ser inferior direito, inferior esquerdo ou superior direito, nunca o superior esquerdo (adesivo).',[
+  ...[['movie','posterDarkT'],['series','posterLight'],['anime','dvdLightT']].flatMap(([cat,cv],i)=>[W(150,e('div',null,c(pickId(cat,null,i),cat,'Padrão','2020',cv),L('padrão'))),...['br','bl','tr'].slice(0,i===0?3:1).map(k=>W(150,e('div',null,c(pickId(cat,k,i),cat,'Variante','2020',cv),L('canto descolado '+k))))]),
+  W(190,e('div',null,c(pickId('music',null,0),'music','Padrão','2020','vinylLightT'),L('padrão'))),W(190,e('div',null,c(pickId('music','worn',0),'music','Variante','2020','vinylLightT'),L('canto gasto'))),
+  W(150,e('div',null,c(pickId('book',null,0),'book','Padrão','2020','bookCreamT'),L('padrão'))),W(150,e('div',null,c(pickId('book','ribbon',0),'book','Variante','2020','bookCreamT'),L('fita marcadora'))),
+  W(130,e('div',null,c(pickId('manga',null,0),'manga','Padrão','2020','mangaLightT',{volume:1}),L('padrão'))),W(130,e('div',null,c(pickId('manga','gloss',0),'manga','Variante','2020','mangaLightT',{volume:2}),L('brilho da capa'))),
+  W(150,e('div',null,c(pickId('game',null,0),'game','Sem variante','2020','gameDarkT'),L('game: só o padrão')))]),
  S('Estados','Normal, hover (levanta e endireita), foco (anel de 2px), desabilitado (somente leitura), carregando, erro de imagem, sem capa e vaga na estante.',[
   W(150,e('div',null,c('s1','movie','Normal','2019','posterDarkT'))),
   W(150,e('div',null,c('s2','movie','Hover','2019','posterDarkT',{state:'hover'}))),
@@ -40,5 +47,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(e('div',null,
   W(190,e(HC,{id:'s9',category:'music',title:'Sem capa',year:'2020',href:'#'})),
   W(150,e(M.HighlightSlot,{category:'movie'}))]),
  S('Rotação estável','O ângulo vem do id da obra (FNV-1a), então a mesma obra tem sempre o mesmo ângulo, em qualquer renderização, servidor ou navegador. Faixa: 0,9° a 2,5° para qualquer lado (0,5° a 1,5° em grids com menos de 480px).',[
-  ...['obra-101','obra-102','obra-103'].flatMap(id=>[1,2].map(n=>W(110,e('div',null,c(id,'movie','Obra '+id.slice(-3),'2020','posterLight',{fix:'tape',showTag:false}),L(id+' · render '+n+' · '+(M.tiltFactor(id)*2.5).toFixed(2)+'°')))))])));
+  ...['obra-101','obra-102','obra-103'].flatMap(id=>[1,2].map(n=>W(110,e('div',null,c(id,'movie','Obra '+id.slice(-3),'2020','posterLight',{showTag:false}),L(id+' · render '+n+' · '+(M.tiltFactor(id)*2.5).toFixed(2)+'°')))))])));
 </script></body></html>

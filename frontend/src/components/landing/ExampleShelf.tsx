@@ -1,6 +1,5 @@
-import type { CSSProperties } from "react";
 import { ItemCover } from "@/components/profile/ItemCover";
-import { CATEGORY_META, shapeClasses, tiltFactor, type PublicItem } from "@/lib/profile-view";
+import { itemClasses, itemStyle, type PublicItem } from "@/lib/profile-view";
 
 // Example highlights for the hero (docs/design/telas/landing.html). Same markup as a profile
 // HighlightCard but not a link: there is no profile behind it. Covers are the abstract placeholders
@@ -30,10 +29,7 @@ export function ExampleShelf() {
     >
       {EXAMPLES.map((item) => (
         <li key={item.ref}>
-          <article
-            className={`mq-item ${shapeClasses(CATEGORY_META[item.category].shape)}`}
-            style={{ "--tilt-f": tiltFactor(item.ref) } as CSSProperties}
-          >
+          <article className={itemClasses(item)} style={itemStyle(item)}>
             <div className="mq-item__link">
               <ItemCover
                 item={{ ...item, imageUrl: null }}

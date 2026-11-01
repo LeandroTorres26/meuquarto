@@ -74,7 +74,7 @@ html,body{margin:0;background:var(--surface-100)}
 .page-head{display:flex;flex-direction:column;gap:var(--l1);padding-top:var(--page-top)}
 /* section header: title (+ description) and an optional action on the same baseline */
 .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--l2)}
-.sec-head--media{margin-bottom:var(--space-6)}  /* stickers and tape overlap the top of covers */
+.sec-head--media{margin-bottom:var(--space-6)}  /* stickers overlap the top of covers */
 .sec-head .t-label{white-space:nowrap}
 
 /* ---------- top bar and footer ---------- */
@@ -286,7 +286,7 @@ html:has(dialog.dialog[open]){overflow:hidden}
 /* ---------- S17 item details: one column in narrow containers (sheet, room panel), cover beside the text from 440px ---------- */
 .detail-wrap{container-type:inline-size}
 .detail{display:grid;gap:var(--l3);align-items:start}
-.detail__cover{justify-self:center;width:min(152px,46%);padding:var(--space-2) var(--space-2) 0;pointer-events:none}  /* room for sticker and tape */
+.detail__cover{justify-self:center;width:min(152px,46%);padding:var(--space-2) var(--space-2) 0;pointer-events:none}  /* room for sticker and finish variant */
 .detail__cover--wide{width:min(208px,64%)}
 .detail__info{display:flex;flex-direction:column;gap:var(--l3);min-width:0}
 .detail__head{display:flex;flex-direction:column;gap:var(--l1)}

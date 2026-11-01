@@ -1,4 +1,4 @@
-meuquarto is a profile that works like the owner's room: posters taped to the wall, volumes on the shelf, a record leaning out of its sleeve. The artwork of the works is the star; the interface stays out of its way. Default theme is dark (`noite`), light (`dia`) is an option, and profile themes are sold as premium items.
+meuquarto is a profile that works like the owner's room: posters on the wall, volumes on the shelf, a record leaning out of its sleeve. The artwork of the works is the star; the interface stays out of its way. Default theme is dark (`noite`), light (`dia`) is an option, and profile themes are sold as premium items.
 
 ## Content fundamentals
 
@@ -16,10 +16,11 @@ meuquarto is a profile that works like the owner's room: posters taped to the wa
 - Spacing follows proximity levels (tokens.json `spacing`): L1 4 to 8 inside an element, L2 16 to 24 inside a group, L3 32 between groups of a section, L4 48 (mobile) or 64 between sections, L5 96 at the page end. Each level is about twice the one inside it; never let the space inside a group equal the space around it. A title is always closer to its own content than to the previous section.
 - Common region (a panel or card) means "these belong together and are separate from the rest". Use it for repeated objects (an account, a store item, a list row you can drag) and for the one thing that needs focus (a dialog, a warning). Do not box a section that a heading and space already group.
 - Alignment: every page sits on one 12-column grid (8 on tablet, 4 on mobile) with the container's gutter. Left-align text; center only short system messages. Media in different sections of the same page share the same column width so edges line up.
-- Art leads. A media card is the cover itself, full bleed and clean. Title and year always sit below it, never on it (title in 2 lines at most, then an ellipsis). The only things on a cover are decorative: sticker, tape or tack, handwritten slip. While an image loads, show the cover slot at the real aspect ratio.
-- Shapes are paper-like: `radius-sm` (2px) on media, stickers and slips; `radius-md` on buttons and inputs; `radius-lg` on panels. Do not use pills for labels or chips. `radius-pill` is only for round things (the tack, the avatar ring).
-- Things are stuck to the wall: use `tape` strips or the tack (`mq-pin`) on top-right of a card, a resting angle derived from the work's id (0.9deg to 2.5deg either way, 60% of that below 480px, see HighlightCard), and `shadow-poster`. Hover straightens the cover and lifts it 4px. Respect `prefers-reduced-motion`.
-- Category stickers (`mq-tag`) sit on the top-left corner of each item and overlap its edge. Tape and tack stay on the right so they never cover the sticker.
+- Art leads. A media card is the cover itself, full bleed and clean. Title and year always sit below it, never on it (title in 2 lines at most, then an ellipsis). The only things on a cover are decorative: the category sticker, the medium's finish variant (see Media finish) and the handwritten slip. While an image loads, show the cover slot at the real aspect ratio.
+- Shapes are paper-like: `radius-sm` (2px) on media, stickers and slips (manga keeps square corners); `radius-md` on buttons and inputs; `radius-lg` on panels. Do not use pills for labels or chips. `radius-pill` is only for round things (the tack, the avatar ring).
+- Things rest on the wall the way they do in a real room: a resting angle derived from the work's id (0.9deg to 2.5deg either way, 60% of that below 480px, see HighlightCard) and `shadow-poster`. Posters are glued from behind, so media never show tape or a tack. Each medium has one clean default and one finish variant that only some items get (see Media finish). Hover straightens the cover and lifts it 4px. Respect `prefers-reduced-motion`.
+- `tape` is only for small, light paper: the polaroid and the handwritten slip. The tack (`mq-pin`) is retired.
+- Category stickers (`mq-tag`) sit on the top-left corner of each item and overlap its edge. No finish variant ever uses the top-left corner.
 - Functional controls are sober: Button, forms, Toast and LimitUpsell use `surface-*`, `brand` and `border-strong`, with no tilt, tape or handwriting.
 - Focus: 2px solid `focus` ring with 2px offset on every interactive element.
 - Status: `success` and `danger` are close in lightness, so always add a word or icon.
@@ -30,12 +31,27 @@ Each medium keeps one physical shape in the grid and in the room scene. Ratios a
 
 | Medium | Class | Front ratio | Depth | Details |
 | --- | --- | --- | --- | --- |
-| Filme, Série | `mq-item--poster` | 2:3 | flat | taped or tacked to the wall |
+| Filme, Série, Anime | `mq-item--poster` | 2:3 | flat | glued to the wall from behind |
 | Livro | `mq-item--book` + `mq-item--volume` | 2:3 | 0.18 | spine shade left, page block right |
-| Mangá | `mq-item--manga` + `mq-item--volume` | 5:7.4 | 0.10 | same as book; the volume number goes in the subline |
+| Mangá | `mq-item--manga` | 5:7.4 | 0.10 | flat cover with square corners and no spine shade; page block on the left (read right to left), flush with the cover, light grey; the volume number goes in the subline |
 | Música | `mq-item--vinyl` | sleeve 1:1, record 0.92 of the sleeve | 0.02 | record (`mq-record`) slides out to the right |
 | Game | `mq-item--game` | 5:7 | 0.12 | black console band (`mq-gamebar`) above the art, no text |
-| Anime | `mq-item--dvd` | 5:7 | 0.12 | plain black spine on the left (`mq-spine`), plastic sheen |
+
+Anime used to be a DVD case (`mq-item--dvd`, `mq-spine`); it is a poster now, in the grid and in the room scene.
+
+## Media finish
+
+Every item shows the clean default. About one item in three also gets its medium's variant. Which items, and the variant's corner and size, come from the work's id with the same hash as the tilt, so an item looks the same on every visit and on server and client. Never pick at random while rendering.
+
+| Medium | Default | Variant |
+| --- | --- | --- |
+| Poster (filme, série, anime) | glued from behind: tilt and shadow only | peeled corner: the bottom-right, bottom-left or top-right corner folds over and shows the back of the paper (light, warm grey gradient) with a small shadow on the cover; size 14% to 20% of the width. Built with `clip-path` on the cover and one triangle on top. |
+| Música | record sliding out of the sleeve | worn corner: one sleeve corner slightly rounded and faded |
+| Livro | spine shade and page block | ribbon bookmark hanging below the bottom edge, in a darker `brand` |
+| Mangá | flat, page block on the left | gloss: one soft diagonal highlight across the cover |
+| Game | console band | none |
+
+On hover the variant may ease back a little (the corner lies flatter), only without `prefers-reduced-motion`.
 
 ## Themes
 
@@ -79,4 +95,4 @@ Provider attribution (TMDB and others) goes in the profile footer in `caption` a
 
 ## Components
 
-HighlightCard, HighlightGrid, CategoryTag and ProfileHeader carry the personality. Button, NowCard, Toast and LimitUpsell are the sober functional set (no tilt, tape or handwriting) and document every state: default, hover, focus, disabled and loading for Button; default, pinned, error, empty and loading for NowCard; success and error for Toast. HighlightCard, HighlightSlot, HighlightGrid, CategoryTag, Button, NowCard, Toast, LimitUpsell and Icon are implemented in `components/bundle.js` (`window.Meuquarto`, React 18); props are typed in `components/index.d.ts`. ProfileHeader is markup only (`mq-profile` classes). Include `tokens.css`, then `components/bundle.css`, then React and `bundle.js`; load the three Google Fonts (Big Shoulders Display 700 to 900, Figtree 400 to 700, Caveat 500 to 700) and set the theme on `html`.
+HighlightCard, HighlightGrid, CategoryTag and ProfileHeader carry the personality; HighlightCard owns the media finish (default and variant). Button, NowCard, Toast and LimitUpsell are the sober functional set (no tilt, tape or handwriting) and document every state: default, hover, focus, disabled and loading for Button; default, pinned, error, empty and loading for NowCard; success and error for Toast. HighlightCard, HighlightSlot, HighlightGrid, CategoryTag, Button, NowCard, Toast, LimitUpsell and Icon are implemented in `components/bundle.js` (`window.Meuquarto`, React 18); props are typed in `components/index.d.ts`. ProfileHeader is markup only (`mq-profile` classes). Include `tokens.css`, then `components/bundle.css`, then React and `bundle.js`; load the three Google Fonts (Big Shoulders Display 700 to 900, Figtree 400 to 700, Caveat 500 to 700) and set the theme on `html`.

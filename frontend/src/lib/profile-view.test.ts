@@ -2,7 +2,9 @@ import { describe, expect, it } from "vitest";
 import {
   CATEGORY_META,
   countLabel,
-  fixKind,
+  finish,
+  itemClasses,
+  itemStyle,
   formatDate,
   isProfileEmpty,
   itemLabel,
@@ -27,12 +29,11 @@ const item = (ref: number): PublicItem => ({
   note: null,
 });
 
-describe("tiltFactor and fixKind", () => {
+describe("tiltFactor", () => {
   it("match the design system reference function", () => {
     expect(tiltFactor("perfect-days")).toBe(0.815);
     expect(tiltFactor("1")).toBe(0.644);
     expect(tiltFactor(42)).toBe(0.367);
-    expect(fixKind("perfect-days")).toBe("pin");
   });
 
   it("is deterministic and keeps the angle between 0.36 and 1 in magnitude", () => {
@@ -46,22 +47,110 @@ describe("tiltFactor and fixKind", () => {
 
   it("treats a numeric ref and its string the same", () => {
     expect(tiltFactor(77)).toBe(tiltFactor("77"));
-    expect(fixKind(77)).toBe(fixKind("77"));
+  });
+});
+
+describe("finish", () => {
+  const ids = Array.from({ length: 3000 }, (_, i) => i + 1);
+
+  it("is deterministic and the same for a numeric ref and its string", () => {
+    for (const id of ids.slice(0, 300)) {
+      expect(finish(id, "MOVIE")).toEqual(finish(id, "MOVIE"));
+      expect(finish(id, "BOOK")).toEqual(finish(String(id), "BOOK"));
+    }
+  });
+
+  it("matches the design system reference function", () => {
+    expect(finish(3, "MOVIE")).toEqual({ kind: "peel", corner: "tr", size: 18.8 });
+    expect(finish("42", "MOVIE")).toEqual({ kind: "peel", corner: "tr", size: 18.8 });
+    expect(finish("perfect-days", "MOVIE")).toBeNull();
+    expect(finish(3, "BOOK")).toEqual({ kind: "ribbon" });
+  });
+
+  it("does not move in runs for consecutive ids", () => {
+    let run = 0;
+    let longest = 0;
+    for (const id of ids.slice(0, 500)) {
+      run = finish(id, "MOVIE") ? run + 1 : 0;
+      longest = Math.max(longest, run);
+    }
+    expect(longest).toBeLessThanOrEqual(6);
+  });
+
+  it("gives the variant to about one item in three", () => {
+    for (const category of ["MOVIE", "SERIES", "ANIME", "MANGA", "BOOK", "MUSIC"] as const) {
+      const share = ids.filter((id) => finish(id, category) !== null).length / ids.length;
+      expect(share).toBeGreaterThan(0.3);
+      expect(share).toBeLessThan(0.37);
+    }
+  });
+
+  it("never gives a game a variant", () => {
+    expect(ids.every((id) => finish(id, "GAME") === null)).toBe(true);
+  });
+
+  it("picks the variant by medium, and posters share the peel", () => {
+    const kind = (category: Parameters<typeof finish>[1]) =>
+      ids.map((id) => finish(id, category)).find((f) => f !== null)?.kind;
+    expect(kind("MOVIE")).toBe("peel");
+    expect(kind("SERIES")).toBe("peel");
+    expect(kind("ANIME")).toBe("peel");
+    expect(kind("MUSIC")).toBe("worn");
+    expect(kind("BOOK")).toBe("ribbon");
+    expect(kind("MANGA")).toBe("gloss");
+  });
+
+  it("peels bottom-right, bottom-left or top-right, never the top-left, 14% to 20% wide", () => {
+    const corners = new Set<string>();
+    for (const id of ids) {
+      const fin = finish(id, "MOVIE");
+      if (fin?.kind !== "peel") continue;
+      corners.add(fin.corner);
+      expect(fin.size).toBeGreaterThanOrEqual(14);
+      expect(fin.size).toBeLessThanOrEqual(20);
+    }
+    expect([...corners].sort()).toEqual(["bl", "br", "tr"]);
+  });
+
+  it("is independent of the tilt direction", () => {
+    const withVariant = ids.filter((id) => finish(id, "MOVIE") !== null);
+    const leaning = withVariant.filter((id) => tiltFactor(id) > 0).length / withVariant.length;
+    expect(leaning).toBeGreaterThan(0.4);
+    expect(leaning).toBeLessThan(0.6);
+  });
+
+  it("turns into the classes and inline style the card renders", () => {
+    const peeled = ids.find((id) => finish(id, "MOVIE")?.kind === "peel")!;
+    const fin = finish(peeled, "MOVIE");
+    expect(itemClasses({ ref: peeled, category: "MOVIE" })).toBe(
+      `mq-item mq-item--poster mq-item--peel mq-item--peel-${fin?.kind === "peel" ? fin.corner : ""}`,
+    );
+    expect(itemStyle({ ref: peeled, category: "MOVIE" })).toMatchObject({
+      "--tilt-f": tiltFactor(peeled),
+      "--peel-size": `${fin?.kind === "peel" ? fin.size : 0}%`,
+    });
+    const clean = ids.find((id) => finish(id, "MANGA") === null)!;
+    expect(itemClasses({ ref: clean, category: "MANGA" })).toBe("mq-item mq-item--manga");
+    expect(itemStyle({ ref: clean, category: "MANGA" })).toEqual({ "--tilt-f": tiltFactor(clean) });
+    const glossy = ids.find((id) => finish(id, "MANGA") !== null)!;
+    expect(itemClasses({ ref: glossy, category: "MANGA" })).toBe(
+      "mq-item mq-item--manga mq-item--gloss",
+    );
   });
 });
 
 describe("categories", () => {
   it("maps every medium to its card shape and listing route", () => {
     expect(CATEGORY_META.MOVIE.shape).toBe("poster");
-    expect(CATEGORY_META.ANIME.shape).toBe("dvd");
+    expect(CATEGORY_META.ANIME.shape).toBe("poster");
     expect(CATEGORY_META.MUSIC.shape).toBe("vinyl");
     expect(CATEGORY_META.MANGA.route).toBe("mangas");
     expect(CATEGORY_META.MUSIC.route).toBe("musica");
   });
 
-  it("marks books and mangas as volumes", () => {
+  it("marks only books as volumes (manga is flat)", () => {
     expect(shapeClasses("book")).toBe("mq-item--book mq-item--volume");
-    expect(shapeClasses("manga")).toBe("mq-item--manga mq-item--volume");
+    expect(shapeClasses("manga")).toBe("mq-item--manga");
     expect(shapeClasses("poster")).toBe("mq-item--poster");
   });
 
