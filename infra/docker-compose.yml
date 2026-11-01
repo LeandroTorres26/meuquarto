@@ -20,6 +20,19 @@ services:
       timeout: 3s
       retries: 10
 
+  # Local mail catcher: receives every e-mail the API sends (password reset) and shows it in a web UI.
+  # Nothing is delivered to the outside. Reachable from this machine only; the UI has no login.
+  mailpit:
+    image: axllent/mailpit:v1.31.6
+    ports:
+      - "127.0.0.1:1025:1025" # SMTP
+      - "127.0.0.1:8025:8025" # web UI: http://localhost:8025
+    healthcheck:
+      test: ["CMD", "/mailpit", "readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   api:
     build: ../backend
     environment:
@@ -27,6 +40,17 @@ services:
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       TMDB_API_KEY: ${TMDB_API_KEY:-}
+      # Links in e-mails are built from this origin only (validated at startup). Local default below.
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
+      # Outgoing e-mail: Mailpit by default; point these at a transactional provider in production.
+      MAIL_HOST: ${MAIL_HOST:-mailpit}
+      MAIL_PORT: ${MAIL_PORT:-1025}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_FROM: ${MAIL_FROM:-meuquarto <no-reply@meuquarto.local>}
+      MAIL_AUTH: ${MAIL_AUTH:-false}
+      MAIL_STARTTLS: ${MAIL_STARTTLS:-false}
+      MAIL_SSL: ${MAIL_SSL:-false}
     depends_on:
       postgres:
         condition: service_healthy

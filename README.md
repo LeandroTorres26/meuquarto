@@ -18,7 +18,9 @@ cp .env.example .env   # then set POSTGRES_PASSWORD
 docker compose -f infra/docker-compose.yml --env-file .env up --build
 ```
 
-Web: http://localhost:3000 · API health: http://localhost:8080/api/health
+Web: http://localhost:3000 · API health: http://localhost:8080/api/health · Mailpit (e-mails sent by the API, such as the password reset link): http://localhost:8025
+
+E-mail is sent over SMTP configured by the `MAIL_*` variables (see `.env.example`). The compose stack points them at Mailpit, which catches every message locally. In production, point the same variables at a transactional provider's SMTP and set `SITE_URL` to the public https origin (ADR 0012).
 
 Development commands are listed in [CLAUDE.md](CLAUDE.md#commands).
 

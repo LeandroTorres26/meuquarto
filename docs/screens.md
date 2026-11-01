@@ -40,6 +40,10 @@ Implementation notes for S18 (issue #26):
 - Search, order and page live in the URL: `?q=`, `?ordem=recentes|titulo|ano`, `?pagina=N` (defaults omitted). Pages are previous/next links instead of infinite scroll, so every page has its own address and works without JavaScript. Searches are `noindex`.
 - Cards are the S4 `HighlightCard` with the "Destaque" seal; clicking one opens S17 over the listing (`?item=` is added to the current query).
 
+Implementation notes for S19 and S20 (issue #53, no prototype: built from the S3 layout and classes):
+- S19 `/esqueci-senha`: one e-mail field, `POST /api/auth/password-reset`. After sending, the page shows "Se existir uma conta com esse e-mail, enviamos um link." plus "O link vale por 30 minutos e só funciona uma vez" whatever the answer was (the API answers 202 for known, unknown and malformed e-mails). Linked from S3 ("Esqueci minha senha", under the password field). Rate-limited answers show the usual "Tente de novo em X minutos".
+- S20 `/redefinir-senha?token=…`: the client reads the token from the address once and rewrites the address without it (`history.replaceState`); the page is `noindex` and sent with `Referrer-Policy: no-referrer` (`next.config.ts`) and `<meta name="referrer">`. States: valid (new password + repetition, "Pelo menos 8 caracteres"; password-rule errors under the field, the link stays usable), expired/used/tampered/missing token ("Link inválido ou expirado", button "Pedir um novo link" to S19; the API gives one generic `INVALID_RESET_TOKEN` for all of them), success ("Senha alterada", button "Entrar" to S3; every session was ended). A reload after the first load also lands on the invalid state, by design, because the token is no longer in the address.
+
 Cross-cutting components: cookie banner, toasts, empty states (no highlights yet), limit-reached upsell, loading skeletons, error states for failed sync.
 
 ## Main flows

@@ -5,7 +5,7 @@ Categories enum: `MOVIE, SERIES, ANIME, MANGA, BOOK, GAME, MUSIC`. Providers enu
 | Table | Key columns | Notes |
 |---|---|---|
 | `users` | id, email (unique), password_hash, created_at | identity |
-| `password_reset_tokens` | id, user_id, token_hash (SHA-256), expires_at, used_at | single-use, 30 min (ADR 0012) |
+| `password_reset_tokens` | id, user_id (FK, cascade), token_hash (SHA-256 hex, unique), created_at, expires_at, used_at | single-use, 30 min (ADR 0012, V13). The raw token exists only in the e-mailed link; rows are purged a day after they expire |
 | `spring_session`, `spring_session_attributes` | managed by Spring Session JDBC | created by its schema script through a Flyway migration |
 | `profiles` | id, user_id (unique FK), slug (unique), display_name, bio, avatar_key, theme_id, created_at | 1:1 with user |
 | `media_items` | id, category, canonical_provider, external_id, title, year, image_url, adult, metadata_source, metadata_json, fetched_at | unique (category, canonical_provider, external_id); snapshot (BR-04). `metadata_source` (V10) is who wrote the metadata last: the canonical catalog or the activity source that created the row (ADR 0005). `metadata_json` is not created yet: it arrives in the migration of the first feature that needs it (V5 has the other columns) |
