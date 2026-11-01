@@ -34,7 +34,7 @@ export function CookieNotice({ returnFocusTo }: { returnFocusTo: string }) {
     <div className="cookie region" role="region" aria-label="Aviso de cookies">
       <p className="t-sm" style={{ color: "var(--ink)" }}>
         Usamos só os cookies necessários para manter você conectado.{" "}
-        <Link href="/termos" prefetch={false}>
+        <Link href="/privacidade" prefetch={false}>
           Saiba mais
         </Link>
       </p>

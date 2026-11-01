@@ -223,7 +223,7 @@ export function SignupForm() {
               Termos de uso
             </Link>{" "}
             e a{" "}
-            <Link href="/termos" prefetch={false}>
+            <Link href="/privacidade" prefetch={false}>
               Política de privacidade
             </Link>
             .

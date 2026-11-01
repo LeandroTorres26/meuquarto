@@ -19,7 +19,7 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S12 | Checkout result | `/painel/loja/sucesso` `/cancelado` | yes | Return from Stripe; waits for webhook confirmation |
 | S13 | My purchases | `/painel/compras` | yes | Orders and owned items |
 | S14 | Account | `/painel/conta` | yes | Change password, delete account (confirmation) |
-| S15 | Terms / Privacy | `/termos` `/privacidade` | no | Legal text |
+| S15 | Terms / Privacy | `/termos` `/privacidade` | no | Static legal text (`LegalLayout`), dated via `src/lib/legal.ts`; revise the texts whenever stored data, cookies or providers change. Linked from sign-up, landing, profile footer and the cookie notice (to `/privacidade`) |
 | S16 | 404 / profile not found | | no | |
 | S19 | Forgot password | `/esqueci-senha` | no | E-mail field; same confirmation message whether or not the account exists ("Se existir uma conta com esse e-mail, enviamos um link."). Linked from S3. |
 | S20 | Reset password | `/redefinir-senha?token=…` | no | New password + confirmation; states: valid, expired/used link (offer to request again), success (go to S3). |
@@ -29,7 +29,12 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 Implementation notes for S4 and S17 (issues #16 and #17):
 - `/{slug}` is the dynamic segment `frontend/src/app/[slug]`. Static routes (`/painel`, `/entrar`, `/cadastro`) win over it and `/api/*` is rewritten by `proxy.ts` before routing, so no reserved word is shadowed. An unknown, reserved or malformed slug renders S16 (the API answers all of them with the same 404). The page streams inside Suspense, so that response is a 200 with `noindex`, not an HTTP 404 (Next.js cannot change the status after streaming starts).
 - S17 is the `?item={ref}` state of S4, where `ref` is the owner's collection item id (not `media_items.id`). Opening and closing it changes the URL with `history.pushState` and never refetches the profile. The dialog fetches `GET /api/public/profiles/{slug}/items/{ref}` through the same-origin proxy.
-- Not built yet and therefore left out of S4: "Agora" (no API), "Ver quarto" (no room), the avatar, tagline and bio (not in the profile response) and the "Ver todos" link, which stays hidden until S18 exists (`CATEGORY_PAGE_READY` in `frontend/src/lib/profile-view.ts`). The Deezer preview in S17 is optional and not built.
+- Not built yet and therefore left out of S4: "Agora" (no API), "Ver quarto" (no room), the avatar, tagline and bio (not in the profile response) and the "Ver todos" link when a category has more items than the shelf shows (it leads to S18; `CATEGORY_PAGE_READY` in `frontend/src/lib/profile-view.ts` can switch it off). The Deezer preview in S17 is optional and not built.
+
+Implementation notes for S18 (issue #26):
+- `/{slug}/{categoria}` is `frontend/src/app/[slug]/[categoria]`. An unknown category segment renders S16 (route variant); an unknown slug renders S16 (profile variant). Server-rendered from `GET /api/public/profiles/{slug}/collection` (24 per page, the API caps at 48).
+- Search, order and page live in the URL: `?q=`, `?ordem=recentes|titulo|ano`, `?pagina=N` (defaults omitted). Pages are previous/next links instead of infinite scroll, so every page has its own address and works without JavaScript. Searches are `noindex`.
+- Cards are the S4 `HighlightCard` with the "Destaque" seal; clicking one opens S17 over the listing (`?item=` is added to the current query).
 
 Cross-cutting components: cookie banner, toasts, empty states (no highlights yet), limit-reached upsell, loading skeletons, error states for failed sync.
 

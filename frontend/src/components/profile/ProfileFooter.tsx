@@ -15,6 +15,15 @@ export function ProfileFooter() {
               Crie o seu
             </Link>
           </p>
+          <p className="t-cap">
+            <Link href="/termos" prefetch={false}>
+              Termos
+            </Link>{" "}
+            e{" "}
+            <Link href="/privacidade" prefetch={false}>
+              privacidade
+            </Link>
+          </p>
         </div>
         <div className="pair-2">
           <p className="t-cap">
