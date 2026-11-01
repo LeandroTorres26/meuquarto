@@ -19,7 +19,7 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S12 | Checkout result | `/painel/loja/sucesso` `/cancelado` | yes | Return from Stripe; waits for webhook confirmation |
 | S13 | My purchases | `/painel/compras` | yes | Orders and owned items |
 | S14 | Account | `/painel/conta` | yes | Change password, delete account (confirmation) |
-| S15 | Terms / Privacy | `/termos` `/privacidade` | no | Legal text |
+| S15 | Terms / Privacy | `/termos` `/privacidade` | no | Static legal text (`LegalLayout`), dated via `src/lib/legal.ts`; revise the texts whenever stored data, cookies or providers change. Linked from sign-up, landing, profile footer and the cookie notice (to `/privacidade`) |
 | S16 | 404 / profile not found | | no | |
 | S19 | Forgot password | `/esqueci-senha` | no | E-mail field; same confirmation message whether or not the account exists ("Se existir uma conta com esse e-mail, enviamos um link."). Linked from S3. |
 | S20 | Reset password | `/redefinir-senha?token=…` | no | New password + confirmation; states: valid, expired/used link (offer to request again), success (go to S3). |
