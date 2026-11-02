@@ -26,6 +26,28 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S18 | Category listing | `/{slug}/{categoria}` (`filmes`, `series`, `animes`, `mangas`, `livros`, `musica`, `games`) | no | "Ver todos" target. Whole visible collection of one category: cover grid, search by title, sort (recentes, título, ano), infinite scroll or pages, highlight badge, empty and no-result states. Click opens S17. |
 | S17 | Item details | modal in S4/S5, `?item={mediaItemId}` | no | Opened by clicking any highlight or "Agora" card. Cover, title, year, category sticker, personal note, origin ("assistido em 3 out. no Letterboxd" when synced), external links ("Ver no Letterboxd", "Ver no TMDB"...). Centered dialog from 600px, bottom sheet on mobile. URL param makes it shareable; back button and Esc close it. In S5 it is the existing info panel. |
 
+## Session states
+
+Public screens are built for three viewers, and every new screen must say what changes for each one:
+1. **Visitor**: no session.
+2. **Signed in, on someone else's page** (or on a page with no owner: landing, legal, 404).
+3. **Signed in, on their own profile** (S4, S18, S5 where the slug is theirs).
+
+| Screen | Visitor | Signed in (other) | Signed in (own) |
+| --- | --- | --- | --- |
+| Top bar of public pages (S1, S4, S18, S15, S16) | Entrar, Crie o seu | Meu perfil, Painel | Destaques, Editar perfil |
+| Profile footer "Crie o seu" (S4, S18, S16) | shown | hidden | hidden |
+| Landing S1 hero | pitch + "Crie o seu" | "Ir para o painel", "Meu perfil" | n/a |
+| S16 (404) sign-up button | "Usar esse endereço" / "Crie o seu" | "Ir para o painel" | n/a |
+| S2 Cadastro, S3 Entrar, S19 Esqueci a senha | form | redirect to `/painel` | n/a |
+| Room S5 panel "Crie o seu quarto" | shown | hidden | hidden (the room has its own share button) |
+| Empty states on the owner's own profile (S4, S18) | neutral text | neutral text | text + link to `/painel/destaques` |
+
+Notes:
+- S5 is full screen and has no top bar; only its panel call to action follows the table. S20 (`/redefinir-senha`) is not redirected: the link comes from an e-mail and works whoever is signed in.
+- "Painel" is `/painel`, "Destaques" is `/painel/destaques`; "Meu perfil" is `/{slug}` of the session; "Editar perfil" is `/painel` (S6).
+- Implementation (issue #118): the pages stay prerendered (Partial Prerender, `cacheComponents`). Everything that depends on the session is a small server component that reads the cookie inside its own `<Suspense>` (`components/SessionActions.tsx`, `components/SessionSlots.tsx`), so the cached HTML holds only an invisible, inert placeholder of the same size (no layout shift, never a wrong call to action) and nothing user-specific. The decision is the pure `viewerState(pageSlug, session)` in `lib/viewer-state.ts`. The room panel receives its call to action as a server element prop (`invite`). Redirects of S2, S3 and S19 are real HTTP redirects in `proxy.ts`.
+
 Implementation notes for S4 and S17 (issues #16 and #17):
 - `/{slug}` is the dynamic segment `frontend/src/app/[slug]`. Static routes (`/painel`, `/entrar`, `/cadastro`) win over it and `/api/*` is rewritten by `proxy.ts` before routing, so no reserved word is shadowed. An unknown, reserved or malformed slug renders S16 (the API answers all of them with the same 404). The page streams inside Suspense, so that response is a 200 with `noindex`, not an HTTP 404 (Next.js cannot change the status after streaming starts).
 - S17 is the `?item={ref}` state of S4, where `ref` is the owner's collection item id (not `media_items.id`). Opening and closing it changes the URL with `history.pushState` and never refetches the profile. The dialog fetches `GET /api/public/profiles/{slug}/items/{ref}` through the same-origin proxy.

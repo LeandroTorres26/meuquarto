@@ -10,6 +10,8 @@ import { ItemDialog } from "@/components/profile/ItemDialog";
 import { ListingPager } from "@/components/profile/ListingPager";
 import { ProfileFooter } from "@/components/profile/ProfileFooter";
 import { ProfileTopBar } from "@/components/profile/ProfileTopBar";
+import type { OwnerSlug } from "@/components/SessionActions";
+import { OwnerHighlightsLink } from "@/components/SessionSlots";
 import {
   categoryFromRoute,
   listingHref,
@@ -54,12 +56,12 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ children, ownerSlug }: { children: React.ReactNode; ownerSlug?: OwnerSlug }) {
   return (
     <div className="page">
-      <ProfileTopBar />
+      <ProfileTopBar ownerSlug={ownerSlug} />
       {children}
-      <ProfileFooter />
+      <ProfileFooter ownerSlug={ownerSlug} />
     </div>
   );
 }
@@ -79,7 +81,7 @@ async function Listing({ props }: { props: Props }) {
   }
   if (profileResult.kind !== "ok" || listingResult.kind !== "ok") {
     return (
-      <Shell>
+      <Shell ownerSlug={slug}>
         <main className="wrap sections" style={{ paddingTop: "var(--l4)" }}>
           <div className="pair-2" role="alert">
             <h1 className="t-h1">Não foi possível abrir essa coleção agora</h1>
@@ -104,7 +106,7 @@ async function Listing({ props }: { props: Props }) {
   const profileHref = `/${encodeURIComponent(profile.slug)}`;
 
   return (
-    <Shell>
+    <Shell ownerSlug={slug}>
       <main
         className="wrap sections"
         style={{ paddingTop: "var(--page-top)", paddingBottom: "var(--l5)" }}
@@ -159,6 +161,7 @@ async function Listing({ props }: { props: Props }) {
                     {profile.displayName} ainda não tem {meta.unit[1]} na coleção.
                   </h2>
                   <p className="t-sm">Quando houver, aparecem aqui.</p>
+                  <OwnerHighlightsLink ownerSlug={profile.slug} />
                 </div>
                 <Link className="mq-btn mq-btn--secondary" href={profileHref}>
                   Voltar ao perfil
@@ -204,7 +207,7 @@ export default function CategoryListingPage(props: Props) {
   return (
     <Suspense
       fallback={
-        <Shell>
+        <Shell ownerSlug={props.params.then((p) => p.slug)}>
           <div className="wrap" aria-busy="true" style={{ paddingTop: "var(--page-top)" }}>
             <p className="t-sm" role="status">
               Carregando coleção…

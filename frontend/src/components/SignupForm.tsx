@@ -78,7 +78,7 @@ export function SignupForm() {
     setErrors({});
     try {
       await signUp({ email: email.trim(), password, slug: normalized });
-      router.replace("/painel/conta");
+      router.replace("/painel");
     } catch (e) {
       const error =
         e instanceof ApiError ? messageFor(e.code, e.status, e.retryAfterSeconds) : networkError();
