@@ -1,11 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  broughtCaption,
   comingSoonProviders,
   cooldownMinutes,
   cooldownUntilFromRetryAfter,
   linkableProviders,
   linkErrorMessage,
   minutesUntil,
+  providerInfo,
   relativeTimePtBr,
   syncErrorMessage,
   syncSuccessMessage,
@@ -66,15 +68,29 @@ describe("providers", () => {
   });
 
   it("only offers linking for platforms with a backend provider that are not linked yet", () => {
-    expect(linkableProviders([]).map((p) => p.id)).toEqual(["LETTERBOXD", "ANILIST", "GOODREADS"]);
+    expect(linkableProviders([]).map((p) => p.id)).toEqual([
+      "LETTERBOXD",
+      "ANILIST",
+      "LASTFM",
+      "GOODREADS",
+    ]);
     expect(linkableProviders([account("ANILIST")]).map((p) => p.id)).toEqual([
       "LETTERBOXD",
+      "LASTFM",
       "GOODREADS",
     ]);
   });
 
+  it("describes what Last.fm brings: albums played a lot and what is playing, never each play", () => {
+    const lastfm = providerInfo("LASTFM");
+    expect(lastfm.available).toBe(true);
+    expect(lastfm.categories).toEqual(["MUSIC"]);
+    expect(broughtCaption(lastfm)).toMatch(/^Entra na coleção: álbuns/);
+    expect(lastfm.hint).toMatch(/atividade recente precisa estar pública/);
+  });
+
   it("lists the platforms still without a provider as coming soon", () => {
-    expect(comingSoonProviders().map((p) => p.id)).toEqual(["STEAM", "LASTFM"]);
+    expect(comingSoonProviders().map((p) => p.id)).toEqual(["STEAM"]);
   });
 });
 

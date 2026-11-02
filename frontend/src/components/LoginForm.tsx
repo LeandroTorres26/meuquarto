@@ -22,7 +22,7 @@ export function LoginForm() {
     setError(null);
     try {
       await logIn({ email: email.trim(), password });
-      router.replace("/painel/conta");
+      router.replace("/painel");
     } catch (e) {
       const mapped =
         e instanceof ApiError ? messageFor(e.code, e.status, e.retryAfterSeconds) : networkError();

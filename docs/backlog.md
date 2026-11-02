@@ -72,7 +72,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - `ActivityProvider` interface, `ProviderRegistry`, linked accounts CRUD and validation
 - Letterboxd RSS adapter (TMDB id mapping)
 - AniList activity adapter
-- Last.fm adapter (now playing, top tracks/artists)
+- Last.fm adapter (done, #32: now playing for Agora, albums played enough for the collection; provisional rows, see ADR 0005)
 - Steam adapter (recently played; appid → IGDB mapping)
 - Goodreads RSS adapter (done, #34; provisional rows, see ADR 0005)
 - Sync upserts collection items per platform rules (BR-10); unlink keeps highlighted/noted items as manual (FR-16)

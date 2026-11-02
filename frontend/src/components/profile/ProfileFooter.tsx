@@ -1,7 +1,9 @@
 import Link from "next/link";
+import type { OwnerSlug } from "@/components/SessionActions";
+import { FooterInvite } from "@/components/SessionSlots";
 
 /** Attribution required by the data providers (ADR 0010) and the invitation to make one's own. */
-export function ProfileFooter() {
+export function ProfileFooter({ ownerSlug }: { ownerSlug?: OwnerSlug }) {
   return (
     <footer className="footer">
       <div className="wrap footer__in">
@@ -10,10 +12,7 @@ export function ProfileFooter() {
             meuquarto
           </Link>
           <p className="t-sm">
-            Seu gosto num endereço só.{" "}
-            <Link href="/cadastro" prefetch={false}>
-              Crie o seu
-            </Link>
+            Seu gosto num endereço só. <FooterInvite ownerSlug={ownerSlug} />
           </p>
           <p className="t-cap">
             <Link href="/termos" prefetch={false}>

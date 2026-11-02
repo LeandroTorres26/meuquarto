@@ -7,6 +7,7 @@ import { NowBlock } from "@/components/profile/NowBlock";
 import { ItemDialog } from "@/components/profile/ItemDialog";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileShell } from "@/components/profile/ProfileShell";
+import { OwnerHighlightsLink } from "@/components/SessionSlots";
 import { CATEGORY_META, isProfileEmpty, visibleSections } from "@/lib/profile-view";
 import { nowMs } from "@/lib/linked-accounts";
 import { getPublicProfile, siteUrl } from "@/lib/public-profile";
@@ -53,7 +54,7 @@ async function Profile({ params }: { params: Props["params"] }) {
   if (result.kind === "not-found") notFound();
   if (result.kind === "unavailable") {
     return (
-      <ProfileShell>
+      <ProfileShell ownerSlug={slug}>
         <main className="wrap sections" style={{ paddingTop: "var(--l4)" }}>
           <div className="pair-2" role="alert">
             <h1 className="t-h1">Não foi possível abrir esse perfil agora</h1>
@@ -70,7 +71,7 @@ async function Profile({ params }: { params: Props["params"] }) {
   return (
     // The owner's theme applies to the whole page, top bar and footer included, through data-theme
     // (tokens are scoped to it); a premium theme also switches the logo to the one-color symbol.
-    <ProfileShell theme={profile.theme} premium={profile.premiumTheme}>
+    <ProfileShell theme={profile.theme} premium={profile.premiumTheme} ownerSlug={profile.slug}>
       <section className="profile-top">
         <div className="wrap profile-top__in">
           <ProfileHeader profile={profile} />
@@ -92,6 +93,7 @@ async function Profile({ params }: { params: Props["params"] }) {
               <p className="t-sm">
                 {profile.displayName} ainda não destacou nenhuma obra. Volte daqui a pouco.
               </p>
+              <OwnerHighlightsLink ownerSlug={profile.slug} />
             </div>
           </section>
         ) : null}
@@ -115,10 +117,13 @@ function ProfileSkeleton() {
 }
 
 export default function ProfilePage({ params }: Props) {
+  // The top bar and footer learn whose page this is from the route params and who is looking from
+  // the session cookie, each inside its own Suspense hole; the page itself stays prerenderable.
+  const ownerSlug = params.then((p) => p.slug);
   return (
     <Suspense
       fallback={
-        <ProfileShell>
+        <ProfileShell ownerSlug={ownerSlug}>
           <ProfileSkeleton />
         </ProfileShell>
       }

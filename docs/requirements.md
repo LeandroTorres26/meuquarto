@@ -26,7 +26,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - FR-11 A mixed list "Favoritos de tudo" with items picked from any collection (highlight-only, no listing).
 
 ### Integrations
-- FR-12 Link an external account by public username: Letterboxd (RSS), AniList (GraphQL, anime + manga), Last.fm, Steam, Goodreads (RSS). Validate that the account exists and is public.
+- FR-12 Link an external account by public username: Letterboxd (RSS), AniList (GraphQL, anime + manga), Last.fm (JSON API with the project's key; recent listening must be public), Steam, Goodreads (RSS). Validate that the account exists and is public.
 - FR-13 Scheduled sync (every ~6 h) plus manual "sync now" button (BR-03).
 - FR-14 Show sync status per account (last success, last error).
 - FR-15 "Agora" block: one item per category, automatic from sync, with manual override or hide (BR-06). Built (#35): `GET /api/now`, `PUT /api/now/{category}` (`mode` AUTOMATIC, PINNED with `collectionItemId`, or HIDDEN) and `now` in the public profile. Séries is manual only.
@@ -52,7 +52,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 | BR-07 | A work appears once per collection (synced and manual merge into one item) and once per highlight list. |
 | BR-08 | Adult-flagged items are never shown on the public profile in P2. |
 | BR-09 | A purchase is granted only after a verified Stripe webhook, idempotent per event id. |
-| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList, entries with status completed, current, paused or repeating (never planning). Goodreads, shelves read (finished) and currently-reading (in progress); the books are provisional Goodreads rows until mapped to Open Library (ADR 0005). Steam, owned games with playtime > 0. Last.fm, loved tracks and albums with at least N scrobbles (N configured, start at 10), never each play. |
+| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList, entries with status completed, current, paused or repeating (never planning). Goodreads, shelves read (finished) and currently-reading (in progress); the books are provisional Goodreads rows until mapped to Open Library (ADR 0005). Steam, owned games with playtime > 0. Last.fm, albums with at least N scrobbles among the user's 200 most recent (N = 10, a constant of `LastFmProvider`) as one entry each at their newest scrobble, plus the album playing now (FR-15, "Ouvindo"); never each play. Loved tracks are not read (they carry no album, and the unit of music is the album). The albums are provisional Last.fm rows until mapped to Deezer (ADR 0005). |
 
 ## Non-functional requirements
 - NFR-01 Modular monolith; each external platform is one `MediaProvider` implementation (Strategy/Adapter).

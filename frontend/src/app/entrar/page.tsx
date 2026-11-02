@@ -5,7 +5,7 @@ import { LoginForm } from "@/components/LoginForm";
 
 export const metadata: Metadata = { title: "Entrar no meuquarto" };
 
-// Signed-in visitors are redirected to /painel/conta by proxy.ts.
+// Signed-in visitors are redirected to /painel by proxy.ts.
 export default function SignInPage() {
   return (
     <AuthLayout
