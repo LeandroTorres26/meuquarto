@@ -9,6 +9,7 @@ import com.meuquarto.profile.domain.ProfileException.Problem;
 import com.meuquarto.profile.domain.ProfileTheme;
 import com.meuquarto.profile.domain.Slug;
 import com.meuquarto.profile.infra.ProfileRepository;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class ProfileEditor {
         DisplayName name = DisplayName.of(rawName);
         Bio bio = Bio.of(rawBio);
         ProfileTheme theme = ProfileTheme.of(rawTheme);
-        if (!plan.canApply(theme.tier())) {
+        if (!plan.canApply(theme)) {
             throw new ProfileException(Problem.THEME_LOCKED); // BR-05
         }
         String oldSlug = profile.slug();
@@ -87,10 +88,24 @@ public class ProfileEditor {
     private static Editable editable(Profile profile, Plan plan) {
         return new Editable(profile.slug(), profile.displayName().orElse(profile.slug()), profile.bio().orElse(""),
                 profile.avatarKey().map(Avatars::urlPath).orElse(null), profile.theme().id(),
-                ProfileTheme.availableTo(plan).stream().map(ProfileTheme::id).toList());
+                ProfileTheme.availableTo(plan).stream().map(ProfileTheme::id).toList(), pickerOf(plan));
     }
 
-    /** What S6 shows. {@code displayName} falls back to the slug until the owner picks one; {@code avatarUrl} is null without avatar. */
+    /** Every theme in display order, each marked by what the plan says about it. */
+    private static List<ThemeOption> pickerOf(Plan plan) {
+        return Arrays.stream(ProfileTheme.values())
+                .map(theme -> new ThemeOption(theme.id(), theme.premium(), plan.ownedThemes().contains(theme),
+                        !plan.canApply(theme)))
+                .toList();
+    }
+
+    /**
+     * What S6 shows. {@code displayName} falls back to the slug until the owner picks one; {@code avatarUrl} is null
+     * without avatar. {@code availableThemes} are the ids the user may apply; {@code themes} is the whole picker.
+     */
     public record Editable(String slug, String displayName, String bio, String avatarUrl, String theme,
-            List<String> availableThemes) {}
+            List<String> availableThemes, List<ThemeOption> themes) {}
+
+    /** One picker entry: {@code owned} is a bought premium theme, {@code locked} is one the user cannot apply (BR-05). */
+    public record ThemeOption(String id, boolean premium, boolean owned, boolean locked) {}
 }

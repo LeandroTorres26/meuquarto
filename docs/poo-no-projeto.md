@@ -12,7 +12,7 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 |---|---|---|
 | 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider` (estende `HttpCatalogProvider` **e** implementa `ActivityProvider`), `SteamProvider`, `LastFmProvider` implementam direto | base feita (issue #28: interface, abstrata, registro); `SyncService`, que percorre os provedores, feito (issue #29); `LetterboxdProvider` feito (issue #30); `AniListProvider` feito (issue #31, junto com a parte AniList da #22); `GoodreadsProvider` feito (issue #34); Steam e Last.fm nas issues #32 e #33 |
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListProvider` (a mesma classe da hierarquia 1), `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); `AniListProvider` feito (issue #31); `OpenLibraryCatalog` e `DeezerCatalog` feitos (issue #22); `IgdbCatalog` falta (precisa das credenciais Twitch do dono) |
-| 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); `PackPlan` só passa a ser usado quando houver compra (issue #39) |
+| 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); temas por posse feitos (issue #37); `PackPlan` só passa a ser entregue quando houver compra do pacote (issue #39) |
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
 | 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException`, `NowException` | feito |
 
@@ -385,21 +385,22 @@ final LetterboxdProvider   final GoodreadsProvider   + implements ActivityProvid
   - Como a capa é protegida? No Open Library a URL é montada por nós a partir do número `cover_i` num host fixo (`covers.openlibrary.org`), então nenhuma URL da resposta é usada. No Deezer a URL vem da resposta e só vale se for `https`, sem usuário nem porta, num host da lista fixa (`*.dzcdn.net`). Qualquer outra vira "sem capa".
   - Por que o método se chama `catalogName()` e não `id()`? Porque o `AniListProvider` implementa as duas interfaces, e o `id()` do `ActivityProvider` devolve `ProviderId`; dois métodos com o mesmo nome e retornos diferentes não compilam na mesma classe.
 
-### 3. Plan (feito na issue #24)
+### 3. Plan (feito na issue #24; temas na issue #37)
 
 ```
         interface Plan
- (code, highlightLimit, canApply(ThemeTier),
+ (code, highlightLimit, ownedThemes,
+  default canApply(ProfileTheme),
   default hasRoomFor(int))
              ^
       +------+------+
       |             |
 final FreePlan   final PackPlan
-(4 destaques,    (12 destaques,
- temas grátis)    todos os temas)
+(4 destaques)    (12 destaques)
 ```
 
-- Arquivos: `profile/domain/Plan.java` (interface), `FreePlan.java`, `PackPlan.java`, `ThemeTier.java` (enum `FREE`/`PREMIUM`); quem decide qual plano o usuário tem: `profile/application/PlanResolver.java` (interface) e `EveryoneIsFree.java` (por enquanto devolve `FreePlan` para todos); quem usa: `HighlightList.highlight(item, plan)` em `profile/domain/HighlightList.java` e `profile/application/ProfileHighlights.java`. Testes: `profile/domain/PlanTest.java`, `profile/domain/HighlightListTest.java` (sem Spring), `profile/HighlightApiTests.java` (a mesma API com `FreePlan` e com `PackPlan`).
+- Temas (BR-05, issue #37): `canApply(theme)` é um método `default` da interface: tema grátis vale para todos; tema premium só se estiver em `ownedThemes()`, o conjunto dos temas que o usuário comprou. Cada plano recebe esse conjunto no construtor (`new FreePlan(owned)`), então `FreePlan` e `PackPlan` não repetem a conta e nenhum código pergunta "tem o pacote?". O pacote (12 destaques) não inclui temas: eles são vendidos um a um. Quem sabe o que o usuário comprou é o `billing` (`Entitlements`); o `profile/application/EntitlementPlans.java` converte isso em `ProfileTheme` e monta o plano. Se o usuário tenta aplicar um tema que o plano recusa, `ProfileEditor` lança `ProfileException(THEME_LOCKED)` (um `DomainException`, HTTP 400). Teste: `profile/domain/BR05PremiumThemeNeedsOwnershipTest.java`.
+- Arquivos: `profile/domain/Plan.java` (interface), `FreePlan.java`, `PackPlan.java`, `ThemeTier.java` (enum `FREE`/`PREMIUM`), `ProfileTheme.java` (enum com os quatro temas); quem decide qual plano o usuário tem: `profile/application/PlanResolver.java` (interface) e `EntitlementPlans.java` (hoje devolve `FreePlan` com os temas comprados; a issue #39 passa a devolver `PackPlan` para quem tem o pacote); quem usa: `HighlightList.highlight(item, plan)` em `profile/domain/HighlightList.java` e `profile/application/ProfileHighlights.java`. Testes: `profile/domain/PlanTest.java`, `profile/domain/HighlightListTest.java` (sem Spring), `profile/HighlightApiTests.java` (a mesma API com `FreePlan` e com `PackPlan`).
 - Roteiro para explicar: (1) a interface `Plan` diz o que qualquer plano responde: limite de destaques (BR-02) e se um tema pode ser aplicado (BR-05); (2) `FreePlan` e `PackPlan` são `final` e só devolvem números e respostas diferentes; (3) a regra "no máximo N destaques" está em `HighlightList.highlight`, que recebe um `Plan` e pergunta `plan.hasRoomFor(tamanho)`; ela nunca pergunta "o usuário comprou o pacote?"; (4) o método `default hasRoomFor` está na interface porque a conta é a mesma para todo plano, só o limite muda.
 - Comparação com a aula 9: `Plan` é o `Animal`/`Pet`, `FreePlan` e `PackPlan` são `Cachorro` e `Gato`, `HighlightList.highlight(item, plan)` é o `PetShop.gritaria(animal)`: o método recebe o tipo base e o comportamento muda conforme o objeto real. Trocar de plano é entregar outro objeto ao mesmo método.
 - Por que interface e não classe abstrata? Os dois planos não compartilham campos nem construtor; só um contrato (e uma conta pequena, o `default`). Classe abstrata seria herança sem nada para herdar, e ainda gastaria a única herança que a classe pode ter. Com interface, um plano futuro pode estender qualquer coisa.
@@ -408,7 +409,7 @@ final FreePlan   final PackPlan
   - Como trocar de plano sem `if`? O `ProfileHighlights` chama `plans.planOf(userId)`, recebe um `Plan` e passa adiante; o teste de API troca o `PlanResolver` por outro que devolve `PackPlan` e o limite vira 12 sem mexer em nenhuma linha de `HighlightList`.
   - E se criarem um plano "Premium" com 30 destaques? Uma classe nova `PremiumPlan implements Plan` e o resolvedor passa a entregá-la; as regras de destaque e de tema não mudam.
   - Por que `Plan` não tem anotação do Spring ou do JPA? É uma hierarquia nossa (ADR 0018): Java puro, testada sem contexto.
-  - Por que `canApply` recebe `ThemeTier` e não um tema? Os temas só existem na issue #37; `ThemeTier` (grátis ou premium) já deixa o método com sentido hoje. Quando existirem, o método pode receber o tema.
+  - Por que `canApply` recebe o tema (`ProfileTheme`) e não só o `ThemeTier`? Na issue #24 os temas ainda não existiam e o tier bastava. Com a issue #37 a posse é por tema (comprar a Locadora não libera a Estufa), então o método precisa saber qual tema é.
   - Por que o erro de limite é `CONFLICT` (HTTP 409) e não `INVALID` (400)? O pedido é válido; ele conflita com o estado atual (a lista está cheia para o seu plano). Depois de remover um destaque, o mesmo pedido funciona.
 
 ## Destaques (issue #24)

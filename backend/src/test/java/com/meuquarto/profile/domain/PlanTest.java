@@ -3,29 +3,42 @@ package com.meuquarto.profile.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /** The Plan hierarchy (BR-02, BR-05) with no Spring: callers see only the interface. */
 class PlanTest {
 
     @Test
-    void freePlanAllowsFourHighlightsAndOnlyFreeThemes_BR02_BR05() {
+    void freePlanAllowsFourHighlightsAndOnlyFreeThemesUntilOneIsBought_BR02_BR05() {
         Plan plan = new FreePlan();
 
         assertThat(plan.code()).isEqualTo("FREE");
         assertThat(plan.highlightLimit()).isEqualTo(4);
-        assertThat(plan.canApply(ThemeTier.FREE)).isTrue();
-        assertThat(plan.canApply(ThemeTier.PREMIUM)).isFalse();
+        assertThat(plan.canApply(ProfileTheme.NOITE)).isTrue();
+        assertThat(plan.canApply(ProfileTheme.DIA)).isTrue();
+        assertThat(plan.canApply(ProfileTheme.LOCADORA)).isFalse();
+        assertThat(plan.canApply(ProfileTheme.ESTUFA)).isFalse();
     }
 
     @Test
-    void packPlanAllowsTwelveHighlightsAndPremiumThemes_BR02_BR05() {
+    void packPlanAllowsTwelveHighlightsAndDoesNotIncludeThemes_BR02_BR05() {
         Plan plan = new PackPlan();
 
         assertThat(plan.code()).isEqualTo("PACK");
         assertThat(plan.highlightLimit()).isEqualTo(12);
-        assertThat(plan.canApply(ThemeTier.FREE)).isTrue();
-        assertThat(plan.canApply(ThemeTier.PREMIUM)).isTrue();
+        assertThat(plan.canApply(ProfileTheme.DIA)).isTrue();
+        assertThat(plan.canApply(ProfileTheme.LOCADORA)).isFalse();
+    }
+
+    @Test
+    void anOwnedPremiumThemeCanBeAppliedOnEveryPlan_BR05() {
+        Set<ProfileTheme> owned = Set.of(ProfileTheme.LOCADORA);
+
+        for (Plan plan : List.of(new FreePlan(owned), new PackPlan(owned))) {
+            assertThat(plan.canApply(ProfileTheme.LOCADORA)).isTrue();
+            assertThat(plan.canApply(ProfileTheme.ESTUFA)).isFalse();
+        }
     }
 
     @Test

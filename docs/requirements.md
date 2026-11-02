@@ -47,7 +47,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 | BR-02 | Collections have no limit. Highlights (shown on the profile home) are limited: free plan 4 per category and 4 in "Favoritos de tudo"; with a purchased pack, 12 each. |
 | BR-03 | A linked account cannot be synced again within 15 min of the previous sync; the scheduler picks accounts older than 6 h. |
 | BR-04 | The same work from different sources is one `media_item` (canonical key: category + canonical catalog + external id). |
-| BR-05 | A premium theme can only be applied if the user owns it. Purchases are permanent. |
+| BR-05 | A premium theme can only be applied if the user owns it. Purchases are permanent. Ownership is per theme (the pack does not include themes); the check is `Plan.canApply(theme)` and a refusal is `THEME_LOCKED` (HTTP 400). Built in #37; until #38 grants entitlements nobody owns a premium theme. |
 | BR-06 | "Agora" shows the latest synced item per category unless the user pinned or hid it. |
 | BR-07 | A work appears once per collection (synced and manual merge into one item) and once per highlight list. |
 | BR-08 | Adult-flagged items are never shown on the public profile in P2. |

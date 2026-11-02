@@ -8,8 +8,7 @@ import { CategoryTools } from "@/components/profile/CategoryTools";
 import { HighlightCard } from "@/components/profile/HighlightCard";
 import { ItemDialog } from "@/components/profile/ItemDialog";
 import { ListingPager } from "@/components/profile/ListingPager";
-import { ProfileFooter } from "@/components/profile/ProfileFooter";
-import { ProfileTopBar } from "@/components/profile/ProfileTopBar";
+import { ProfileShell } from "@/components/profile/ProfileShell";
 import {
   categoryFromRoute,
   listingHref,
@@ -54,16 +53,6 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
   };
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="page">
-      <ProfileTopBar />
-      {children}
-      <ProfileFooter />
-    </div>
-  );
-}
-
 async function Listing({ props }: { props: Props }) {
   const { slug, categoria } = await props.params;
   const category = categoryFromRoute(categoria);
@@ -79,14 +68,14 @@ async function Listing({ props }: { props: Props }) {
   }
   if (profileResult.kind !== "ok" || listingResult.kind !== "ok") {
     return (
-      <Shell>
+      <ProfileShell>
         <main className="wrap sections" style={{ paddingTop: "var(--l4)" }}>
           <div className="pair-2" role="alert">
             <h1 className="t-h1">Não foi possível abrir essa coleção agora</h1>
             <p className="t-lead muted measure-s">Aguarde um instante e recarregue a página.</p>
           </div>
         </main>
-      </Shell>
+      </ProfileShell>
     );
   }
 
@@ -104,7 +93,7 @@ async function Listing({ props }: { props: Props }) {
   const profileHref = `/${encodeURIComponent(profile.slug)}`;
 
   return (
-    <Shell>
+    <ProfileShell theme={profile.theme} premium={profile.premiumTheme}>
       <main
         className="wrap sections"
         style={{ paddingTop: "var(--page-top)", paddingBottom: "var(--l5)" }}
@@ -190,7 +179,7 @@ async function Listing({ props }: { props: Props }) {
       </main>
 
       <ItemDialog slug={profile.slug} ownerName={profile.displayName} />
-    </Shell>
+    </ProfileShell>
   );
 }
 
@@ -204,13 +193,13 @@ export default function CategoryListingPage(props: Props) {
   return (
     <Suspense
       fallback={
-        <Shell>
+        <ProfileShell>
           <div className="wrap" aria-busy="true" style={{ paddingTop: "var(--page-top)" }}>
             <p className="t-sm" role="status">
               Carregando coleção…
             </p>
           </div>
-        </Shell>
+        </ProfileShell>
       }
     >
       <Listing props={props} />

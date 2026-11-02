@@ -46,11 +46,20 @@ public class ProfileController {
 
     /** {@code avatarUrl} is null without an avatar; {@code availableThemes} are the ids the user may apply. */
     public record ProfileResponse(String slug, String displayName, String bio, String avatarUrl, String theme,
-            List<String> availableThemes) {
+            List<String> availableThemes, List<ThemeResponse> themes) {
 
         static ProfileResponse of(ProfileEditor.Editable editable) {
             return new ProfileResponse(editable.slug(), editable.displayName(), editable.bio(), editable.avatarUrl(),
-                    editable.theme(), editable.availableThemes());
+                    editable.theme(), editable.availableThemes(),
+                    editable.themes().stream().map(ThemeResponse::of).toList());
+        }
+    }
+
+    /** A picker entry (S6): {@code locked} themes cannot be applied yet, the store sells them (BR-05). */
+    public record ThemeResponse(String id, boolean premium, boolean owned, boolean locked) {
+
+        static ThemeResponse of(ProfileEditor.ThemeOption option) {
+            return new ThemeResponse(option.id(), option.premium(), option.owned(), option.locked());
         }
     }
 }

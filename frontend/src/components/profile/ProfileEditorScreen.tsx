@@ -1,18 +1,21 @@
 "use client";
 
-import { Upload } from "lucide-react";
+import { Lock, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { AlertBox } from "@/components/AlertBox";
 import { FieldError } from "@/components/FieldError";
 import { ApiError, removeAvatar, saveProfile, uploadAvatar } from "@/lib/api-client";
+import { ThemePreview } from "@/components/profile/ThemePreview";
 import { normalizeSlug } from "@/lib/slug";
 import {
   AVATAR_TYPES,
   BIO_MAX,
   NAME_MAX,
+  NETWORK_DOWN,
   THEME_LABELS,
+  themeCaption,
   avatarFileProblem,
   charCount,
   profileMessage,
@@ -23,13 +26,8 @@ import {
 
 type Toast = { kind: "ok" | "bad"; text: string };
 
-const NETWORK: EditorError = {
-  field: "form",
-  message: "Não foi possível falar com o servidor. Confira sua conexão e tente de novo.",
-};
-
 const toError = (e: unknown): EditorError =>
-  e instanceof ApiError ? profileMessage(e.code, e.status, e.retryAfterSeconds) : NETWORK;
+  e instanceof ApiError ? profileMessage(e.code, e.status, e.retryAfterSeconds) : NETWORK_DOWN;
 
 /** S6 (docs/design/telas/painel-perfil.html): photo, name, bio, address and theme. */
 export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
@@ -38,7 +36,12 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
   const [name, setName] = useState(initial.displayName);
   const [bio, setBio] = useState(initial.bio);
   const [slug, setSlug] = useState(initial.slug);
+  // `theme` is what Salvar perfil sends (always one the user may apply); `viewed` is the one drawn in the
+  // preview, which may also be a locked premium theme the user is only looking at.
   const [theme, setTheme] = useState(initial.theme);
+  const [viewed, setViewed] = useState(initial.theme);
+  // True after a save failed in a way that may pass by itself (server restarting, connection lost).
+  const [canRetrySave, setCanRetrySave] = useState(false);
   // What the polaroid shows: the chosen file as a data URL while it uploads, else the saved avatar.
   const [preview, setPreview] = useState<string | null>(null);
   const [avatarUrl, setAvatarUrl] = useState(initial.avatarUrl);
@@ -49,9 +52,11 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const shown = preview ?? avatarUrl;
+  const viewedOption = saved.themes.find((option) => option.id === viewed);
 
-  function fail(error: EditorError) {
+  function fail(error: EditorError, fromSave = false) {
     setErrors({ [error.field]: error.message });
+    setCanRetrySave(fromSave && Boolean(error.retry));
     if (error.field === "form") setToast({ kind: "bad", text: error.message });
   }
 
@@ -105,11 +110,16 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
     }
   }
 
-  async function onSubmit(event: FormEvent<HTMLFormElement>) {
+  function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    void submit();
+  }
+
+  async function submit() {
     if (saving) return;
     setSaving(true);
     setErrors({});
+    setCanRetrySave(false);
     setToast(null);
     try {
       const result = await saveProfile({
@@ -123,10 +133,11 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
       setBio(result.bio);
       setSlug(result.slug);
       setTheme(result.theme);
+      setViewed(result.theme);
       setToast({ kind: "ok", text: "Perfil salvo." });
       router.refresh();
     } catch (e) {
-      fail(toError(e));
+      fail(toError(e), true);
     } finally {
       setSaving(false);
     }
@@ -277,6 +288,15 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
             Salvar perfil
             {saving && <span className="mq-spinner" aria-hidden="true" />}
           </button>
+          {canRetrySave && !saving ? (
+            <button
+              type="button"
+              className="mq-btn mq-btn--secondary"
+              onClick={() => void submit()}
+            >
+              Tentar de novo
+            </button>
+          ) : null}
           <div aria-live="polite" role="status">
             {toast && (
               <div className="mq-toast">
@@ -295,8 +315,7 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
             Tema
           </h2>
           <p className="help">
-            Muda as cores do seu perfil. Mais temas chegam com a loja.
-            {/* The store link returns with S11. */}
+            Escolha um tema para ver a prévia aqui embaixo. Os marcados com “na loja” são pagos.
           </p>
         </div>
         <div
@@ -305,33 +324,58 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
           aria-labelledby="tema-h"
           style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "var(--space-3)" }}
         >
-          {saved.availableThemes.map((id) => (
-            <label className="theme-opt" key={id}>
+          {saved.themes.map((option) => (
+            <label className="theme-opt" key={option.id}>
               <input
                 type="radio"
                 name="tema"
-                value={id}
-                checked={theme === id}
-                onChange={() => setTheme(id)}
+                value={option.id}
+                checked={viewed === option.id}
+                onChange={() => {
+                  setViewed(option.id); // a locked theme can be looked at...
+                  if (!option.locked) setTheme(option.id); // ...but only an allowed one is saved
+                }}
               />
-              <div className="swatch" data-theme={id} aria-hidden="true">
+              <div className="swatch" data-theme={option.id} aria-hidden="true">
                 <span className="swatch__poster" />
                 <span className="swatch__aa">AA</span>
                 <span className="swatch__bar" />
                 <span className="swatch__lamp" />
               </div>
               <span className="row row--between">
-                <span className="t-label">{THEME_LABELS[id] ?? id}</span>
-                <span className="t-cap">grátis</span>
+                <span className="t-label">{THEME_LABELS[option.id] ?? option.id}</span>
+                <span className="t-cap">{themeCaption(option)}</span>
               </span>
             </label>
           ))}
         </div>
         <FieldError id="tema-erro">{errors.theme}</FieldError>
-        <p className="help">
-          O tema vale depois de <strong>Salvar perfil</strong>.{" "}
-          <Link href={`/${saved.slug}`}>Ver meu perfil</Link>
-        </p>
+        <ThemePreview
+          theme={viewed}
+          name={name.trim() || saved.slug}
+          slug={normalizeSlug(slug) || saved.slug}
+          bio={bio}
+          label={`Prévia do tema ${THEME_LABELS[viewed] ?? viewed}`}
+        />
+        {viewedOption?.locked ? (
+          <p className="help" role="status">
+            <Lock className="icon" aria-hidden="true" /> O tema {THEME_LABELS[viewed] ?? viewed} é
+            pago. Você pode ver como fica, mas só aplica depois de comprar.{" "}
+            <Link href="/painel/loja" prefetch={false}>
+              Ver na loja
+            </Link>
+          </p>
+        ) : theme !== saved.theme ? (
+          <p className="help" role="status">
+            Isto é só uma prévia: seu perfil público só muda quando você clicar em{" "}
+            <strong>Salvar perfil</strong>.
+          </p>
+        ) : (
+          <p className="help">
+            O tema vale depois de <strong>Salvar perfil</strong>.{" "}
+            <Link href={`/${saved.slug}`}>Ver meu perfil</Link>
+          </p>
+        )}
       </section>
     </div>
   );

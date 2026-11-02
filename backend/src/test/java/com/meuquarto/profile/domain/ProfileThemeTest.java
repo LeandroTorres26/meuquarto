@@ -4,30 +4,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.meuquarto.profile.domain.ProfileException.Problem;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-/** BR-05 for the editor: only the free themes exist for now, and the plan decides who may apply a theme. */
+/** The themes a profile can wear (FR-17) and which ones a plan offers (BR-05). */
 class ProfileThemeTest {
 
     @Test
-    void onlyTheFreeThemesExist() {
-        assertThat(ProfileTheme.of("noite")).isEqualTo(ProfileTheme.NOITE);
-        assertThat(ProfileTheme.of("dia")).isEqualTo(ProfileTheme.DIA);
-        assertThat(ProfileTheme.values()).allSatisfy(theme -> assertThat(theme.tier()).isEqualTo(ThemeTier.FREE));
+    void thereAreTwoFreeAndTwoPremiumThemesInDisplayOrder() {
+        assertThat(ProfileTheme.values()).containsExactly(ProfileTheme.NOITE, ProfileTheme.DIA,
+                ProfileTheme.LOCADORA, ProfileTheme.ESTUFA);
+        assertThat(ProfileTheme.NOITE.premium()).isFalse();
+        assertThat(ProfileTheme.DIA.premium()).isFalse();
+        assertThat(ProfileTheme.LOCADORA.premium()).isTrue();
+        assertThat(ProfileTheme.ESTUFA.premium()).isTrue();
+        assertThat(ProfileTheme.of("locadora")).isEqualTo(ProfileTheme.LOCADORA);
         assertThat(ProfileTheme.DEFAULT).isEqualTo(ProfileTheme.NOITE);
     }
 
     @Test
     void anUnknownIdIsRefused() {
-        assertThatThrownBy(() -> ProfileTheme.of("estufa")).isInstanceOfSatisfying(ProfileException.class,
+        assertThatThrownBy(() -> ProfileTheme.of("neon")).isInstanceOfSatisfying(ProfileException.class,
                 e -> assertThat(e.problem()).isEqualTo(Problem.THEME_UNKNOWN));
         assertThatThrownBy(() -> ProfileTheme.of(null)).isInstanceOf(ProfileException.class);
         assertThatThrownBy(() -> ProfileTheme.of("NOITE")).isInstanceOf(ProfileException.class);
     }
 
     @Test
-    void theFreePlanListsTheFreeThemes() {
+    void thePlanListsTheThemesItCanApply_BR05() {
         assertThat(ProfileTheme.availableTo(new FreePlan())).containsExactly(ProfileTheme.NOITE, ProfileTheme.DIA);
+        assertThat(ProfileTheme.availableTo(new FreePlan(Set.of(ProfileTheme.ESTUFA))))
+                .containsExactly(ProfileTheme.NOITE, ProfileTheme.DIA, ProfileTheme.ESTUFA);
     }
 
     @Test

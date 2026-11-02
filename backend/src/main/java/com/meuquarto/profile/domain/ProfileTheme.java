@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * The themes a profile can wear. Only the two free ones exist until the store (#37, #39) adds the
- * premium themes: each new theme is a new constant with {@link ThemeTier#PREMIUM}, and
- * {@link Plan#canApply(ThemeTier)} decides who may use it (BR-05).
+ * The themes a profile can wear. A new theme is a new constant, free or {@link ThemeTier#PREMIUM}, plus a
+ * row in {@code themes} (seeded) and its tokens in the design system; {@link Plan#canApply(ProfileTheme)}
+ * decides who may use it (BR-05).
  */
 public enum ProfileTheme {
     NOITE("noite", ThemeTier.FREE),
-    DIA("dia", ThemeTier.FREE);
+    DIA("dia", ThemeTier.FREE),
+    LOCADORA("locadora", ThemeTier.PREMIUM),
+    ESTUFA("estufa", ThemeTier.PREMIUM);
 
     public static final ProfileTheme DEFAULT = NOITE;
 
@@ -41,8 +43,13 @@ public enum ProfileTheme {
         return Arrays.stream(values()).filter(theme -> theme.id.equals(id)).findFirst();
     }
 
+    /** True for the themes that are bought. */
+    public boolean premium() {
+        return tier == ThemeTier.PREMIUM;
+    }
+
     /** Themes a plan may apply, in display order. */
     public static List<ProfileTheme> availableTo(Plan plan) {
-        return Arrays.stream(values()).filter(theme -> plan.canApply(theme.tier)).toList();
+        return Arrays.stream(values()).filter(plan::canApply).toList();
     }
 }

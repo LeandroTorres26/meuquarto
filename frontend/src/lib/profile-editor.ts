@@ -3,6 +3,9 @@
 import { collectionMessage } from "./collection";
 import { slugReasonMessage } from "./auth-errors";
 
+/** One entry of the theme picker. `owned` is a bought premium theme, `locked` one the user cannot apply. */
+export type ThemeOption = { id: string; premium: boolean; owned: boolean; locked: boolean };
+
 /** GET /api/profile. `avatarUrl` is null without avatar; `availableThemes` are the ids the user may apply. */
 export type OwnProfile = {
   slug: string;
@@ -11,6 +14,8 @@ export type OwnProfile = {
   avatarUrl: string | null;
   theme: string;
   availableThemes: string[];
+  /** Every theme in display order; `locked` ones cannot be applied yet (BR-05). */
+  themes: ThemeOption[];
 };
 
 export type ProfileChange = { displayName: string; bio: string; slug: string; theme: string };
@@ -21,14 +26,40 @@ export const BIO_MAX = 160;
 export const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 export const AVATAR_TYPES = ["image/jpeg", "image/png"];
 
-/** Free themes shown in the picker, in the design's order. */
-export const THEME_LABELS: Record<string, string> = { noite: "Noite", dia: "Dia" };
+/** Names of the themes in the picker (the API sends ids and flags only). */
+export const THEME_LABELS: Record<string, string> = {
+  noite: "Noite",
+  dia: "Dia",
+  locadora: "Locadora",
+  estufa: "Estufa",
+};
+
+/** The small caption under a theme in the picker (design: "grátis", "comprado", "na loja"). */
+export function themeCaption(option: ThemeOption): string {
+  if (!option.premium) return "grátis";
+  return option.owned ? "comprado" : "na loja";
+}
 
 /** Characters of a text as the server counts them (code points, so an emoji is one). */
 export const charCount = (text: string): number => Array.from(text).length;
 
 export type EditorField = "name" | "bio" | "slug" | "theme" | "avatar" | "form";
-export type EditorError = { field: EditorField; message: string };
+/** `retry` is true when the same request may well work in a moment (server restarting, connection lost). */
+export type EditorError = { field: EditorField; message: string; retry?: boolean };
+
+/** Shown for a 5xx without one of our error codes, typically the API restarting behind the proxy. */
+export const SERVER_DOWN: EditorError = {
+  field: "form",
+  message: "O servidor não respondeu agora. Pode ser só um reinício rápido: tente de novo.",
+  retry: true,
+};
+
+/** The browser could not reach the server at all. */
+export const NETWORK_DOWN: EditorError = {
+  field: "form",
+  message: "Não foi possível falar com o servidor. Confira sua conexão e tente de novo.",
+  retry: true,
+};
 
 const BY_CODE: Record<string, EditorError> = {
   DISPLAY_NAME_REQUIRED: { field: "name", message: "Escreva um nome." },
@@ -43,7 +74,7 @@ const BY_CODE: Record<string, EditorError> = {
   BIO_TOO_LONG: { field: "bio", message: `A bio pode ter no máximo ${BIO_MAX} caracteres.` },
   BIO_INVALID: { field: "bio", message: "A bio tem caracteres que não podemos guardar." },
   THEME_UNKNOWN: { field: "theme", message: "Esse tema não existe." },
-  THEME_LOCKED: { field: "theme", message: "Esse tema ainda não está liberado para você." },
+  THEME_LOCKED: { field: "theme", message: "Você ainda não tem esse tema. Ele está na loja." },
   SLUG_TOO_SHORT: { field: "slug", message: "O endereço precisa ter pelo menos 3 caracteres." },
   SLUG_TOO_LONG: { field: "slug", message: "O endereço pode ter no máximo 30 caracteres." },
   SLUG_INVALID_CHARACTERS: { field: "slug", message: "Use só letras minúsculas, números e hífen." },
@@ -82,6 +113,7 @@ export function profileMessage(
   retryAfterSeconds?: number,
 ): EditorError {
   if (code && BY_CODE[code]) return BY_CODE[code];
+  if (status !== undefined && status >= 500) return SERVER_DOWN;
   return { field: "form", message: collectionMessage(code, status, retryAfterSeconds) };
 }
 

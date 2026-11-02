@@ -42,7 +42,8 @@ TmdbCatalog AniListCatalog OpenLibraryCatalog IgdbCatalog DeezerCatalog
 ### 3. Plan (implemented in #24; the pack is wired in #39)
 ```
         interface Plan
-        (code(), highlightLimit(), canApply(ThemeTier),
+        (code(), highlightLimit(), ownedThemes(),
+         default canApply(ProfileTheme),
          default hasRoomFor(count))
              ^
       +------+------+
@@ -51,7 +52,7 @@ TmdbCatalog AniListCatalog OpenLibraryCatalog IgdbCatalog DeezerCatalog
  (4 highlights, (12 highlights,
   free themes)   owned themes)
 ```
-Replaces `if (hasPack) ... else ...` for BR-02 (highlight limits) and BR-05 (premium themes need ownership). The profile asks its `Plan`; it does not test for the pack itself. As built in #24: `canApply` takes a `ThemeTier` (`FREE` or `PREMIUM`) because themes do not exist yet (#37), and `hasRoomFor(count)` is a `default` method on the interface. The classes live in `profile/domain`; an application-level `PlanResolver` decides which object to hand out (everybody is `FreePlan` until entitlements exist in #39), which is the only place that decides who has what.
+Replaces `if (hasPack) ... else ...` for BR-02 (highlight limits) and BR-05 (premium themes need ownership). The profile asks its `Plan`; it does not test for the pack itself. As built in #24: `hasRoomFor(count)` is a `default` method on the interface. As built in #37: themes are sold one by one (the pack only raises the highlight limit), so each plan carries the set of premium themes its user bought (`ownedThemes()`), and `canApply(ProfileTheme)` is a `default` method: free themes for everyone, premium ones only when owned. The set comes from billing's `Entitlements` through the `PlanResolver`, so the plan classes stay plain Java. The classes live in `profile/domain`; an application-level `PlanResolver` (`EntitlementPlans`) decides which object to hand out (a `FreePlan` carrying the owned themes until the pack is wired in #39), which is the only place that decides who has what.
 
 ### 4. ValidationRule (implemented in this PR)
 ```

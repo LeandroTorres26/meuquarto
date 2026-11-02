@@ -50,11 +50,12 @@ public class PublicProfileController {
     }
 
     public record ProfileResponse(String slug, String displayName, String bio, String avatarUrl, String theme,
-            List<NowResponse> now, List<ItemResponse> favorites, List<SectionResponse> categories) {
+            boolean premiumTheme, List<NowResponse> now, List<ItemResponse> favorites,
+            List<SectionResponse> categories) {
 
         static ProfileResponse of(PublicProfile profile) {
             return new ProfileResponse(profile.slug(), profile.displayName(), profile.bio(), profile.avatarUrl(),
-                    profile.theme(),
+                    profile.theme(), profile.premiumTheme(),
                     profile.now().stream().map(NowResponse::of).toList(),
                     profile.favorites().stream().map(ItemResponse::of).toList(),
                     profile.categories().stream().map(SectionResponse::of).toList());
