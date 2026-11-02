@@ -16,7 +16,7 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 | 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
 | 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException`, `NowException` | feito |
 
-Opcional depois (issue #43): `RoomObject` (abstrata) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`.
+Opcional, feito na issue #43: `RoomObject` (abstrata, TypeScript no frontend) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`, `Decor` (hierarquia 6, abaixo).
 
 ## Regras da coleção (issue #23)
 
@@ -248,6 +248,45 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
   - Por que `RuntimeException` como base? Erros de regra de negócio não precisam ser declarados em cada assinatura (`throws`); o handler da API os captura em um ponto.
   - Por que a `DomainException` não conhece HTTP? O domínio não pode depender da camada de API (ArchUnit confere); o `ErrorKind` é a ponte neutra.
   - Onde um novo erro precisa ser registrado? Em lugar nenhum além da própria classe.
+
+### 6. RoomObject (opcional, feito na issue #43; é em TypeScript, no frontend)
+
+```
+              abstract RoomObject
+   (id, label, title, subtitle, items)
+   abstract boxes(view)
+   anchor(), isSelectable(), onSelect(actions), bounds(), has(ref)
+                     ^
+     +-------+-------+--------+---------------+
+     |       |       |        |               |
+   Poster  Shelf  RecordPlayer  Tv          Decor
+ (parede e (estante) (vitrola)  (tv)    (o próprio quarto)
+  mural)
+```
+
+Esta é a única hierarquia que não está em Java: ela mora em `frontend/src/features/room/objects/` (os caminhos desta seção são relativos a `frontend/src/features/room/`). O professor pediu herança, classe abstrata, interface e polimorfismo em código nosso, e uma classe TypeScript com `abstract class`, `extends`, `super(...)` e `override` mostra a mesma ideia. As cinco hierarquias em Java continuam sendo o núcleo da entrega.
+
+- Arquivos: `objects/RoomObject.ts` (a abstrata), `objects/Poster.ts`, `objects/Shelf.ts`, `objects/RecordPlayer.ts`, `objects/Tv.ts`, `objects/Decor.ts`, `objects/buildRoom.ts` (monta a lista), `box.ts` (a caixa 3D, dado puro). A tela (`RoomScene.tsx`, `ObjectView.tsx`, `LabelLayer.tsx`) só percorre a lista. Testes: `objects/objects.test.ts` e `camera.test.ts` (Vitest, sem navegador).
+- O que é: o quarto da tela S5 é feito de objetos (pôsteres na parede, mural, estante, vitrola, TV e o próprio cômodo). Cada objeto sabe (1) quais caixas 3D o compõem (`boxes`), (2) onde fica o rótulo (`anchor`), (3) se dá para apontar para ele (`isSelectable`) e (4) o que acontece no clique (`onSelect`).
+- Roteiro para explicar, linha por linha da `RoomObject.ts`:
+  1. `export abstract class RoomObject`: abstrata porque "um objeto qualquer do quarto" não existe; só existem pôster, estante, etc. Não dá para fazer `new RoomObject(...)`.
+  2. `protected constructor(readonly id, readonly label, readonly title, readonly subtitle, readonly items)`: o construtor é `protected`, então só as subclasses o chamam, com `super(...)`. Os campos nascem `readonly` (como `final` no Java) e guardam o que todo objeto tem: um id (`'parede'`, `'estante'`...), o nome curto do rótulo, o título do painel e a lista de destaques daquele objeto.
+  3. `abstract boxes(view): Box[]`: o único método abstrato. Cada subclasse devolve as caixas que a desenham (a estante devolve tábuas e livros; a TV devolve a mesa e a tela). Não tem corpo na base, e o compilador obriga cada subclasse a implementar.
+  4. `anchor()`: método pronto na base (o meio do topo do objeto). `Poster`, `Shelf`, `RecordPlayer` e `Tv` o sobrescrevem (`override`) para pôr o rótulo onde o desenho ficou melhor.
+  5. `isSelectable()`: devolve `true` na base; só o `Decor` sobrescreve para `false`. É assim que a tela sabe que o cômodo não tem rótulo nem brilho, sem perguntar "você é um Decor?".
+  6. `onSelect(actions)`: na base só chama `actions.select(this.id)`. A `RecordPlayer` sobrescreve: chama `super.onSelect(actions)` (faz o que a base faz) e depois `actions.reveal(this.id)`, que levanta a capa da frente do caixote. As outras subclasses não mexem nisso.
+  7. `protected solid(...)` e `protected cover(...)`: auxiliares que só as subclasses usam. `solid` cria uma caixa já marcada com o id do objeto (é isso que faz o objeto inteiro brilhar no hover); `cover` escolhe a capa (só imagem `https`) ou um papel liso.
+- Onde está o polimorfismo: em `RoomScene.tsx` há `objects.map(...)` e `byId.get(id)?.onSelect(actions)`. A tela chama `boxes(view)`, `anchor()` e `onSelect(...)` sempre pelo tipo base `RoomObject`. Ela nunca faz `instanceof Shelf` nem `switch` sobre o tipo. Clicar na vitrola e clicar na estante é a mesma linha de código com resultados diferentes, porque o objeto real é diferente (igual ao `PetShop.gritaria(animal)` das aulas).
+- `Poster` é uma classe só com duas posições (parede e mural): a diferença é dado (`Placement`), não subclasse. Dois `new` diferentes (`Poster.wall(...)`, `Poster.mural(...)`) e o mesmo código.
+- Regras do ADR 0018 cumpridas: nenhuma classe da hierarquia importa React, Next ou o DOM (só TypeScript puro), os métodos são pequenos e nenhum chamador usa `instanceof`.
+- Perguntas:
+  - Por que classe abstrata e não interface? Os objetos compartilham campos (`id`, `label`, `items`), um construtor e métodos prontos (`anchor`, `onSelect`, `bounds`); interface só tem contrato. É o mesmo raciocínio da `LengthRule`.
+  - O que é `override` no TypeScript? Marca que o método sobrescreve um da classe pai, como o `@Override` do Java; se o nome no pai mudar, o compilador avisa.
+  - Qual a diferença para o Java? `abstract class` e `extends` funcionam igual; os campos do construtor com `readonly` substituem `private final` mais o getter, e não há sobrecarga de construtor.
+  - Como acrescentar um objeto novo (um aquário)? Cria `Aquarium extends RoomObject`, implementa `boxes` e inclui um `Aquarium.of(...)` em `buildRoom`. A tela, o rótulo, o brilho, o teclado e o painel funcionam sem mudar.
+  - Por que `RecordPlayer.onSelect` chama `super.onSelect`? Para reaproveitar o comportamento da base (selecionar) e só acrescentar o que é dele (levantar a capa). Sem o `super`, ele deixaria de selecionar.
+  - Por que o `Decor` é um `RoomObject` se não é selecionável? Porque o cômodo também é feito de caixas e passa pelo mesmo desenho; a única diferença é `isSelectable() === false`, resolvida por polimorfismo e não por `if` na tela.
+  - Onde está o `if` sobre o tipo? Em lugar nenhum. O único lugar que sabe quais classes existem é `buildRoom`, que monta a lista.
 
 ### 1. ActivityProvider (base na issue #28; `LetterboxdProvider` na issue #30; `AniListProvider` na issue #31; os outros três nas issues #32 a #34)
 
