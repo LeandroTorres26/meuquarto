@@ -35,7 +35,7 @@ Public screens are built for three viewers, and every new screen must say what c
 
 | Screen | Visitor | Signed in (other) | Signed in (own) |
 | --- | --- | --- | --- |
-| Top bar of public pages (S1, S4, S18, S15, S16) | Entrar, Crie o seu | Meu perfil, Painel | Painel, Editar perfil |
+| Top bar of public pages (S1, S4, S18, S15, S16) | Entrar, Crie o seu | Meu perfil, Painel | Destaques, Editar perfil |
 | Profile footer "Crie o seu" (S4, S18, S16) | shown | hidden | hidden |
 | Landing S1 hero | pitch + "Crie o seu" | "Ir para o painel", "Meu perfil" | n/a |
 | S16 (404) sign-up button | "Usar esse endereço" / "Crie o seu" | "Ir para o painel" | n/a |
@@ -45,7 +45,7 @@ Public screens are built for three viewers, and every new screen must say what c
 
 Notes:
 - S5 is full screen and has no top bar; only its panel call to action follows the table. S20 (`/redefinir-senha`) is not redirected: the link comes from an e-mail and works whoever is signed in.
-- "Painel" is `/painel`; "Meu perfil" is `/{slug}` of the session; "Editar perfil" is `/painel` (S6).
+- "Painel" is `/painel`, "Destaques" is `/painel/destaques`; "Meu perfil" is `/{slug}` of the session; "Editar perfil" is `/painel` (S6).
 - Implementation (issue #118): the pages stay prerendered (Partial Prerender, `cacheComponents`). Everything that depends on the session is a small server component that reads the cookie inside its own `<Suspense>` (`components/SessionActions.tsx`, `components/SessionSlots.tsx`), so the cached HTML holds only an invisible, inert placeholder of the same size (no layout shift, never a wrong call to action) and nothing user-specific. The decision is the pure `viewerState(pageSlug, session)` in `lib/viewer-state.ts`. The room panel receives its call to action as a server element prop (`invite`). Redirects of S2, S3 and S19 are real HTTP redirects in `proxy.ts`.
 
 Implementation notes for S4 and S17 (issues #16 and #17):

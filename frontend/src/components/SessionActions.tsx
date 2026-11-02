@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { currentSession } from "@/lib/session";
-import { PANEL_HREF, profileHref, viewerState } from "@/lib/viewer-state";
+import { HIGHLIGHTS_HREF, PANEL_HREF, profileHref, viewerState } from "@/lib/viewer-state";
 
 // The session-aware calls to action of the public screens (docs/screens.md, "Session states").
 // The pages that use them are prerendered; these components read the session cookie, so each one
@@ -45,8 +45,8 @@ async function TopBarButtons({ ownerSlug }: { ownerSlug: OwnerSlug }) {
   if (state === "own") {
     return (
       <>
-        <Link href={PANEL_HREF} prefetch={false} className="mq-btn mq-btn--ghost mq-btn--sm">
-          Painel
+        <Link href={HIGHLIGHTS_HREF} prefetch={false} className="mq-btn mq-btn--ghost mq-btn--sm">
+          Destaques
         </Link>
         <Link href={PANEL_HREF} prefetch={false} className="mq-btn mq-btn--primary mq-btn--sm">
           Editar perfil
