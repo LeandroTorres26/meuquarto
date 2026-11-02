@@ -22,7 +22,7 @@ What each platform allows, checked on 2026-11-02:
 3. **No file import as the main path.** The CSV card is removed from S9. Importing exports may come back later only as an optional way to bring old history.
 4. **MyAnimeList is added before the store**, linked by username and read with the project's client ID (`MAL_CLIENT_ID`). Its entries are mapped to the AniList catalog through AniList's `idMal`, so a user with both accounts sees each work once and no MyAnimeList metadata is kept; only the AniList work and the list status. Before real charges, ask MyAnimeList for written authorization (recorded in ADR 0010).
 5. **Link-only platforms at launch:** Backloggd (games), Trakt (series and films) and StoryGraph (books). Adding one is a name, a category list, a URL template and its mark; it needs no provider class.
-6. **Platform marks.** Links and S9 cards show the platform's one-color mark (Simple Icons, CC0; the marks belong to their owners and only name the platform a link goes to). A platform without a mark uses its category icon.
+6. **Platform marks in their own colors.** Links and S9 cards show the platform's mark on a small tile in the platform's colors (marks from Simple Icons, CC0; the marks belong to their owners and only name the platform a link goes to). The owner chose color so each platform keeps its identity; the tile keeps dark brands visible on every theme. A platform without a mark uses its category icon on its category color.
 7. **Item links go to the work, not a search** (FR-10a): Letterboxd through `letterboxd.com/tmdb/{id}`, MyAnimeList through AniList's `idMal`, the catalogs by their ids.
 
 ## Consequences

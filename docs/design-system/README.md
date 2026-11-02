@@ -81,7 +81,7 @@ BR-05: a premium theme can only be applied by an account that bought it; purchas
 
 Icons are Lucide (ISC license), 24px grid, 2px stroke, `currentColor`, shown at 14px inside stickers and 18px inside buttons. Inline the SVG with `class="mq-icon"`. Category icons: Filme `clapperboard`, Série `tv`, Anime `sparkles`, Mangá `book-copy`, Livro `book-open`, Música `disc-3`, Game `gamepad-2`. Action icons: `copy`, `door-open`, `share-2`.
 
-Platform marks (the profile's platform links and the S9 cards) come from Simple Icons (CC0; the marks belong to their owners and are used only to name the platform a link goes to): `brand-letterboxd`, `brand-anilist`, `brand-myanimelist`, `brand-lastfm`, `brand-steam`, `brand-goodreads`, `brand-storygraph`, `brand-trakt`. They are filled shapes (`icon--brand`: `fill: currentColor`, no stroke), one color, never the brand colors. A platform without a mark there (Backloggd) uses its category icon.
+Platform marks (the profile's platform links and the S9 cards) come from Simple Icons (CC0; the marks belong to their owners and are used only to name the platform a link goes to): `brand-letterboxd`, `brand-anilist`, `brand-myanimelist`, `brand-lastfm`, `brand-steam`, `brand-goodreads`, `brand-storygraph`, `brand-trakt`. Each one sits on a small tile in the platform's own colors (`mq-mark mq-mark--<platform>`, like an app icon; `mq-mark--lg` in the S9 cards). The colors are literal on purpose: like the meuquarto symbol, a brand never follows the theme, and the tile keeps dark marks (Steam, StoryGraph, Letterboxd) visible on dark themes. Letterboxd uses its real three dots (`brand-letterboxd-dots`). A platform without a mark there (Backloggd) gets its category icon on its category sticker color.
 
 ## Marks
 

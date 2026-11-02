@@ -165,6 +165,23 @@
 .mq-link:hover{background:var(--surface-200);border-color:var(--ink)}
 .mq-link:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.mq-link{transition:none}}
+/* platform mark: the platform's own mark on a small tile in its own colors, like an app icon. The colors are literal on
+   purpose (like the meuquarto symbol, a brand never follows the theme); the tile keeps dark marks visible on dark themes
+   and the neutral inset line keeps the tile's edge visible on any wall. A platform without a mark gets its category sticker color. */
+.mq-mark{--mark-bg:var(--surface-300);--mark-fg:var(--ink);display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:var(--radius-md);background:var(--mark-bg);color:var(--mark-fg);box-shadow:inset 0 0 0 1px hsl(0 0% 50% / .3)}
+.mq-mark > svg{width:16px;height:16px;fill:currentColor;stroke:none}
+.mq-mark > svg.mq-icon{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}   /* a category icon (Lucide) as fallback */
+.mq-mark--lg{width:28px;height:28px}.mq-mark--lg > svg{width:18px;height:18px}
+.mq-mark--letterboxd{--mark-bg:hsl(210 20% 16%)}
+.mq-mark--letterboxd > svg{width:20px}
+.mq-mark--anilist{--mark-bg:hsl(214 41% 14%);--mark-fg:hsl(200 100% 50%)}
+.mq-mark--myanimelist{--mark-bg:hsl(222 56% 41%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--lastfm{--mark-bg:hsl(3 94% 43%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--steam{--mark-bg:hsl(222 18% 11%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--goodreads{--mark-bg:hsl(42 31% 94%);--mark-fg:hsl(25 49% 15%)}
+.mq-mark--storygraph{--mark-bg:hsl(0 0% 8%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--trakt{--mark-bg:hsl(282 54% 52%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--backloggd{--mark-bg:var(--sticker-game);--mark-fg:var(--on-sticker)}
 @media (max-width:560px){.mq-profile{grid-template-columns:minmax(0,1fr);justify-items:start}.mq-profile .mq-polaroid{width:120px;padding:6px 6px 4px}.mq-profile .mq-polaroid__cap{font-size:20px;line-height:22px}.mq-profile{gap:var(--space-6)}}
 
 /* ---------- NowCard: one "Agora" entry. A row, not a box: the list that holds it is the group ---------- */
