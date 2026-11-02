@@ -2,10 +2,11 @@ import type { Category } from "@/lib/profile-view";
 
 // S9 (painel-contas.html): pure helpers for the linked accounts screen. No React, no fetch.
 
-/** The platforms the API links (ADR 0023). MyAnimeList joins them with issue #126. */
+/** The platforms the API links (ADR 0023). */
 export type ProviderId =
   | "LETTERBOXD"
   | "ANILIST"
+  | "MYANIMELIST"
   | "STEAM"
   | "LASTFM"
   | "GOODREADS"
@@ -71,6 +72,17 @@ export const PROVIDERS: ProviderInfo[] = [
     note: "Completos, assistindo, pausados e revendo.",
     label: "Usuário do AniList",
     hint: "Como aparece em anilist.co/user/nome.",
+    placeholder: "seunome",
+    available: true,
+  },
+  {
+    id: "MYANIMELIST",
+    name: "MyAnimeList",
+    categories: ["ANIME", "MANGA"],
+    syncs: true,
+    note: "Completos, assistindo, pausados e revendo. Com o AniList também vinculado, nada aparece duas vezes.",
+    label: "Usuário do MyAnimeList",
+    hint: "Como aparece em myanimelist.net/profile/nome.",
     placeholder: "seunome",
     available: true,
   },
@@ -141,6 +153,23 @@ export const PROVIDERS: ProviderInfo[] = [
     available: true,
   },
 ];
+
+/** One item of GET /api/linked-accounts/providers: a platform with a provider and whether it works now. */
+export type ProviderAvailability = { provider: string; available: boolean };
+
+/**
+ * Whether a card offers the link form (true) or "Em breve" (false). A platform with no provider yet is
+ * "Em breve" on the screen's own list; one the server reports as not configured (no key for it) is too.
+ * When the server could not be asked (null) or does not list the platform, the screen's list decides.
+ */
+export function isLinkable(
+  provider: ProviderInfo,
+  availability: readonly ProviderAvailability[] | null | undefined,
+): boolean {
+  if (!provider.available) return false;
+  const reported = availability?.find((item) => item.provider === provider.id);
+  return reported ? reported.available : true;
+}
 
 export const providerInfo = (id: ProviderId): ProviderInfo =>
   PROVIDERS.find((p) => p.id === id) ?? PROVIDERS[0];

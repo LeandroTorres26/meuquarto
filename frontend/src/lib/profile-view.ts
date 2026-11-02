@@ -302,6 +302,7 @@ export function parseItemRef(raw: string | null | undefined): string | null {
 const SOURCE_NAMES: Record<string, string> = {
   LETTERBOXD: "Letterboxd",
   ANILIST: "AniList",
+  MYANIMELIST: "MyAnimeList",
   LASTFM: "Last.fm",
   STEAM: "Steam",
   GOODREADS: "Goodreads",

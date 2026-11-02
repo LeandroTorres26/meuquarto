@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   cooldownMinutes,
   cooldownUntilFromRetryAfter,
+  isLinkable,
   linkErrorMessage,
   inProviderOrder,
   minutesUntil,
@@ -75,6 +76,7 @@ describe("providers", () => {
     expect(unlinkedProviders([]).map((p) => p.id)).toEqual([
       "LETTERBOXD",
       "ANILIST",
+      "MYANIMELIST",
       "LASTFM",
       "STEAM",
       "GOODREADS",
@@ -84,6 +86,7 @@ describe("providers", () => {
     ]);
     expect(unlinkedProviders([account("ANILIST"), account("TRAKT")]).map((p) => p.id)).toEqual([
       "LETTERBOXD",
+      "MYANIMELIST",
       "LASTFM",
       "STEAM",
       "GOODREADS",
@@ -128,6 +131,39 @@ describe("providers", () => {
 
   it("keeps Steam as coming soon: it has no provider yet", () => {
     expect(PROVIDERS.filter((p) => !p.available).map((p) => p.id)).toEqual(["STEAM"]);
+  });
+
+  it("describes MyAnimeList: anime and manga, updates by itself, nothing twice with AniList", () => {
+    const mal = providerInfo("MYANIMELIST");
+    expect(mal.name).toBe("MyAnimeList");
+    expect(mal.categories).toEqual(["ANIME", "MANGA"]);
+    expect(mal.syncs).toBe(true);
+    expect(mal.label).toBe("Usuário do MyAnimeList");
+    expect(mal.hint).toBe("Como aparece em myanimelist.net/profile/nome.");
+    expect(syncNote(mal)).toEqual({
+      lead: "Atualiza sozinho.",
+      text: "Completos, assistindo, pausados e revendo. Com o AniList também vinculado, nada aparece duas vezes.",
+    });
+  });
+
+  it("puts MyAnimeList between AniList and Last.fm, the order of the profile links", () => {
+    expect(PROVIDERS.slice(0, 4).map((p) => p.id)).toEqual([
+      "LETTERBOXD",
+      "ANILIST",
+      "MYANIMELIST",
+      "LASTFM",
+    ]);
+  });
+
+  it("offers the form only when the screen and the server both say the platform works", () => {
+    const mal = providerInfo("MYANIMELIST");
+    const steam = providerInfo("STEAM");
+    expect(isLinkable(mal, [{ provider: "MYANIMELIST", available: true }])).toBe(true);
+    expect(isLinkable(mal, [{ provider: "MYANIMELIST", available: false }])).toBe(false); // no client id
+    expect(isLinkable(mal, [{ provider: "ANILIST", available: true }])).toBe(true); // not listed: screen decides
+    expect(isLinkable(mal, null)).toBe(true); // the server could not be asked
+    expect(isLinkable(steam, [{ provider: "STEAM", available: true }])).toBe(false); // no provider yet
+    expect(isLinkable(steam, null)).toBe(false);
   });
 
   it("shows the profile link without the scheme and the trailing slash", () => {

@@ -1,7 +1,7 @@
 // Platforms that appear as links on the public profile (S4) and as cards in the panel (S9), ADR 0023.
 // Pure helpers: no React, no fetch.
 
-/** In the fixed order the profile lists them (FR-12a). MyAnimeList is not linkable yet (issue #126). */
+/** In the fixed order the profile lists them (FR-12a). */
 export const PLATFORM_IDS = [
   "LETTERBOXD",
   "ANILIST",
