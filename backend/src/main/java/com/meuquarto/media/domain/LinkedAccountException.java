@@ -16,7 +16,9 @@ public final class LinkedAccountException extends DomainException {
         /** The profile already has an account on this platform. */
         ALREADY_LINKED(ErrorKind.CONFLICT),
         /** The account does not exist or belongs to someone else (the two answers are the same on purpose). */
-        LINKED_ACCOUNT_NOT_FOUND(ErrorKind.NOT_FOUND);
+        LINKED_ACCOUNT_NOT_FOUND(ErrorKind.NOT_FOUND),
+        /** The platform is link-only (ADR 0023): its lists are never read, so there is nothing to sync. */
+        SYNC_NOT_SUPPORTED(ErrorKind.INVALID);
 
         private final ErrorKind kind;
 

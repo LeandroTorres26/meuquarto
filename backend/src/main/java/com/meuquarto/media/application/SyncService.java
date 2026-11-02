@@ -9,6 +9,7 @@ import com.meuquarto.media.domain.LinkedAccount;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.LinkedAccountException.Problem;
 import com.meuquarto.media.domain.MetadataSource;
+import com.meuquarto.media.domain.ProviderId;
 import com.meuquarto.media.domain.SyncCooldownException;
 import com.meuquarto.media.domain.SyncOutcome;
 import com.meuquarto.media.domain.SyncPolicy;
@@ -91,6 +92,9 @@ public class SyncService {
                 .orElseThrow(() -> new LinkedAccountException(Problem.LINKED_ACCOUNT_NOT_FOUND));
         LinkedAccount account = accounts.findByIdAndProfileId(accountId, profileId)
                 .orElseThrow(() -> new LinkedAccountException(Problem.LINKED_ACCOUNT_NOT_FOUND));
+        if (account.provider().linkOnly()) {
+            throw new LinkedAccountException(Problem.SYNC_NOT_SUPPORTED); // ADR 0023: a link-only platform is never read
+        }
         Instant now = clock.instant();
         Optional<Duration> wait = SyncPolicy.cooldownRemaining(account.lastSyncStartedAt(), now);
         if (wait.isPresent()) {
@@ -115,7 +119,7 @@ public class SyncService {
     public int syncDueAccounts(int batchSize) {
         Instant now = clock.instant();
         List<LinkedAccount> due = accounts.findDue(now.minus(SyncPolicy.STALE_AFTER), now,
-                now.minus(SyncPolicy.MANUAL_COOLDOWN), PageRequest.of(0, batchSize));
+                now.minus(SyncPolicy.MANUAL_COOLDOWN), ProviderId.linkOnlyPlatforms(), PageRequest.of(0, batchSize));
         int synced = 0;
         for (LinkedAccount account : due) {
             try {

@@ -6,7 +6,9 @@ import com.meuquarto.media.domain.ActivityRegistry;
 import com.meuquarto.media.domain.LinkedAccount;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.LinkedAccountException.Problem;
+import com.meuquarto.media.domain.ProfileUrls;
 import com.meuquarto.media.domain.ProviderId;
+import com.meuquarto.shared.domain.ValidationRule;
 import com.meuquarto.media.infra.LinkedAccountRepository;
 import java.time.Clock;
 import java.util.List;
@@ -35,10 +37,41 @@ public class LinkedAccounts {
 
     /**
      * Order matters for safety: the format rules of the platform run before any network call, and the
-     * outbound request is made outside any database transaction.
+     * outbound request is made outside any database transaction. A link-only platform (ADR 0023) is
+     * only format-checked: nothing is sent to it and its account is never synced.
      */
     public LinkedAccount link(long userId, ProviderId providerId, String rawUsername) {
         long profileId = profileIdOf(userId);
+        String username = providerId.linkOnly()
+                ? linkOnlyUsername(providerId, rawUsername, profileId)
+                : checkedUsername(providerId, rawUsername, profileId);
+        try {
+            LinkedAccount linked = accounts.saveAndFlush(
+                    LinkedAccount.link(profileId, providerId, username, clock.instant()));
+            owners.platformLinksChanged(profileId);
+            return linked;
+        } catch (DataIntegrityViolationException race) {
+            // Two requests at once: the unique (profile, provider) constraint decides who wins.
+            if (accounts.existsByProfileIdAndProvider(profileId, providerId)) {
+                throw new LinkedAccountException(Problem.ALREADY_LINKED);
+            }
+            throw race;
+        }
+    }
+
+    /** Format rules only; the name is never looked up on the platform. */
+    private String linkOnlyUsername(ProviderId providerId, String rawUsername, long profileId) {
+        String username = rawUsername == null ? "" : rawUsername.strip();
+        if (ValidationRule.firstProblem(ProfileUrls.linkOnlyUsernameRules(), username).isPresent()) {
+            throw new LinkedAccountException(Problem.INVALID_USERNAME);
+        }
+        if (accounts.existsByProfileIdAndProvider(profileId, providerId)) {
+            throw new LinkedAccountException(Problem.ALREADY_LINKED);
+        }
+        return username;
+    }
+
+    private String checkedUsername(ProviderId providerId, String rawUsername, long profileId) {
         ActivityProvider provider = registry.find(providerId)
                 .orElseThrow(() -> new LinkedAccountException(Problem.PROVIDER_UNAVAILABLE));
         String username = provider.normalizeUsername(rawUsername);
@@ -54,15 +87,7 @@ public class LinkedAccounts {
             case UNAVAILABLE -> throw new LinkedAccountException(Problem.PROVIDER_UNAVAILABLE);
             case EXISTS -> { }
         }
-        try {
-            return accounts.saveAndFlush(LinkedAccount.link(profileId, providerId, username, clock.instant()));
-        } catch (DataIntegrityViolationException race) {
-            // Two requests at once: the unique (profile, provider) constraint decides who wins.
-            if (accounts.existsByProfileIdAndProvider(profileId, providerId)) {
-                throw new LinkedAccountException(Problem.ALREADY_LINKED);
-            }
-            throw race;
-        }
+        return username;
     }
 
     @Transactional(readOnly = true)

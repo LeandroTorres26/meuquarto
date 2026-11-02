@@ -1,6 +1,7 @@
 package com.meuquarto.profile;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -246,6 +247,65 @@ class PublicProfileApiTests {
         String json = profileJson("privacy");
         assertThat(json).doesNotContain("@").doesNotContain("userId").doesNotContain("email")
                 .doesNotContain("hidden").doesNotContain("sources");
+    }
+
+    // --- linked platforms (FR-12a, ADR 0023) ---
+
+    @Test
+    void homeListsTheLinkedPlatformsInTheFixedOrderWithServerBuiltUrls() throws Exception {
+        Cookie owner = signUp("platforms");
+        // linked out of the platform order; Letterboxd goes straight into the table (its provider needs the network)
+        send(post("/api/linked-accounts"), owner, "{\"provider\":\"STORYGRAPH\",\"username\":\"Ana.B\"}")
+                .andExpect(status().isCreated());
+        jdbc.update("""
+                insert into linked_accounts (profile_id, provider, username)
+                select p.id, 'LETTERBOXD', 'ana_l' from profiles p where p.slug = 'platforms'""");
+        mvc.perform(get("/api/public/profiles/platforms")).andExpect(status().isOk()); // caches the model
+        send(post("/api/linked-accounts"), owner, "{\"provider\":\"BACKLOGGD\",\"username\":\"ana\"}")
+                .andExpect(status().isCreated());
+
+        // the profile is rebuilt at once: linking evicts the cached model
+        mvc.perform(get("/api/public/profiles/platforms")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.platforms.length()").value(3))
+                .andExpect(jsonPath("$.platforms[0].platform").value("LETTERBOXD"))
+                .andExpect(jsonPath("$.platforms[0].url").value("https://letterboxd.com/ana_l/"))
+                .andExpect(jsonPath("$.platforms[1].platform").value("BACKLOGGD"))
+                .andExpect(jsonPath("$.platforms[1].url").value("https://backloggd.com/u/ana/"))
+                .andExpect(jsonPath("$.platforms[2].platform").value("STORYGRAPH"))
+                .andExpect(jsonPath("$.platforms[2].url").value("https://app.thestorygraph.com/profile/Ana.B"));
+        assertThat(profileJson("platforms")).doesNotContain("userId").doesNotContain("email").doesNotContain("status");
+    }
+
+    @Test
+    void unlinkingAPlatformRemovesItFromThePublicProfileAtOnce() throws Exception {
+        Cookie owner = signUp("unlinker");
+        String body = send(post("/api/linked-accounts"), owner, "{\"provider\":\"TRAKT\",\"username\":\"ana\"}")
+                .andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
+        assertThat(JsonPath.<Integer>read(profileJson("unlinker"), "$.platforms.length()")).isEqualTo(1);
+
+        mvc.perform(delete("/api/linked-accounts/" + ((Number) JsonPath.read(body, "$.id")).longValue())
+                        .cookie(owner).with(RealCsrf.token(mvc)))
+                .andExpect(status().isNoContent());
+
+        assertThat(JsonPath.<Integer>read(profileJson("unlinker"), "$.platforms.length()")).isZero();
+    }
+
+    @Test
+    void aProfileWithoutLinkedPlatformsHasAnEmptyList() throws Exception {
+        signUp("nolinks");
+
+        mvc.perform(get("/api/public/profiles/nolinks")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.platforms.length()").value(0));
+    }
+
+    @Test
+    void anotherUsersLinksNeverLeakIntoAProfile() throws Exception {
+        Cookie ana = signUp("leakana");
+        signUp("leakbia");
+        send(post("/api/linked-accounts"), ana, "{\"provider\":\"TRAKT\",\"username\":\"ana\"}")
+                .andExpect(status().isCreated());
+
+        mvc.perform(get("/api/public/profiles/leakbia")).andExpect(jsonPath("$.platforms.length()").value(0));
     }
 
     // --- 404s ---

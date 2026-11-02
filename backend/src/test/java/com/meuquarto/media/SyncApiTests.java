@@ -398,6 +398,22 @@ class SyncApiTests {
     }
 
     @Test
+    void theSchedulerNeverPicksALinkOnlyAccount() throws Exception {
+        signUp("a@example.com", "ana");
+        for (String platform : new String[] {"BACKLOGGD", "TRAKT", "STORYGRAPH"}) {
+            jdbc.update("insert into linked_accounts (profile_id, provider, username) values (?, ?, 'ana')",
+                    profileOf("a@example.com"), platform);
+        }
+
+        scheduler.runBatch();
+
+        assertThat(fake.fetched).isEmpty();
+        assertThat(count("sync_runs")).isZero();
+        assertThat(jdbc.queryForObject("select count(*) from linked_accounts where last_sync_started_at is not null",
+                Integer.class)).isZero();
+    }
+
+    @Test
     void anAccountBackingOffIsPickedAgainWhenItsTimeComes() throws Exception {
         long account = accountOf("a@example.com", "ana", "retry");
         jdbc.update("update linked_accounts set next_attempt_at = now() - interval '1 minute', consecutive_failures = 2,"

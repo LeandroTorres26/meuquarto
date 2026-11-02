@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.Instant;
+import java.util.Optional;
 
 /**
  * An external account linked to a profile by its public username (FR-12, ADR 0004). Only the
@@ -88,6 +89,11 @@ public class LinkedAccount {
 
     public String username() {
         return username;
+    }
+
+    /** The profile of this account on its platform, built from the fixed template (never from user input). */
+    public Optional<String> profileUrl() {
+        return ProfileUrls.urlFor(provider, username);
     }
 
     public LinkStatus status() {
