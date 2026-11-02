@@ -12,8 +12,12 @@ export function SoonCard({ provider }: { provider: ProviderInfo }) {
         </h3>
         <ProviderTags provider={provider} />
       </div>
-      <p className="t-cap">{broughtCaption(provider)}</p>
-      <button type="button" className="mq-btn mq-btn--secondary mq-btn--sm self-start" disabled>
+      <p className="t-cap region__note">{broughtCaption(provider)}</p>
+      <button
+        type="button"
+        className="mq-btn mq-btn--secondary mq-btn--sm self-start region__act"
+        disabled
+      >
         Em breve
       </button>
     </div>

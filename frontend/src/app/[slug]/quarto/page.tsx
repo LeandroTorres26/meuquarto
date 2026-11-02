@@ -67,6 +67,7 @@ async function Room({ params }: { params: Props["params"] }) {
       ownerName={profile.displayName}
       sections={sections}
       invite={<RoomInvite ownerSlug={profile.slug} />}
+      theme={profile.theme}
     />
   );
 }

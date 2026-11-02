@@ -3,6 +3,7 @@
 import { Check, Plus, RefreshCw, Search, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { AlertBox } from "@/components/AlertBox";
+import { useCloseWhenHidden } from "@/components/useCloseWhenHidden";
 import { addToCollection, ApiError, searchCatalog } from "@/lib/api-client";
 import {
   CATEGORIES,
@@ -65,6 +66,7 @@ export function AddWorkDialog({
       element.close();
     }
   }, [open]);
+  useCloseWhenHidden(dialog);
 
   function handleClose() {
     onClose();

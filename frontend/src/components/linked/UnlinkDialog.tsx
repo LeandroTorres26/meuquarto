@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { AlertBox } from "@/components/AlertBox";
+import { useCloseWhenHidden } from "@/components/useCloseWhenHidden";
 
 /**
  * Confirmation before unlinking (FR-16). Native <dialog>: Esc, focus trap and an inert page come from
@@ -30,6 +31,7 @@ export function UnlinkDialog({
     if (open && !element.open) element.showModal();
     if (!open && element.open) element.close();
   }, [open]);
+  useCloseWhenHidden(dialog);
 
   return (
     <dialog

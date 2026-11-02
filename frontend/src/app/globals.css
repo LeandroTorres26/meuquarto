@@ -9,6 +9,17 @@
   --font-hand: var(--font-hand-loaded), Caveat, "Comic Sans MS", cursive;
 }
 
+/* Native controls (checkboxes, selects, scrollbars) follow the theme: dia is the only light one. */
+:root,
+[data-theme="noite"],
+[data-theme="locadora"],
+[data-theme="estufa"] {
+  color-scheme: dark;
+}
+[data-theme="dia"] {
+  color-scheme: light;
+}
+
 /* The design system already handles motion in its components (spinner slows down, cards stop tilting);
    this covers the rest: no smooth scrolling and no transitions. */
 @media (prefers-reduced-motion: reduce) {
@@ -51,6 +62,10 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
+/* Three samples fill the narrow column. */
+.theme-preview .shelf {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
 
 /* The bio keeps the owner's line breaks. */
 .bio-text {
@@ -77,10 +92,13 @@
   border-radius: var(--radius-sm);
 }
 
-.coll-row .note {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+/* Below 1024px the field and its counter stack; from 1024px site.css lines them up on the row's subgrid. */
+@media (max-width: 1023.98px) {
+  .coll-row .note {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
 }
 .coll-row .note .t-cap {
   min-height: 16px;

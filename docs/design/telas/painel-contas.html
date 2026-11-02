@@ -39,7 +39,7 @@
               <p class="t-cap">Entra na coleção: seu diário recente; o histórico se acumula a partir de agora.</p>
               <p class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 3 minutos</p>
             </div>
-            <div class="actions">
+            <div class="actions region__act">
               <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#clock"/></svg>Atualizar em 12 min</button>
               <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
             </div>
@@ -52,7 +52,7 @@
               <p class="status status--ok" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 2 horas</p>
               <p class="status" data-estado="sincronizando" role="status" style="color: var(--ink-muted);"><span class="mq-spinner" aria-hidden="true" style="margin-top: 2px;"></span>Buscando sua lista no AniList…</p>
             </div>
-            <div class="actions">
+            <div class="actions region__act">
               <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Atualizar agora</button>
               <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="sincronizando" disabled aria-busy="true"><span class="mq-spinner" aria-hidden="true"></span>Sincronizando…</button>
               <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
@@ -65,7 +65,7 @@
               <p class="t-cap">Entra na coleção: faixas amadas e álbuns que você mais ouve.</p>
               <p class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>O Last.fm não respondeu às 14:20. Tentamos de novo às 14:40; o que já está no perfil continua lá.</p>
             </div>
-            <div class="actions">
+            <div class="actions region__act">
               <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Tentar agora</button>
               <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
             </div>
@@ -82,8 +82,8 @@
           <form class="region region--line" aria-labelledby="p-st">
             <div class="row row--between"><h3 id="p-st" class="t-h3">Steam</h3><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span></div>
             <div class="field"><label class="label" for="steam">Perfil do Steam</label><input id="steam" class="input" placeholder="steamcommunity.com/id/seunome"><p class="help">A lista de jogos também precisa estar pública.</p></div>
-            <p class="t-cap">Entra na coleção: jogos com tempo de jogo.</p>
-            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start">Conectar Steam</button>
+            <p class="t-cap region__note">Entra na coleção: jogos com tempo de jogo.</p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Conectar Steam</button>
           </form>
           <form class="region region--line" aria-labelledby="p-gr">
             <div class="row row--between"><h3 id="p-gr" class="t-h3">Goodreads</h3><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span></div>
@@ -92,13 +92,13 @@
               <input id="gr" class="input input--error" value="leandro-torres" aria-invalid="true" aria-describedby="gr-err">
               <p id="gr-err" class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>Esse perfil não existe ou está privado. Confira o nome na URL do seu perfil.</p>
             </div>
-            <p class="t-cap">Entra na coleção: estantes lidos e lendo.</p>
-            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start">Conectar Goodreads</button>
+            <p class="t-cap region__note">Entra na coleção: estantes lidos e lendo.</p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Conectar Goodreads</button>
           </form>
           <div class="region region--line" aria-labelledby="p-csv">
             <h3 id="p-csv" class="t-h3">Outra plataforma</h3>
             <p class="t-sm">Usa Skoob, StoryGraph ou Backloggd? Importação por arquivo CSV chega em uma próxima versão. Séries você adiciona à mão em Destaques.</p>
-            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start" disabled>Em breve</button>
+            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start region__act" disabled>Em breve</button>
           </div>
         </div>
       </section>

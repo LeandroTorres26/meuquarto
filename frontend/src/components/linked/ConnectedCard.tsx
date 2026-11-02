@@ -159,7 +159,7 @@ export function ConnectedCard({
           ) : null}
         </p>
       </div>
-      <div className="actions">
+      <div className="actions region__act">
         <button
           type="button"
           className="mq-btn mq-btn--secondary mq-btn--sm"

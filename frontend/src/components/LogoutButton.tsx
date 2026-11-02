@@ -4,6 +4,7 @@ import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { logOut } from "@/lib/api-client";
+import { forgetTheme } from "@/lib/theme";
 
 /** Sign out: POST with CSRF, then back to S3 and a refresh so no signed-in page is kept. */
 export function LogoutButton() {
@@ -16,6 +17,7 @@ export function LogoutButton() {
     setFailed(false);
     try {
       await logOut();
+      forgetTheme();
       router.replace("/entrar");
       router.refresh();
     } catch {

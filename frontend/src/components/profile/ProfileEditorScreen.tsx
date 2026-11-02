@@ -3,12 +3,13 @@
 import { Lock, Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useLayoutEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { AlertBox } from "@/components/AlertBox";
 import { FieldError } from "@/components/FieldError";
 import { ApiError, removeAvatar, saveProfile, uploadAvatar } from "@/lib/api-client";
 import { ThemePreview } from "@/components/profile/ThemePreview";
 import { normalizeSlug } from "@/lib/slug";
+import { applyTheme, showTheme } from "@/lib/theme";
 import {
   AVATAR_TYPES,
   BIO_MAX,
@@ -22,6 +23,7 @@ import {
   type EditorError,
   type EditorField,
   type OwnProfile,
+  type ThemeOption,
 } from "@/lib/profile-editor";
 
 type Toast = { kind: "ok" | "bad"; text: string };
@@ -36,10 +38,14 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
   const [name, setName] = useState(initial.displayName);
   const [bio, setBio] = useState(initial.bio);
   const [slug, setSlug] = useState(initial.slug);
-  // `theme` is what Salvar perfil sends (always one the user may apply); `viewed` is the one drawn in the
-  // preview, which may also be a locked premium theme the user is only looking at.
-  const [theme, setTheme] = useState(initial.theme);
+  // `saved.theme` colours the whole site and is saved the moment it is picked; `viewed` is the one
+  // shown now, which may also be a locked premium theme the user is only looking at.
   const [viewed, setViewed] = useState(initial.theme);
+  const [themeNote, setThemeNote] = useState<string | null>(null);
+  // The saved theme for callbacks that outlive a render (a slow save, leaving the page).
+  const savedTheme = useRef(initial.theme);
+  // Only the answer to the latest pick may change the theme (picks can be quicker than the API).
+  const themeRequest = useRef(0);
   // True after a save failed in a way that may pass by itself (server restarting, connection lost).
   const [canRetrySave, setCanRetrySave] = useState(false);
   // What the polaroid shows: the chosen file as a data URL while it uploads, else the saved avatar.
@@ -53,6 +59,16 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
 
   const shown = preview ?? avatarUrl;
   const viewedOption = saved.themes.find((option) => option.id === viewed);
+
+  // A locked theme is only looked at while this screen is open. Next.js keeps a left page hidden
+  // in the document (Activity), so leaving it puts the saved theme back on the site at once.
+  useLayoutEffect(
+    () => () => {
+      showTheme(savedTheme.current);
+      setViewed(savedTheme.current);
+    },
+    [],
+  );
 
   function fail(error: EditorError, fromSave = false) {
     setErrors({ [error.field]: error.message });
@@ -110,6 +126,48 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
     }
   }
 
+  function pickTheme(option: ThemeOption) {
+    setViewed(option.id);
+    setErrors((current) => ({ ...current, theme: undefined }));
+    if (option.locked) {
+      showTheme(option.id); // looked at, never saved
+      setThemeNote(null);
+      return;
+    }
+    applyTheme(option.id);
+    void saveTheme(option.id);
+  }
+
+  // The theme is saved on its own: the other fields keep their saved values, so unsaved edits to the
+  // name or the bio are neither sent nor lost.
+  async function saveTheme(id: string) {
+    const request = ++themeRequest.current;
+    setThemeNote(null);
+    try {
+      const result = await saveProfile({
+        displayName: saved.displayName,
+        bio: saved.bio,
+        slug: saved.slug,
+        theme: id,
+      });
+      if (request !== themeRequest.current) return;
+      savedTheme.current = result.theme;
+      setSaved((current) => ({
+        ...current,
+        theme: result.theme,
+        themes: result.themes ?? current.themes,
+      }));
+      setThemeNote(`Tema ${THEME_LABELS[result.theme] ?? result.theme} salvo.`);
+      router.refresh();
+    } catch (e) {
+      if (request !== themeRequest.current) return;
+      applyTheme(savedTheme.current);
+      setViewed(savedTheme.current);
+      const error = toError(e);
+      setErrors({ theme: error.message });
+    }
+  }
+
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void submit();
@@ -126,13 +184,14 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
         displayName: name,
         bio,
         slug: normalizeSlug(slug),
-        theme,
+        theme: savedTheme.current,
       });
       setSaved(result);
       setName(result.displayName);
       setBio(result.bio);
       setSlug(result.slug);
-      setTheme(result.theme);
+      savedTheme.current = result.theme;
+      applyTheme(result.theme);
       setViewed(result.theme);
       setToast({ kind: "ok", text: "Perfil salvo." });
       router.refresh();
@@ -315,7 +374,7 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
             Tema
           </h2>
           <p className="help">
-            Escolha um tema para ver a prévia aqui embaixo. Os marcados com “na loja” são pagos.
+            Muda as cores do site todo e já fica salvo. Os marcados com “na loja” são pagos.
           </p>
         </div>
         <div
@@ -331,10 +390,7 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
                 name="tema"
                 value={option.id}
                 checked={viewed === option.id}
-                onChange={() => {
-                  setViewed(option.id); // a locked theme can be looked at...
-                  if (!option.locked) setTheme(option.id); // ...but only an allowed one is saved
-                }}
+                onChange={() => pickTheme(option)}
               />
               <div className="swatch" data-theme={option.id} aria-hidden="true">
                 <span className="swatch__poster" />
@@ -365,14 +421,9 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
               Ver na loja
             </Link>
           </p>
-        ) : theme !== saved.theme ? (
-          <p className="help" role="status">
-            Isto é só uma prévia: seu perfil público só muda quando você clicar em{" "}
-            <strong>Salvar perfil</strong>.
-          </p>
         ) : (
-          <p className="help">
-            O tema vale depois de <strong>Salvar perfil</strong>.{" "}
+          <p className="help" role="status">
+            {themeNote ? `${themeNote} ` : null}
             <Link href={`/${saved.slug}`}>Ver meu perfil</Link>
           </p>
         )}

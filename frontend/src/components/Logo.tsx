@@ -57,7 +57,7 @@ export function Logo({ href, id, variant = "color" }: Props) {
   const content = (
     <>
       <Mark variant={variant} />
-      meuquarto
+      <span className="lockup__word">meuquarto</span>
     </>
   );
   if (href) {

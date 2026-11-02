@@ -79,7 +79,7 @@ async function LinkedAccounts() {
                 </p>
                 <button
                   type="button"
-                  className="mq-btn mq-btn--secondary mq-btn--sm self-start"
+                  className="mq-btn mq-btn--secondary mq-btn--sm self-start region__act"
                   disabled
                 >
                   Em breve
