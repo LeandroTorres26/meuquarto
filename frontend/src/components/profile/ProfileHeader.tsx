@@ -1,3 +1,5 @@
+import { DoorOpen } from "lucide-react";
+import Link from "next/link";
 import { countLabel, visibleSections, type PublicProfileData } from "@/lib/profile-view";
 import { CategoryTag } from "./CategoryTag";
 import { CopyLinkButton } from "./CopyLinkButton";
@@ -7,7 +9,8 @@ const PUBLIC_HOST = "meuquarto.com.br";
 
 /**
  * ProfileHeader (design system) without avatar, tagline and bio: the API does not carry them yet.
- * The stickers show how many works each category holds. "Ver quarto" is left out until the room exists.
+ * The stickers show how many works each category holds. "Ver quarto" opens the room (S5); it is not
+ * prefetched, so the profile never pays for the room.
  */
 export function ProfileHeader({ profile }: { profile: PublicProfileData }) {
   const sections = visibleSections(profile.categories);
@@ -30,6 +33,14 @@ export function ProfileHeader({ profile }: { profile: PublicProfileData }) {
         ) : null}
         <div className="mq-profile__actions">
           <CopyLinkButton slug={profile.slug} />
+          <Link
+            href={`/${encodeURIComponent(profile.slug)}/quarto`}
+            prefetch={false}
+            className="mq-btn mq-btn--secondary"
+          >
+            <DoorOpen className="icon" aria-hidden="true" />
+            Ver quarto
+          </Link>
         </div>
       </div>
     </header>
