@@ -35,6 +35,7 @@ public final class ProfileUrls {
         return Optional.of(switch (platform) {
             case LETTERBOXD -> "https://letterboxd.com/" + name + "/";
             case ANILIST -> "https://anilist.co/user/" + name + "/";
+            case MYANIMELIST -> "https://myanimelist.net/profile/" + name;
             case LASTFM -> "https://www.last.fm/user/" + name;
             case STEAM -> "https://steamcommunity.com/id/" + name;
             case GOODREADS -> "https://www.goodreads.com/user/show/" + name;

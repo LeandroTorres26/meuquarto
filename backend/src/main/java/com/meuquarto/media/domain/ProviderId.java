@@ -12,7 +12,7 @@ import java.util.List;
  * never read, so it has no {@code ActivityProvider} and the sync never touches it (ADR 0023, decision 5).
  */
 public enum ProviderId {
-    LETTERBOXD(false), ANILIST(false), LASTFM(false), STEAM(false), GOODREADS(false),
+    LETTERBOXD(false), ANILIST(false), MYANIMELIST(false), LASTFM(false), STEAM(false), GOODREADS(false),
     BACKLOGGD(true), TRAKT(true), STORYGRAPH(true);
 
     private final boolean linkOnly;

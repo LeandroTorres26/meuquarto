@@ -6,8 +6,8 @@ import { ConnectedCard } from "@/components/linked/ConnectedCard";
 import { LinkCard } from "@/components/linked/LinkCard";
 import { SoonCard } from "@/components/linked/SoonCard";
 import { PanelNav } from "@/components/PanelNav";
-import { inProviderOrder, nowMs, unlinkedProviders } from "@/lib/linked-accounts";
-import { fetchLinkedAccounts } from "@/lib/linked-accounts-server";
+import { inProviderOrder, isLinkable, nowMs, unlinkedProviders } from "@/lib/linked-accounts";
+import { fetchLinkedAccounts, fetchProviderAvailability } from "@/lib/linked-accounts-server";
 import { getSession } from "@/lib/session";
 import { Logo } from "@/components/Logo";
 
@@ -18,7 +18,10 @@ export const metadata: Metadata = { title: "Contas vinculadas, painel do meuquar
 async function LinkedAccounts() {
   const session = await getSession();
   if (!session) redirect("/entrar");
-  const accounts = await fetchLinkedAccounts();
+  const [accounts, availability] = await Promise.all([
+    fetchLinkedAccounts(),
+    fetchProviderAvailability(),
+  ]);
   const serverNow = nowMs();
   const unlinked = accounts ? unlinkedProviders(accounts) : [];
 
@@ -69,7 +72,7 @@ async function LinkedAccounts() {
               </div>
               <div className="cards">
                 {unlinked.map((provider) =>
-                  provider.available ? (
+                  isLinkable(provider, availability) ? (
                     <LinkCard key={provider.id} provider={provider} />
                   ) : (
                     <SoonCard key={provider.id} provider={provider} />

@@ -45,6 +45,13 @@ public class LinkedAccountController {
         return linkedAccounts.list(userId).stream().map(AccountResponse::of).toList();
     }
 
+    /** Which syncing platforms can be linked now. Private like the rest: it is a screen of the signed-in panel. */
+    @GetMapping("/providers")
+    public List<ProviderResponse> providers() {
+        return linkedAccounts.availability().stream()
+                .map(item -> new ProviderResponse(item.provider(), item.available())).toList();
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AccountResponse link(@CurrentUserId long userId, @Valid @RequestBody LinkRequest body) {
@@ -66,6 +73,8 @@ public class LinkedAccountController {
     public SyncResponse syncNow(@CurrentUserId long userId, @PathVariable long id) {
         return SyncResponse.of(sync.syncNow(userId, id));
     }
+
+    public record ProviderResponse(ProviderId provider, boolean available) {}
 
     public record LinkRequest(@NotNull ProviderId provider, @NotBlank @Size(max = MAX_USERNAME) String username) {}
 

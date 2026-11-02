@@ -35,6 +35,7 @@ export const metadata: Metadata = {
 // Integrations: only what exists is presented as working (docs/backlog.md, M2).
 const INTEGRATIONS = [
   { name: "Letterboxd", categories: ["MOVIE"], ready: true },
+  { name: "MyAnimeList", categories: ["ANIME", "MANGA"], ready: true },
   { name: "AniList", categories: ["ANIME", "MANGA"], ready: true },
   { name: "Goodreads", categories: ["BOOK"], ready: true },
   { name: "Steam", categories: ["GAME"], ready: false },
@@ -65,8 +66,8 @@ export default function Landing() {
               <p className="t-hand">filmes, animes, livros, games e música</p>
             </div>
             <p className="t-lead measure-s">
-              Um link para a bio com o que você assiste, lê, joga e ouve. Conecte o Letterboxd e o
-              AniList, e o perfil se atualiza sozinho.
+              Um link para a bio com o que você assiste, lê, joga e ouve. Conecte o Letterboxd, o
+              AniList e o MyAnimeList, e o perfil se atualiza sozinho.
             </p>
             <div
               className="stack-tight"
@@ -97,8 +98,8 @@ export default function Landing() {
               </span>
               <h3 className="t-h3">Conecte suas contas</h3>
               <p className="t-sm">
-                O que você registra no Letterboxd, no AniList, no Goodreads e no Last.fm entra na
-                sua coleção. A Steam chega em breve.
+                O que você registra no Letterboxd, no AniList, no MyAnimeList, no Goodreads e no
+                Last.fm entra na sua coleção. A Steam chega em breve.
               </p>
             </li>
             <li className="span-all t-span-4 d-span-4 step">

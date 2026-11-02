@@ -172,6 +172,7 @@ describe("collection listing", () => {
   it("labels the origin", () => {
     expect(sourceLabels(["MANUAL"])).toEqual(["Manual"]);
     expect(sourceLabels(["ANILIST"])).toEqual(["AniList"]);
+    expect(sourceLabels(["MYANIMELIST"])).toEqual(["MyAnimeList"]);
     expect(sourceLabels(["LETTERBOXD", "MANUAL"])).toEqual(["Letterboxd"]);
     expect(sourceLabels(["OUTRO"])).toEqual(["Outro"]);
   });

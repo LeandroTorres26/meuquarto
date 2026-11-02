@@ -165,6 +165,12 @@ public final class LastFmProvider implements ActivityProvider {
         return API_KEY.matcher(apiKey).matches();
     }
 
+    /** Without a usable key the provider cannot work, and the linking screen says so. */
+    @Override
+    public boolean isAvailable() {
+        return isConfigured();
+    }
+
     /** One request for the newest scrobble. Last.fm answers error 6 for a missing user and 17 for private listening. */
     @Override
     public AccountCheck checkAccountExists(String username) {
