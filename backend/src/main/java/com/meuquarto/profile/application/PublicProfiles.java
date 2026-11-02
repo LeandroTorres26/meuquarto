@@ -216,7 +216,7 @@ public class PublicProfiles {
                 nowBlocks.resolve(profile.id(), nowEntries.findByProfileId(profile.id())).values());
         return new PublicProfile(profile.slug(), profile.displayName().orElse(profile.slug()),
                 profile.bio().orElse(null), profile.avatarKey().map(Avatars::urlPath).orElse(null),
-                profile.theme().id(), now, favorites, List.copyOf(sections));
+                profile.theme().id(), profile.theme().premium(), now, favorites, List.copyOf(sections));
     }
 
     /** The list's items in the owner's order, keeping only those still shown (and of the category, if the list has one). */

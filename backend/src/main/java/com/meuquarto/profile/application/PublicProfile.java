@@ -9,10 +9,10 @@ import java.util.List;
  * cached and shared. It deliberately holds no e-mail, user id, hidden or adult item.
  * {@code displayName} is the owner's name, or the slug until one is set; {@code bio} and {@code avatarUrl}
  * are null when empty; {@code avatarUrl} is a same-origin path served by this API; {@code theme} is the
- * {@code data-theme} id.
+ * {@code data-theme} id; {@code premiumTheme} tells the page to use the one-color logo (design system, Marks).
  */
 public record PublicProfile(String slug, String displayName, String bio, String avatarUrl, String theme,
-        List<NowItem> now, List<PublicItem> favorites, List<Section> categories) {
+        boolean premiumTheme, List<NowItem> now, List<PublicItem> favorites, List<Section> categories) {
 
     /**
      * One category block of the home. {@code total} is the visible collection size ("Ver todos", FR-10b).

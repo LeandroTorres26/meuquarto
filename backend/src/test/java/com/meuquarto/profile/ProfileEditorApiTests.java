@@ -162,7 +162,7 @@ class ProfileEditorApiTests {
                 .andExpect(jsonPath("$.error").value("DISPLAY_NAME_INVALID"));
         save(session, "Leandro", "b".repeat(161), "leandro", "noite").andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("BIO_TOO_LONG"));
-        save(session, "Leandro", "x", "leandro", "estufa").andExpect(status().isBadRequest())
+        save(session, "Leandro", "x", "leandro", "neon").andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("THEME_UNKNOWN"));
         save(session, "Leandro", "x", "leandro", "NOITE").andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("THEME_UNKNOWN"));

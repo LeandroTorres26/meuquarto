@@ -29,7 +29,8 @@ async function Perfil() {
         <ProfileEditorScreen initial={profile} />
       ) : (
         <p className="t-sm" role="alert">
-          Não foi possível carregar seu perfil agora. Recarregue a página.
+          Não foi possível carregar seu perfil agora (o servidor pode estar reiniciando).{" "}
+          <Link href="/painel">Tentar de novo</Link>
         </p>
       )}
     </>

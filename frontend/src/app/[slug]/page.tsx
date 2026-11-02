@@ -5,9 +5,8 @@ import { CategoryShelf } from "@/components/profile/CategoryShelf";
 import { Favorites } from "@/components/profile/Favorites";
 import { NowBlock } from "@/components/profile/NowBlock";
 import { ItemDialog } from "@/components/profile/ItemDialog";
-import { ProfileFooter } from "@/components/profile/ProfileFooter";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
-import { ProfileTopBar } from "@/components/profile/ProfileTopBar";
+import { ProfileShell } from "@/components/profile/ProfileShell";
 import { OwnerHighlightsLink } from "@/components/SessionSlots";
 import { CATEGORY_META, isProfileEmpty, visibleSections } from "@/lib/profile-view";
 import { nowMs } from "@/lib/linked-accounts";
@@ -55,12 +54,14 @@ async function Profile({ params }: { params: Props["params"] }) {
   if (result.kind === "not-found") notFound();
   if (result.kind === "unavailable") {
     return (
-      <main className="wrap sections" style={{ paddingTop: "var(--l4)" }}>
-        <div className="pair-2" role="alert">
-          <h1 className="t-h1">Não foi possível abrir esse perfil agora</h1>
-          <p className="t-lead muted measure-s">Aguarde um instante e recarregue a página.</p>
-        </div>
-      </main>
+      <ProfileShell ownerSlug={slug}>
+        <main className="wrap sections" style={{ paddingTop: "var(--l4)" }}>
+          <div className="pair-2" role="alert">
+            <h1 className="t-h1">Não foi possível abrir esse perfil agora</h1>
+            <p className="t-lead muted measure-s">Aguarde um instante e recarregue a página.</p>
+          </div>
+        </main>
+      </ProfileShell>
     );
   }
 
@@ -68,8 +69,9 @@ async function Profile({ params }: { params: Props["params"] }) {
   const sections = visibleSections(profile.categories);
   const serverNow = nowMs();
   return (
-    // The owner's theme applies to the whole profile through data-theme (tokens are scoped to it).
-    <div data-theme={profile.theme} className="profile-themed">
+    // The owner's theme applies to the whole page, top bar and footer included, through data-theme
+    // (tokens are scoped to it); a premium theme also switches the logo to the one-color symbol.
+    <ProfileShell theme={profile.theme} premium={profile.premiumTheme} ownerSlug={profile.slug}>
       <section className="profile-top">
         <div className="wrap profile-top__in">
           <ProfileHeader profile={profile} />
@@ -98,7 +100,7 @@ async function Profile({ params }: { params: Props["params"] }) {
       </main>
 
       <ItemDialog slug={profile.slug} ownerName={profile.displayName} />
-    </div>
+    </ProfileShell>
   );
 }
 
@@ -119,12 +121,14 @@ export default function ProfilePage({ params }: Props) {
   // the session cookie, each inside its own Suspense hole; the page itself stays prerenderable.
   const ownerSlug = params.then((p) => p.slug);
   return (
-    <div className="page">
-      <ProfileTopBar ownerSlug={ownerSlug} />
-      <Suspense fallback={<ProfileSkeleton />}>
-        <Profile params={params} />
-      </Suspense>
-      <ProfileFooter ownerSlug={ownerSlug} />
-    </div>
+    <Suspense
+      fallback={
+        <ProfileShell ownerSlug={ownerSlug}>
+          <ProfileSkeleton />
+        </ProfileShell>
+      }
+    >
+      <Profile params={params} />
+    </Suspense>
   );
 }

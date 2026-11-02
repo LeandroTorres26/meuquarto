@@ -44,6 +44,14 @@
   color: var(--ink);
 }
 
+/* S6: the chosen theme drawn on a small profile before it is saved. */
+.theme-preview {
+  padding: var(--space-4);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
 /* The bio keeps the owner's line breaks. */
 .bio-text {
   white-space: pre-line;
