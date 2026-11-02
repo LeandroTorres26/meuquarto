@@ -9,8 +9,13 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
@@ -33,6 +38,11 @@ final class AniListStub implements AutoCloseable {
     volatile String forcedBody;
     /** Users the stub knows; any other name gets the 404 AniList sends for a missing or private user. */
     volatile List<String> knownUsers = List.of("ana_l");
+
+    /** For the lookup by MyAnimeList id: per type ("ANIME", "MANGA"), the MAL id each AniList work carries. */
+    final Map<String, Map<Long, Long>> malToAniList = new ConcurrentHashMap<>();
+    /** AniList ids the lookup answers with {@code isAdult: true}. */
+    volatile Set<Long> adultAniList = Set.of();
 
     private final HttpServer server;
 
@@ -84,6 +94,29 @@ final class AniListStub implements AutoCloseable {
         status = 200;
         forcedBody = null;
         knownUsers = List.of("ana_l");
+        malToAniList.clear();
+        adultAniList = Set.of();
+    }
+
+    /** The {@code Page { media(idMal_in: ...) }} answer: only the ids the test registered, each with its AniList work. */
+    private String malLookup(String type, JsonNode ids) {
+        Map<Long, Long> known = malToAniList.getOrDefault(type, Map.of());
+        List<Map<String, Object>> media = new ArrayList<>();
+        for (JsonNode id : ids) {
+            Long aniListId = known.get(id.asLong());
+            if (aniListId != null) {
+                Map<String, Object> work = new LinkedHashMap<>();
+                work.put("idMal", id.asLong());
+                work.put("id", aniListId);
+                work.put("isAdult", adultAniList.contains(aniListId));
+                work.put("startDate", Map.of("year", 2020));
+                work.put("seasonYear", 2020);
+                work.put("title", Map.of("romaji", "Work " + aniListId));
+                work.put("coverImage", Map.of("large", "https://s4.anilist.co/file/anilistcdn/media/cover/bx" + aniListId + ".jpg"));
+                media.add(work);
+            }
+        }
+        return JSON.writeValueAsString(Map.of("data", Map.of("Page", Map.of("media", media))));
     }
 
     private String fixtureFor(String requestBody) throws IOException {
@@ -91,6 +124,9 @@ final class AniListStub implements AutoCloseable {
         String query = request.path("query").asString("");
         JsonNode variables = request.path("variables");
         String type = variables.path("type").asString("ANIME").toLowerCase();
+        if (query.contains("idMal_in")) {
+            return malLookup(variables.path("type").asString("ANIME"), variables.path("ids"));
+        }
         if (query.contains("Page(")) {
             return read("search-" + type + ".json");
         }

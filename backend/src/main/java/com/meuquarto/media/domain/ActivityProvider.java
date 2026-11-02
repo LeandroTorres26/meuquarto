@@ -7,8 +7,8 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * A platform whose public activity we read by username (Letterboxd, AniList, Last.fm, Steam,
- * Goodreads), seen only through this contract (ADR 0018, hierarchy 1). The sync and the linking code
+ * A platform whose public activity we read by username (Letterboxd, AniList, MyAnimeList,
+ * Last.fm, Steam, Goodreads), seen only through this contract (ADR 0018, hierarchy 1). The sync and the linking code
  * hold an {@code ActivityProvider} and never ask which class it really is.
  * <p>
  * Features of the course used here: an interface, {@code default} methods ({@link #normalizeUsername},
@@ -18,6 +18,15 @@ import java.util.Set;
 public interface ActivityProvider {
 
     ProviderId id();
+
+    /**
+     * Default method: false when the platform cannot work now, for instance because the project's key for it
+     * is not configured (Last.fm, MyAnimeList). The linking screen reads it to say "Em breve" instead of
+     * letting the user try. A platform that needs nothing keeps the default.
+     */
+    default boolean isAvailable() {
+        return true;
+    }
 
     /** The categories this platform can feed (Letterboxd: movies; AniList: anime and manga...). */
     Set<MediaCategory> categories();

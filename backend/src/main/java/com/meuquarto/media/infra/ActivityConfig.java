@@ -38,6 +38,17 @@ class ActivityConfig {
         return new LastFmProvider(apiKey, Clock.systemUTC());
     }
 
+    /**
+     * MyAnimeList needs the project's client id, read only from the environment ({@code MAL_CLIENT_ID}).
+     * Without it the provider reports itself unavailable and nothing is sent. Its entries are mapped to the
+     * AniList catalog, so it is built with the AniList bean (the first one, so a test can put its own first).
+     */
+    @Bean
+    ActivityProvider myAnimeListProvider(@Value("${meuquarto.activity.myanimelist.client-id:}") String clientId,
+            ObjectProvider<AniListProvider> anilist) {
+        return new MyAnimeListProvider(clientId, anilist.orderedStream().findFirst().orElseThrow());
+    }
+
     @Bean
     ActivityRegistry activityRegistry(ObjectProvider<ActivityProvider> providers) {
         return new ActivityRegistry(providers.orderedStream().toList());

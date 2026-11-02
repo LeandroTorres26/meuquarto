@@ -108,6 +108,10 @@ meuquarto:
       # Last.fm API key (travels in the query string by Last.fm's design, so it is never logged).
       # Empty = Last.fm reports itself unavailable and linking says so.
       api-key: ${LASTFM_API_KEY:}
+    myanimelist:
+      # MyAnimeList API client ID (sent in the X-MAL-CLIENT-ID header, never logged). Create it at
+      # myanimelist.net/apiconfig. Empty = MyAnimeList reports itself unavailable and the panel says "Em breve".
+      client-id: ${MAL_CLIENT_ID:}
 
   sync:
     # Scheduled sync (ADR 0007): a batch of due accounts every interval. Off in tests.

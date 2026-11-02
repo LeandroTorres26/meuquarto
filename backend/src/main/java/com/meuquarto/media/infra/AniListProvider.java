@@ -24,8 +24,11 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -118,6 +121,15 @@ public final class AniListProvider extends HttpCatalogProvider implements Activi
             + " sort: UPDATED_TIME_DESC, forceSingleCompletedList: true, perChunk: " + MAX_ENTRIES + ", chunk: 1) {"
             + " lists { isCustomList entries { status updatedAt startedAt { year month day }"
             + " completedAt { year month day } media { " + MEDIA_FIELDS + " } } } } }";
+
+    /** MAL ids resolved per request (ADR 0023, decision 4); AniList pages hold at most 50 items. */
+    static final int MAL_BATCH = 50;
+    private static final long MAX_MAL_ID = Integer.MAX_VALUE; // a GraphQL Int
+
+    /** The works that carry the given MyAnimeList ids, for {@link #worksByMalId}. {@code idMal} is only a key here. */
+    private static final String MAL_QUERY = "query ($ids: [Int], $type: MediaType) {"
+            + " Page(page: 1, perPage: " + MAL_BATCH + ") {"
+            + " media(idMal_in: $ids, type: $type) { idMal " + MEDIA_FIELDS + " } } }";
 
     /** The AniList list statuses we accept and what each one means for us (BR-10). PLANNING and DROPPED are absent. */
     private enum ListStatus {
@@ -289,6 +301,42 @@ public final class AniListProvider extends HttpCatalogProvider implements Activi
         } catch (IOException | RuntimeException e) {
             throw failed(e.getClass().getSimpleName());
         }
+    }
+
+    // ---- lookup by MyAnimeList id (used by MyAnimeListProvider, ADR 0023) ----
+
+    /**
+     * The AniList works that have the given MyAnimeList ids ({@code idMal}), in batches of {@value #MAL_BATCH}.
+     * This is how a MyAnimeList entry becomes the canonical AniList work (ADR 0005): the work is built exactly
+     * as {@link #fetchActivity} builds it, so the same anime reached through either platform is one item. An id
+     * AniList does not know is simply absent from the answer. The ids go only in the GraphQL variables.
+     *
+     * @throws IOException on a non-200 answer or an oversized body (the message is a status, never a payload)
+     */
+    Map<Long, CatalogEntry> worksByMalId(MediaCategory category, Collection<Long> malIds)
+            throws IOException, InterruptedException {
+        Set<Long> unique = new LinkedHashSet<>();
+        for (Long id : malIds) {
+            if (id != null && id > 0 && id <= MAX_MAL_ID) {
+                unique.add(id);
+            }
+        }
+        List<Long> ids = List.copyOf(unique);
+        Map<Long, CatalogEntry> found = new HashMap<>();
+        for (int from = 0; from < ids.size(); from += MAL_BATCH) {
+            List<Long> batch = ids.subList(from, Math.min(from + MAL_BATCH, ids.size()));
+            Reply reply = postJson(endpoint, body(MAL_QUERY, Map.of("ids", batch, "type", category.name())));
+            if (reply.status() != 200) {
+                throw new IOException("HTTP " + reply.status());
+            }
+            for (JsonNode node : JSON.readTree(reply.body()).path("data").path("Page").path("media")) {
+                long malId = node.path("idMal").asLong(0);
+                if (malId > 0) {
+                    toWork(category, node).ifPresent(work -> found.putIfAbsent(malId, work));
+                }
+            }
+        }
+        return found;
     }
 
     // ---- mapping ----

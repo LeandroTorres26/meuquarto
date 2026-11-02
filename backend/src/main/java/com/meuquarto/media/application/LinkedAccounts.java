@@ -11,6 +11,7 @@ import com.meuquarto.media.domain.ProviderId;
 import com.meuquarto.shared.domain.ValidationRule;
 import com.meuquarto.media.infra.LinkedAccountRepository;
 import java.time.Clock;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -88,6 +89,21 @@ public class LinkedAccounts {
             case EXISTS -> { }
         }
         return username;
+    }
+
+    /** A syncing platform and whether it can be linked now (a missing key makes it unavailable). */
+    public record ProviderAvailability(ProviderId provider, boolean available) {}
+
+    /**
+     * What the linking screen needs to say "Em breve": every registered syncing platform and whether it is
+     * usable now, in the order of the profile. A platform with no provider is not listed (the screen knows it).
+     * No network: it only asks each provider about its own configuration.
+     */
+    public List<ProviderAvailability> availability() {
+        return Arrays.stream(ProviderId.values())
+                .flatMap(id -> registry.find(id).stream()
+                        .map(provider -> new ProviderAvailability(id, provider.isAvailable())))
+                .toList();
     }
 
     @Transactional(readOnly = true)

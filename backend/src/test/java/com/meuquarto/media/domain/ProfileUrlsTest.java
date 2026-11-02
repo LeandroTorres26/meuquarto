@@ -14,6 +14,7 @@ class ProfileUrlsTest {
     void everyPlatformHasAFixedHostAndPathTemplate() {
         assertThat(ProfileUrls.urlFor(ProviderId.LETTERBOXD, "leandro")).contains("https://letterboxd.com/leandro/");
         assertThat(ProfileUrls.urlFor(ProviderId.ANILIST, "leandro")).contains("https://anilist.co/user/leandro/");
+        assertThat(ProfileUrls.urlFor(ProviderId.MYANIMELIST, "Leandro-T_1")).contains("https://myanimelist.net/profile/Leandro-T_1");
         assertThat(ProfileUrls.urlFor(ProviderId.LASTFM, "Leandro_T")).contains("https://www.last.fm/user/Leandro_T");
         assertThat(ProfileUrls.urlFor(ProviderId.GOODREADS, "12345678")).contains("https://www.goodreads.com/user/show/12345678");
         assertThat(ProfileUrls.urlFor(ProviderId.STEAM, "leandro")).contains("https://steamcommunity.com/id/leandro");
@@ -66,7 +67,7 @@ class ProfileUrlsTest {
 
     @Test
     void theDeclarationOrderIsTheFixedPlatformOrderOfTheProfile() {
-        assertThat(ProviderId.values()).containsExactly(ProviderId.LETTERBOXD, ProviderId.ANILIST, ProviderId.LASTFM,
-                ProviderId.STEAM, ProviderId.GOODREADS, ProviderId.BACKLOGGD, ProviderId.TRAKT, ProviderId.STORYGRAPH);
+        assertThat(ProviderId.values()).containsExactly(ProviderId.LETTERBOXD, ProviderId.ANILIST, ProviderId.MYANIMELIST,
+                ProviderId.LASTFM, ProviderId.STEAM, ProviderId.GOODREADS, ProviderId.BACKLOGGD, ProviderId.TRAKT, ProviderId.STORYGRAPH);
     }
 }
