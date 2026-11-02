@@ -28,12 +28,12 @@ public record MetadataSource(String name) {
     }
 
     /**
-     * Rows keyed by a platform that only stands in for the real catalog (a Goodreads book, until it is
-     * mapped to Open Library). The platform "owns" them by name, but its two shelves describe the same book
-     * with different fields (a cover on one, none on the other), so nobody overwrites: the first values
-     * stay and later ones only fill the gaps.
+     * Rows keyed by a platform that only stands in for the real catalog (a Goodreads book until it is
+     * mapped to Open Library; a Last.fm album until it is mapped to Deezer). The platform "owns" them by
+     * name, but its feeds describe the same work with different fields (a cover in one, none in another),
+     * so nobody overwrites: the first values stay and later ones only fill the gaps.
      */
-    private static final java.util.Set<String> PROVISIONAL = java.util.Set.of("GOODREADS");
+    private static final java.util.Set<String> PROVISIONAL = java.util.Set.of("GOODREADS", "LASTFM");
 
     /** True when this source owns the metadata of the entry, so its values replace the stored ones. */
     public boolean overwrites(CatalogEntry entry) {

@@ -13,7 +13,7 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S6 | Editor: profile | `/painel` | yes | Name, bio, avatar upload, slug, theme picker |
 | S7 | Editor: collection and highlights | `/painel/destaques` | yes | Tabs per category + "Favoritos de tudo". Per category: the highlights strip (reorder, limit indicator and upsell) and the whole collection below (search, sort, source badge, note, "Destacar", "Ocultar"/"Remover", "Adicionar obra" opens S8) |
 | S8 | Search/pin dialog | modal in S7 | yes | Search catalog, result cards, pin |
-| S9 | Linked accounts | `/painel/contas` | yes | Provider cards: link username, status, last sync, "sync now" (cooldown), unlink |
+| S9 | Linked accounts | `/painel/contas` | yes | Provider cards: link username, status, last sync, "sync now" (cooldown), unlink. Last.fm is linked here too (its help text says the recent activity must be public); only Steam is still "Em breve" |
 | S10 | "Agora" settings | `/painel/agora` | yes | Per category: auto item, pin manually, hide |
 | S11 | Store | `/painel/loja` | yes | Theme/pack catalog, preview, buy |
 | S12 | Checkout result | `/painel/loja/sucesso` `/cancelado` | yes | Return from Stripe; waits for webhook confirmation |

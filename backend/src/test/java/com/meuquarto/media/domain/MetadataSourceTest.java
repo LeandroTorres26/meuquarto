@@ -42,6 +42,13 @@ class MetadataSourceTest {
     }
 
     @Test
+    void br04AProvisionalLastFmAlbumIsNeverOverwrittenOnlyFilled() {
+        CatalogEntry album = new CatalogEntry(MediaCategory.MUSIC, "LASTFM", "0123", "OK Computer - Radiohead", null, null, false);
+
+        assertThat(MetadataSource.activity(ProviderId.LASTFM).overwrites(album)).isFalse();
+    }
+
+    @Test
     void aSourceNeedsAName() {
         assertThatThrownBy(() -> new MetadataSource(" ")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new MetadataSource(null)).isInstanceOf(IllegalArgumentException.class);

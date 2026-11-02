@@ -103,6 +103,12 @@ meuquarto:
       client-id: ${TWITCH_CLIENT_ID:}
       client-secret: ${TWITCH_CLIENT_SECRET:}
 
+  activity:
+    lastfm:
+      # Last.fm API key (travels in the query string by Last.fm's design, so it is never logged).
+      # Empty = Last.fm reports itself unavailable and linking says so.
+      api-key: ${LASTFM_API_KEY:}
+
   sync:
     # Scheduled sync (ADR 0007): a batch of due accounts every interval. Off in tests.
     batch-size: 20
