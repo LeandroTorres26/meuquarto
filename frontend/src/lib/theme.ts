@@ -30,10 +30,10 @@ export function themeCookie(theme: ThemeId | null, secure: boolean): string {
 }
 
 /**
- * Runs in <head> before the first paint. Only a known id is applied, so a tampered cookie can never
- * put anything else in the attribute.
+ * Runs in <head> before the first paint. The pattern matches only a whole known id (the ids are fixed
+ * lowercase words), so a tampered cookie can never put anything else in the attribute.
  */
-export const THEME_BOOT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=([a-z]+)/);if(m&&${JSON.stringify(THEME_IDS)}.indexOf(m[1])>=0)document.documentElement.setAttribute("data-theme",m[1])}catch(e){}})()`;
+export const THEME_BOOT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(${THEME_IDS.join("|")})(?:;|$)/);if(m)document.documentElement.setAttribute("data-theme",m[1])}catch(e){}})()`;
 
 /** Colours the whole site with `theme` right away, without keeping it (a locked theme being looked at). */
 export function showTheme(theme: string) {

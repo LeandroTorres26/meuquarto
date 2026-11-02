@@ -47,6 +47,7 @@ describe("THEME_BOOT_SCRIPT", () => {
   it("leaves the server default for a missing or unknown value", () => {
     expect(run("a=1")).toBeNull();
     expect(run("mq_theme=hacker")).toBeNull();
+    expect(run("mq_theme=diax; a=1")).toBeNull(); // a known id must be the whole value
   });
 });
 
