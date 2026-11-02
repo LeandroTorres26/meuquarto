@@ -3,6 +3,7 @@ import Link from "next/link";
 import { countLabel, visibleSections, type PublicProfileData } from "@/lib/profile-view";
 import { CategoryTag } from "./CategoryTag";
 import { CopyLinkButton } from "./CopyLinkButton";
+import { PlatformLinks } from "./PlatformLinks";
 
 /** Public host shown in the address line; the copy button uses the real origin of the page. */
 const PUBLIC_HOST = "meuquarto.com.br";
@@ -65,6 +66,11 @@ export function ProfileHeader({ profile }: { profile: PublicProfileData }) {
             Ver quarto
           </Link>
         </div>
+        <PlatformLinks
+          ownerSlug={profile.slug}
+          displayName={profile.displayName}
+          platforms={profile.platforms}
+        />
       </div>
     </header>
   );

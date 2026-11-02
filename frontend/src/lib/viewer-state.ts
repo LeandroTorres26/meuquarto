@@ -22,6 +22,7 @@ export function viewerState(
 
 export const PANEL_HREF = "/painel";
 export const HIGHLIGHTS_HREF = "/painel/destaques";
+export const ACCOUNTS_HREF = "/painel/contas";
 
 /** Address of a profile page. */
 export function profileHref(slug: string): string {

@@ -1,6 +1,7 @@
 // Pure helpers for the public profile (S4) and the item dialog (S17): no React, no I/O, unit tested.
 
 import type { CSSProperties } from "react";
+import type { PublicPlatformLink } from "@/lib/platforms";
 
 export type Category = "MOVIE" | "SERIES" | "ANIME" | "MANGA" | "BOOK" | "GAME" | "MUSIC";
 
@@ -45,6 +46,8 @@ export type PublicProfileData = {
   now: PublicNowItem[];
   favorites: PublicItem[];
   categories: PublicSection[];
+  /** The owner's linked platforms with the profile URL built by the server (FR-12a), in a fixed order. */
+  platforms: PublicPlatformLink[];
 };
 
 /** GET /api/public/profiles/{slug}/items/{ref}. */
