@@ -42,7 +42,7 @@ export const metadata: Metadata = {
 const INTEGRATIONS = [
   { name: "Letterboxd", categories: ["MOVIE"], ready: true },
   { name: "AniList", categories: ["ANIME", "MANGA"], ready: true },
-  { name: "Goodreads", categories: ["BOOK"], ready: false },
+  { name: "Goodreads", categories: ["BOOK"], ready: true },
   { name: "Steam", categories: ["GAME"], ready: false },
   { name: "Last.fm", categories: ["MUSIC"], ready: false },
 ] as const;
@@ -111,8 +111,8 @@ export default function Landing() {
               </span>
               <h3 className="t-h3">Conecte suas contas</h3>
               <p className="t-sm">
-                O que você registra no Letterboxd e no AniList entra na sua coleção. Last.fm, Steam
-                e Goodreads chegam em breve.
+                O que você registra no Letterboxd, no AniList e no Goodreads entra na sua coleção.
+                Last.fm e Steam chegam em breve.
               </p>
             </li>
             <li className="span-all t-span-4 d-span-4 step">
