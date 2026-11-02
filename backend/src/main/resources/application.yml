@@ -99,6 +99,12 @@ meuquarto:
       # TMDB API Read Access Token (v4, sent as a Bearer header). Empty = TMDB reports itself unavailable.
       token: ${TMDB_API_KEY:}
 
+  activity:
+    lastfm:
+      # Last.fm API key (travels in the query string by Last.fm's design, so it is never logged).
+      # Empty = Last.fm reports itself unavailable and linking says so.
+      api-key: ${LASTFM_API_KEY:}
+
   sync:
     # Scheduled sync (ADR 0007): a batch of due accounts every interval. Off in tests.
     batch-size: 20
