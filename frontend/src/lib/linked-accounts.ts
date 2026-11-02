@@ -2,12 +2,25 @@ import type { Category } from "@/lib/profile-view";
 
 // S9 (painel-contas.html): pure helpers for the linked accounts screen. No React, no fetch.
 
-export type ProviderId = "LETTERBOXD" | "ANILIST" | "STEAM" | "LASTFM" | "GOODREADS";
+/** The platforms the API links (ADR 0023). MyAnimeList joins them with issue #126. */
+export type ProviderId =
+  | "LETTERBOXD"
+  | "ANILIST"
+  | "STEAM"
+  | "LASTFM"
+  | "GOODREADS"
+  | "BACKLOGGD"
+  | "TRAKT"
+  | "STORYGRAPH";
 
 export type LinkedAccount = {
   id: number;
   provider: ProviderId;
   username: string;
+  /** Link to the profile on the platform, built by the server from a fixed template; null if none could be built. */
+  profileUrl: string | null;
+  /** False for a link-only platform: there is no sync status and no "Sincronizar agora". */
+  syncs: boolean;
   status: "ACTIVE" | "ERROR";
   lastSyncedAt: string | null;
   lastError: string | null;
@@ -25,8 +38,10 @@ export type ProviderInfo = {
   name: string;
   /** Categories the platform feeds (tags on the card). */
   categories: Category[];
-  /** What enters the collection (BR-10), the caption the design asks for. */
-  brings: string;
+  /** True when the platform's list is read and updates the collection (BR-10); false for "Só o link". */
+  syncs: boolean;
+  /** What the note under the card says after "Atualiza sozinho." or "Só o link.". */
+  note: string;
   /** Label of the username input. */
   label: string;
   /** Provider-specific hint under the input. */
@@ -41,9 +56,10 @@ export const PROVIDERS: ProviderInfo[] = [
     id: "LETTERBOXD",
     name: "Letterboxd",
     categories: ["MOVIE"],
-    brings: "Seu diário recente; o histórico se acumula a partir de agora.",
+    syncs: true,
+    note: "O que você registra no diário. Filmes marcados como vistos fora do diário o Letterboxd não compartilha; esses você destaca à mão.",
     label: "Usuário do Letterboxd",
-    hint: "Seu nome de usuário no Letterboxd, como aparece em letterboxd.com/nome.",
+    hint: "Como aparece em letterboxd.com/nome.",
     placeholder: "seunome",
     available: true,
   },
@@ -51,9 +67,21 @@ export const PROVIDERS: ProviderInfo[] = [
     id: "ANILIST",
     name: "AniList",
     categories: ["ANIME", "MANGA"],
-    brings: "Completos, assistindo, pausados e revendo.",
+    syncs: true,
+    note: "Completos, assistindo, pausados e revendo.",
     label: "Usuário do AniList",
-    hint: "Seu nome de usuário no AniList, como aparece em anilist.co/user/nome.",
+    hint: "Como aparece em anilist.co/user/nome.",
+    placeholder: "seunome",
+    available: true,
+  },
+  {
+    id: "LASTFM",
+    name: "Last.fm",
+    categories: ["MUSIC"],
+    syncs: true,
+    note: "Os álbuns que você mais ouve e o que está tocando agora.",
+    label: "Usuário do Last.fm",
+    hint: "Como aparece em last.fm/user/nome. Sua atividade recente precisa estar pública.",
     placeholder: "seunome",
     available: true,
   },
@@ -61,30 +89,55 @@ export const PROVIDERS: ProviderInfo[] = [
     id: "STEAM",
     name: "Steam",
     categories: ["GAME"],
-    brings: "Jogos com tempo de jogo.",
+    syncs: true,
+    note: "Jogos com tempo de jogo.",
     label: "Perfil do Steam",
-    hint: "A lista de jogos também precisa estar pública.",
-    placeholder: "steamcommunity.com/id/seunome",
-    available: false,
-  },
-  {
-    id: "LASTFM",
-    name: "Last.fm",
-    categories: ["MUSIC"],
-    brings: "Álbuns que você ouve bastante e o que está tocando agora; nunca cada faixa ouvida.",
-    label: "Usuário do Last.fm",
-    hint: "Seu nome de usuário no Last.fm, como aparece em last.fm/user/nome. Sua atividade recente precisa estar pública.",
+    hint: "Como aparece em steamcommunity.com/id/nome. A lista de jogos também precisa estar pública.",
     placeholder: "seunome",
-    available: true,
+    available: false,
   },
   {
     id: "GOODREADS",
     name: "Goodreads",
     categories: ["BOOK"],
-    brings: "Estantes lidos e lendo.",
+    syncs: true,
+    note: "Estantes lidos e lendo.",
     label: "Número do seu perfil no Goodreads",
     hint: "O número que aparece no endereço do seu perfil, em goodreads.com/user/show/12345678-nome. Seu perfil e suas estantes precisam estar públicos.",
     placeholder: "12345678",
+    available: true,
+  },
+  {
+    id: "BACKLOGGD",
+    name: "Backloggd",
+    categories: ["GAME"],
+    syncs: false,
+    note: "O Backloggd não tem como ler sua lista. Seus jogos você destaca à mão.",
+    label: "Usuário do Backloggd",
+    hint: "Como aparece em backloggd.com/u/nome.",
+    placeholder: "seunome",
+    available: true,
+  },
+  {
+    id: "TRAKT",
+    name: "Trakt",
+    categories: ["SERIES", "MOVIE"],
+    syncs: false,
+    note: "Por enquanto não lemos a lista do Trakt. Suas séries você destaca à mão.",
+    label: "Usuário do Trakt",
+    hint: "Como aparece em trakt.tv/users/nome.",
+    placeholder: "seunome",
+    available: true,
+  },
+  {
+    id: "STORYGRAPH",
+    name: "StoryGraph",
+    categories: ["BOOK"],
+    syncs: false,
+    note: "O StoryGraph não tem como ler sua lista. Seus livros você destaca à mão.",
+    label: "Usuário do StoryGraph",
+    hint: "Como aparece em app.thestorygraph.com/profile/nome.",
+    placeholder: "seunome",
     available: true,
   },
 ];
@@ -92,18 +145,28 @@ export const PROVIDERS: ProviderInfo[] = [
 export const providerInfo = (id: ProviderId): ProviderInfo =>
   PROVIDERS.find((p) => p.id === id) ?? PROVIDERS[0];
 
-/** Providers the user can still link: available and not linked yet. */
-export function linkableProviders(accounts: LinkedAccount[]): ProviderInfo[] {
+/** Platforms not linked yet, in the order of the cards ("Vincular mais"). */
+export function unlinkedProviders(accounts: LinkedAccount[]): ProviderInfo[] {
   const linked = new Set(accounts.map((a) => a.provider));
-  return PROVIDERS.filter((p) => p.available && !linked.has(p.id));
+  return PROVIDERS.filter((p) => !linked.has(p.id));
 }
 
-/** "Entra na coleção: …" caption (BR-10) for a platform. */
-export const broughtCaption = (p: ProviderInfo): string =>
-  `Entra na coleção: ${p.brings.charAt(0).toLowerCase()}${p.brings.slice(1)}`;
+/** The linked accounts in the fixed order of the platforms, the same as the links on the profile. */
+export const inProviderOrder = (accounts: LinkedAccount[]): LinkedAccount[] =>
+  [...accounts].sort(
+    (a, b) =>
+      PROVIDERS.findIndex((p) => p.id === a.provider) -
+      PROVIDERS.findIndex((p) => p.id === b.provider),
+  );
 
-/** Providers shown as "Em breve" (no backend provider yet). */
-export const comingSoonProviders = (): ProviderInfo[] => PROVIDERS.filter((p) => !p.available);
+/** The note under a card (ADR 0023): says whether the platform updates by itself or is only a link, and what it brings. */
+export function syncNote(p: ProviderInfo): { lead: string; text: string } {
+  return { lead: p.syncs ? "Atualiza sozinho." : "Só o link.", text: p.note };
+}
+
+/** The profile link as text: "letterboxd.com/leandro", without the scheme and the trailing slash. */
+export const profileLinkText = (url: string): string =>
+  url.replace(/^https:\/\//, "").replace(/\/$/, "");
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;

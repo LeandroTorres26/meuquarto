@@ -69,11 +69,16 @@ public class LinkedAccountController {
 
     public record LinkRequest(@NotNull ProviderId provider, @NotBlank @Size(max = MAX_USERNAME) String username) {}
 
-    public record AccountResponse(long id, ProviderId provider, String username, LinkStatus status,
-            Instant lastSyncedAt, String lastError, Instant nextManualSyncAt) {
+    /**
+     * {@code profileUrl} is built by the server from the fixed template of the platform (ADR 0023), never
+     * from user input. {@code syncs} is false for a link-only platform: it has no sync status or button.
+     */
+    public record AccountResponse(long id, ProviderId provider, String username, String profileUrl, boolean syncs,
+            LinkStatus status, Instant lastSyncedAt, String lastError, Instant nextManualSyncAt) {
 
         static AccountResponse of(LinkedAccount account) {
-            return new AccountResponse(account.id(), account.provider(), account.username(), account.status(),
+            return new AccountResponse(account.id(), account.provider(), account.username(),
+                    account.profileUrl().orElse(null), !account.provider().linkOnly(), account.status(),
                     account.lastSyncedAt(), account.lastError(), account.nextManualSyncAt());
         }
     }

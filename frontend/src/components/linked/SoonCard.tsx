@@ -1,18 +1,14 @@
-import { ProviderTags } from "@/components/linked/ProviderTags";
-import { broughtCaption, type ProviderInfo } from "@/lib/linked-accounts";
+import { ProviderHead } from "@/components/linked/ProviderHead";
+import { SyncNote } from "@/components/linked/SyncNote";
+import type { ProviderInfo } from "@/lib/linked-accounts";
 
-/** A platform whose provider does not exist yet: honest "Em breve", no input. */
+/** A platform whose provider does not exist yet: same card, honest "Em breve" action, no input. */
 export function SoonCard({ provider }: { provider: ProviderInfo }) {
   const id = `${provider.id.toLowerCase()}-soon`;
   return (
     <div className="region region--line" role="group" aria-labelledby={`${id}-h`}>
-      <div className="row row--between">
-        <h3 id={`${id}-h`} className="t-h3">
-          {provider.name}
-        </h3>
-        <ProviderTags provider={provider} />
-      </div>
-      <p className="t-cap region__note">{broughtCaption(provider)}</p>
+      <ProviderHead provider={provider} headingId={`${id}-h`} />
+      <SyncNote provider={provider} />
       <button
         type="button"
         className="mq-btn mq-btn--secondary mq-btn--sm self-start region__act"

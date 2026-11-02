@@ -1,8 +1,9 @@
+import { Link2 } from "lucide-react";
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { ActionsPlaceholder, type OwnerSlug } from "@/components/SessionActions";
 import { currentSession } from "@/lib/session";
-import { HIGHLIGHTS_HREF, viewerState, type ViewerState } from "@/lib/viewer-state";
+import { ACCOUNTS_HREF, HIGHLIGHTS_HREF, viewerState, type ViewerState } from "@/lib/viewer-state";
 
 // Small session-aware pieces of the public screens, each one a dynamic hole inside <Suspense>
 // (see SessionActions.tsx). Rules: docs/screens.md, "Session states".
@@ -94,6 +95,25 @@ export function OwnerHighlightsLink({ ownerSlug }: { ownerSlug: OwnerSlug }) {
       <p className="t-sm">
         <Link href={HIGHLIGHTS_HREF}>Escolher destaques no painel</Link>
       </p>
+    </ForOwner>
+  );
+}
+
+/**
+ * In the S4 header of the owner's own profile with no linked platform: "Vincule seus perfis" to the
+ * accounts screen (FR-12a, docs/screens.md). Visitors and other users see nothing.
+ */
+export function OwnerPlatformsInvite({ ownerSlug }: { ownerSlug: OwnerSlug }) {
+  return (
+    <ForOwner ownerSlug={ownerSlug}>
+      <ul className="mq-profile__links">
+        <li>
+          <Link href={ACCOUNTS_HREF} prefetch={false} className="mq-link">
+            <Link2 className="mq-icon" aria-hidden="true" />
+            Vincule seus perfis
+          </Link>
+        </li>
+      </ul>
     </ForOwner>
   );
 }

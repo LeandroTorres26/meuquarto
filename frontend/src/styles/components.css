@@ -85,7 +85,7 @@
 .mq-item--vinyl .mq-item__meta{width:76%}
 /* game box: 5:7 case, console band above the art (not on it); no finish variant */
 .mq-item--game .mq-item__cover{aspect-ratio:5/7;display:flex;flex-direction:column;background:hsl(240 13% 5%);border-radius:3px;box-shadow:var(--shadow-poster)}
-.mq-gamebar{flex:0 0 11%;display:flex;align-items:center;padding:0 8px;color:hsl(0 0% 100%)}
+.mq-gamebar{flex:0 0 11%;display:flex;align-items:center;justify-content:flex-end;padding:0 8px;color:hsl(0 0% 100%)}   /* icon on the right: the sticker covers the top-left corner */
 .mq-gamebar .mq-icon{width:14px;height:14px}
 .mq-item--game .mq-art{flex:1 1 0;min-height:0;height:auto;border-radius:0 0 2px 2px;box-shadow:none}
 
@@ -158,6 +158,31 @@
 .mq-profile__bio{margin:var(--space-4) 0 0;max-width:52ch;font:400 16px/24px var(--font-sans);color:var(--ink)}
 .mq-profile__tags{display:flex;flex-wrap:wrap;gap:var(--space-3);margin:var(--space-6) 0 0;padding:var(--space-1) 0 0;list-style:none}
 .mq-profile__actions{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-6)}
+/* links to the owner's profiles on other platforms (the link-in-bio part): one outlined tile per platform with its mark and name,
+   lighter than the actions above (no fill), heavier than text; marks are one-color (currentColor) so they follow the theme */
+.mq-profile__links{display:flex;flex-wrap:wrap;gap:var(--space-2);margin:var(--space-4) 0 0;padding:0;list-style:none}
+.mq-link{display:inline-flex;align-items:center;gap:var(--space-2);min-height:40px;padding:0 var(--space-3);border:1.5px solid var(--border-strong);border-radius:var(--radius-md);color:var(--ink);font:600 14px/20px var(--font-sans);text-decoration:none;transition:background-color .15s ease,border-color .15s ease}
+.mq-link .mq-icon{width:18px;height:18px}
+.mq-link:hover{background:var(--surface-200);border-color:var(--ink)}
+.mq-link:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.mq-link{transition:none}}
+/* platform mark: the platform's own mark on a small tile in its own colors, like an app icon. The colors are literal on
+   purpose (like the meuquarto symbol, a brand never follows the theme); the tile keeps dark marks visible on dark themes
+   and the neutral inset line keeps the tile's edge visible on any wall. A platform without a mark gets its category sticker color. */
+.mq-mark{--mark-bg:var(--surface-300);--mark-fg:var(--ink);display:inline-grid;place-items:center;flex:none;width:24px;height:24px;border-radius:var(--radius-md);background:var(--mark-bg);color:var(--mark-fg);box-shadow:inset 0 0 0 1px hsl(0 0% 50% / .3)}
+.mq-mark > svg{width:16px;height:16px;fill:currentColor;stroke:none}
+.mq-mark > svg.mq-icon{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}   /* a category icon (Lucide) as fallback */
+.mq-mark--lg{width:28px;height:28px}.mq-mark--lg > svg{width:18px;height:18px}
+.mq-mark--letterboxd{--mark-bg:hsl(210 20% 16%)}
+.mq-mark--letterboxd > svg{width:20px}
+.mq-mark--anilist{--mark-bg:hsl(214 41% 14%);--mark-fg:hsl(200 100% 50%)}
+.mq-mark--myanimelist{--mark-bg:hsl(222 56% 41%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--lastfm{--mark-bg:hsl(3 94% 43%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--steam{--mark-bg:hsl(222 18% 11%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--goodreads{--mark-bg:hsl(42 31% 94%);--mark-fg:hsl(25 49% 15%)}
+.mq-mark--storygraph{--mark-bg:hsl(0 0% 8%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--trakt{--mark-bg:hsl(282 54% 52%);--mark-fg:hsl(0 0% 100%)}
+.mq-mark--backloggd{--mark-bg:var(--sticker-game);--mark-fg:var(--on-sticker)}
 @media (max-width:560px){.mq-profile{grid-template-columns:minmax(0,1fr);justify-items:start}.mq-profile .mq-polaroid{width:120px;padding:6px 6px 4px}.mq-profile .mq-polaroid__cap{font-size:20px;line-height:22px}.mq-profile{gap:var(--space-6)}}
 
 /* ---------- NowCard: one "Agora" entry. A row, not a box: the list that holds it is the group ---------- */

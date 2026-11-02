@@ -1,20 +1,22 @@
 "use client";
 
-import { Check, Clock, RefreshCw, TriangleAlert } from "lucide-react";
+import { Check, Clock, ExternalLink, RefreshCw, TriangleAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ProviderTags } from "@/components/linked/ProviderTags";
+import { ProviderHead } from "@/components/linked/ProviderHead";
+import { SyncNote } from "@/components/linked/SyncNote";
 import { UnlinkDialog } from "@/components/linked/UnlinkDialog";
 import { useNow } from "@/components/linked/useNow";
 import { ApiError, syncAccount, unlinkAccount } from "@/lib/api-client";
+import { isHttpsUrl } from "@/lib/platforms";
 import {
   NETWORK_MESSAGE,
   nowMs,
-  broughtCaption,
   cooldownMinutes,
   cooldownUntilFromRetryAfter,
   minutesUntil,
+  profileLinkText,
   providerInfo,
   relativeTimePtBr,
   syncErrorMessage,
@@ -25,7 +27,11 @@ import {
 
 type Outcome = { kind: "ok" | "bad"; message: string };
 
-/** S9, a linked account: status, "Sincronizar agora" with the BR-03 cooldown, and "Desvincular" (FR-16). */
+/**
+ * S9, a linked account (ADR 0023): the link to the profile on the platform, then, where the platform's list
+ * is read, the status and "Sincronizar agora" with the BR-03 cooldown; always "Desvincular" (FR-16). A
+ * link-only platform has no status and no sync button.
+ */
 export function ConnectedCard({
   account,
   slug,
@@ -50,7 +56,7 @@ export function ConnectedCard({
     cooldownMinutes(account.nextManualSyncAt, now),
     minutesUntil(localUntil, now),
   );
-  const failed = account.status === "ERROR" || outcome?.kind === "bad";
+  const failed = account.syncs && (account.status === "ERROR" || outcome?.kind === "bad");
   const headingId = `conta-${account.id}-h`;
 
   async function sync() {
@@ -122,16 +128,18 @@ export function ConnectedCard({
 
   return (
     <article className={`region${failed ? " region--danger" : ""}`} aria-labelledby={headingId}>
-      <div className="row row--between">
-        <h3 id={headingId} className="t-h3">
-          {provider.name}
-        </h3>
-        <ProviderTags provider={provider} />
-      </div>
+      <ProviderHead provider={provider} headingId={headingId} />
       <div className="pair">
-        <p className="t-body">{account.username}</p>
-        <p className="t-cap">{broughtCaption(provider)}</p>
-        {failed ? (
+        {account.profileUrl && isHttpsUrl(account.profileUrl) ? (
+          <a href={account.profileUrl} target="_blank" rel="noopener noreferrer" className="t-body">
+            {profileLinkText(account.profileUrl)}
+            <ExternalLink className="icon icon--inline" aria-hidden="true" />
+            <span className="sr"> (abre em nova aba)</span>
+          </a>
+        ) : (
+          <p className="t-body">{account.username}</p>
+        )}
+        {!account.syncs ? null : failed ? (
           <p className="status status--bad">
             <TriangleAlert className="icon" aria-hidden="true" />
             {outcome?.kind === "bad" ? outcome.message : stored}
@@ -142,48 +150,53 @@ export function ConnectedCard({
             {syncedLabel}
           </p>
         )}
-        <p
-          role="status"
-          aria-live="polite"
-          className={syncing || outcome?.kind === "ok" ? "status" : undefined}
-        >
-          {syncing ? (
-            <>
-              <span className="mq-spinner" aria-hidden="true" style={{ marginTop: 2 }} />
-              Buscando sua lista no {provider.name}…
-            </>
-          ) : outcome?.kind === "ok" ? (
-            <>
-              {outcome.message}. {slug && <Link href={`/${slug}`}>Ver meu perfil</Link>}
-            </>
-          ) : null}
-        </p>
+        {account.syncs && (
+          <p
+            role="status"
+            aria-live="polite"
+            className={syncing || outcome?.kind === "ok" ? "status" : undefined}
+          >
+            {syncing ? (
+              <>
+                <span className="mq-spinner" aria-hidden="true" style={{ marginTop: 2 }} />
+                Buscando sua lista no {provider.name}…
+              </>
+            ) : outcome?.kind === "ok" ? (
+              <>
+                {outcome.message}. {slug && <Link href={`/${slug}`}>Ver meu perfil</Link>}
+              </>
+            ) : null}
+          </p>
+        )}
       </div>
+      <SyncNote provider={provider} />
       <div className="actions region__act">
-        <button
-          type="button"
-          className="mq-btn mq-btn--secondary mq-btn--sm"
-          onClick={sync}
-          disabled={syncing || wait > 0}
-          aria-busy={syncing}
-        >
-          {syncing ? (
-            <>
-              <span className="mq-spinner" aria-hidden="true" />
-              Sincronizando…
-            </>
-          ) : wait > 0 ? (
-            <>
-              <Clock className="icon" aria-hidden="true" />
-              {waitLabel(wait)}
-            </>
-          ) : (
-            <>
-              <RefreshCw className="icon" aria-hidden="true" />
-              {failed ? "Tentar agora" : "Sincronizar agora"}
-            </>
-          )}
-        </button>
+        {account.syncs && (
+          <button
+            type="button"
+            className="mq-btn mq-btn--secondary mq-btn--sm"
+            onClick={sync}
+            disabled={syncing || wait > 0}
+            aria-busy={syncing}
+          >
+            {syncing ? (
+              <>
+                <span className="mq-spinner" aria-hidden="true" />
+                Sincronizando…
+              </>
+            ) : wait > 0 ? (
+              <>
+                <Clock className="icon" aria-hidden="true" />
+                {waitLabel(wait)}
+              </>
+            ) : (
+              <>
+                <RefreshCw className="icon" aria-hidden="true" />
+                {failed ? "Tentar agora" : "Sincronizar agora"}
+              </>
+            )}
+          </button>
+        )}
         <button
           type="button"
           className="mq-btn mq-btn--ghost mq-btn--sm"
@@ -199,6 +212,7 @@ export function ConnectedCard({
       <UnlinkDialog
         open={confirming}
         providerName={provider.name}
+        syncs={account.syncs}
         sending={unlinking}
         error={unlinkError}
         onCancel={() => setConfirming(false)}

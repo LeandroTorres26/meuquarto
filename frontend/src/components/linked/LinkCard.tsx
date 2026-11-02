@@ -4,11 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { AlertBox } from "@/components/AlertBox";
 import { FieldError } from "@/components/FieldError";
-import { ProviderTags } from "@/components/linked/ProviderTags";
+import { ProviderHead } from "@/components/linked/ProviderHead";
+import { SyncNote } from "@/components/linked/SyncNote";
 import { ApiError, linkAccount } from "@/lib/api-client";
 import {
   NETWORK_MESSAGE,
-  broughtCaption,
   linkErrorMessage,
   type LinkErrorField,
   type ProviderInfo,
@@ -32,7 +32,7 @@ export function LinkCard({ provider }: { provider: ProviderInfo }) {
     try {
       await linkAccount({ provider: provider.id, username: value });
       setUsername("");
-      router.refresh(); // the card moves to "Conectadas" with the server's data
+      router.refresh(); // the card moves to "Vinculadas" with the server's data
     } catch (e) {
       setError(
         e instanceof ApiError
@@ -48,12 +48,7 @@ export function LinkCard({ provider }: { provider: ProviderInfo }) {
 
   return (
     <form className="region region--line" aria-labelledby={`${id}-h`} onSubmit={onSubmit}>
-      <div className="row row--between">
-        <h3 id={`${id}-h`} className="t-h3">
-          {provider.name}
-        </h3>
-        <ProviderTags provider={provider} />
-      </div>
+      <ProviderHead provider={provider} headingId={`${id}-h`} />
       <div className="stack">
         {error?.field === "form" && <AlertBox>{error.message}</AlertBox>}
         <div className="field">
@@ -80,7 +75,7 @@ export function LinkCard({ provider }: { provider: ProviderInfo }) {
           <FieldError id={`${id}-erro`}>{invalid ? error?.message : undefined}</FieldError>
         </div>
       </div>
-      <p className="t-cap region__note">{broughtCaption(provider)}</p>
+      <SyncNote provider={provider} />
       <button
         type="submit"
         className={`mq-btn mq-btn--primary mq-btn--sm self-start region__act${sending ? " is-loading" : ""}`}

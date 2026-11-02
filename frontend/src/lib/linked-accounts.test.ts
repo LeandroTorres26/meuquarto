@@ -1,16 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
-  broughtCaption,
-  comingSoonProviders,
   cooldownMinutes,
   cooldownUntilFromRetryAfter,
-  linkableProviders,
   linkErrorMessage,
+  inProviderOrder,
   minutesUntil,
+  profileLinkText,
+  PROVIDERS,
   providerInfo,
   relativeTimePtBr,
   syncErrorMessage,
+  syncNote,
   syncSuccessMessage,
+  unlinkedProviders,
   type LinkedAccount,
 } from "./linked-accounts";
 
@@ -61,36 +63,78 @@ describe("providers", () => {
     id: 1,
     provider,
     username: "x",
+    profileUrl: null,
+    syncs: providerInfo(provider).syncs,
     status: "ACTIVE",
     lastSyncedAt: null,
     lastError: null,
     nextManualSyncAt: null,
   });
 
-  it("only offers linking for platforms with a backend provider that are not linked yet", () => {
-    expect(linkableProviders([]).map((p) => p.id)).toEqual([
+  it("lists every platform not linked yet, in the fixed order of the cards", () => {
+    expect(unlinkedProviders([]).map((p) => p.id)).toEqual([
       "LETTERBOXD",
       "ANILIST",
       "LASTFM",
+      "STEAM",
       "GOODREADS",
+      "BACKLOGGD",
+      "TRAKT",
+      "STORYGRAPH",
     ]);
-    expect(linkableProviders([account("ANILIST")]).map((p) => p.id)).toEqual([
+    expect(unlinkedProviders([account("ANILIST"), account("TRAKT")]).map((p) => p.id)).toEqual([
       "LETTERBOXD",
       "LASTFM",
+      "STEAM",
       "GOODREADS",
+      "BACKLOGGD",
+      "STORYGRAPH",
     ]);
+  });
+
+  it("orders linked accounts like the platforms, not like the date they were linked", () => {
+    expect(
+      inProviderOrder([account("STORYGRAPH"), account("LETTERBOXD"), account("LASTFM")]).map(
+        (a) => a.provider,
+      ),
+    ).toEqual(["LETTERBOXD", "LASTFM", "STORYGRAPH"]);
+  });
+
+  it("says which platforms update by themselves and which are only a link", () => {
+    expect(PROVIDERS.filter((p) => !p.syncs).map((p) => p.id)).toEqual([
+      "BACKLOGGD",
+      "TRAKT",
+      "STORYGRAPH",
+    ]);
+    expect(syncNote(providerInfo("ANILIST"))).toEqual({
+      lead: "Atualiza sozinho.",
+      text: "Completos, assistindo, pausados e revendo.",
+    });
+    expect(syncNote(providerInfo("BACKLOGGD")).lead).toBe("Só o link.");
+  });
+
+  it("is honest about Letterboxd: only the diary, the rest is by hand", () => {
+    expect(syncNote(providerInfo("LETTERBOXD")).text).toMatch(/diário/);
+    expect(syncNote(providerInfo("LETTERBOXD")).text).toMatch(/destaca à mão/);
   });
 
   it("describes what Last.fm brings: albums played a lot and what is playing, never each play", () => {
     const lastfm = providerInfo("LASTFM");
     expect(lastfm.available).toBe(true);
     expect(lastfm.categories).toEqual(["MUSIC"]);
-    expect(broughtCaption(lastfm)).toMatch(/^Entra na coleção: álbuns/);
+    expect(syncNote(lastfm).text).toMatch(/^Os álbuns que você mais ouve/);
     expect(lastfm.hint).toMatch(/atividade recente precisa estar pública/);
   });
 
-  it("lists the platforms still without a provider as coming soon", () => {
-    expect(comingSoonProviders().map((p) => p.id)).toEqual(["STEAM"]);
+  it("keeps Steam as coming soon: it has no provider yet", () => {
+    expect(PROVIDERS.filter((p) => !p.available).map((p) => p.id)).toEqual(["STEAM"]);
+  });
+
+  it("shows the profile link without the scheme and the trailing slash", () => {
+    expect(profileLinkText("https://letterboxd.com/leandro/")).toBe("letterboxd.com/leandro");
+    expect(profileLinkText("https://www.last.fm/user/leandro_t")).toBe(
+      "www.last.fm/user/leandro_t",
+    );
   });
 });
 

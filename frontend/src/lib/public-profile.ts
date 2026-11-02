@@ -46,7 +46,12 @@ export const getPublicProfile = cache(async (slug: string): Promise<ProfileResul
     if (res.status === 404) return { kind: "not-found" };
     if (!res.ok) return { kind: "unavailable" };
     const body: unknown = await res.json();
-    return isProfile(body) ? { kind: "ok", profile: body } : { kind: "unavailable" };
+    return isProfile(body)
+      ? {
+          kind: "ok",
+          profile: { ...body, platforms: Array.isArray(body.platforms) ? body.platforms : [] },
+        }
+      : { kind: "unavailable" };
   } catch {
     return { kind: "unavailable" };
   }

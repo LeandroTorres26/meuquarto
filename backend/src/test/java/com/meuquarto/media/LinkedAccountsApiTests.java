@@ -1,6 +1,7 @@
 package com.meuquarto.media;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -108,6 +109,8 @@ class LinkedAccountsApiTests {
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.provider").value("LETTERBOXD"))
                 .andExpect(jsonPath("$.username").value("leandro_01"))
+                .andExpect(jsonPath("$.profileUrl").value("https://letterboxd.com/leandro_01/"))
+                .andExpect(jsonPath("$.syncs").value(true))
                 .andExpect(jsonPath("$.status").value("ACTIVE"))
                 .andExpect(jsonPath("$.lastSyncedAt").doesNotExist())
                 .andExpect(jsonPath("$.lastError").doesNotExist());
@@ -204,6 +207,79 @@ class LinkedAccountsApiTests {
 
         mvc.perform(get("/api/linked-accounts").cookie(bia)).andExpect(jsonPath("$.length()").value(0));
         mvc.perform(get("/api/linked-accounts").cookie(ana)).andExpect(jsonPath("$.length()").value(1));
+    }
+
+    // --- link-only platforms (ADR 0023) ---
+
+    @ParameterizedTest
+    @ValueSource(strings = {"BACKLOGGD", "TRAKT", "STORYGRAPH"})
+    void aLinkOnlyPlatformIsLinkedByFormatAloneWithAServerBuiltProfileUrl(String platform) throws Exception {
+        Cookie session = signUp("a@example.com", "leandro");
+        int checksBefore = checks();
+
+        link(session, platform, "  Leandro.T-01 ").andExpect(status().isCreated())
+                .andExpect(jsonPath("$.provider").value(platform))
+                .andExpect(jsonPath("$.username").value("Leandro.T-01"))
+                .andExpect(jsonPath("$.syncs").value(false))
+                .andExpect(jsonPath("$.status").value("ACTIVE"))
+                .andExpect(jsonPath("$.lastSyncedAt").doesNotExist())
+                .andExpect(jsonPath("$.profileUrl").value(containsString("Leandro.T-01")));
+
+        assertThat(checks()).isEqualTo(checksBefore); // no existence check on a link-only platform
+        mvc.perform(get("/api/linked-accounts").cookie(session)).andExpect(jsonPath("$.length()").value(1));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"../admin", "..", ".", "a?b=c", "a#frag", "x@evil.com", "a/b", "a b", "a%2fb", "caf\\u00e9",
+            "http://evil.example/x", "a\\r\\nb", "this_username_is_longer_than_forty_characters"})
+    void aMalformedLinkOnlyUsernameIsRefused(String username) throws Exception {
+        Cookie session = signUp("a@example.com", "leandro");
+
+        link(session, "BACKLOGGD", username).andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("INVALID_USERNAME"));
+
+        assertThat(jdbc.queryForObject("select count(*) from linked_accounts", Integer.class)).isZero();
+    }
+
+    @Test
+    void aLinkOnlyPlatformIsLinkedOncePerProfileAndCanBeUnlinked() throws Exception {
+        Cookie session = signUp("a@example.com", "leandro");
+        String body = link(session, "TRAKT", "leandro").andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        long id = ((Number) JsonPath.read(body, "$.id")).longValue();
+
+        link(session, "TRAKT", "other").andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error").value("ALREADY_LINKED"));
+        mvc.perform(delete("/api/linked-accounts/" + id).cookie(session).with(RealCsrf.token(mvc)))
+                .andExpect(status().isNoContent());
+        link(session, "TRAKT", "leandro").andExpect(status().isCreated());
+    }
+
+    @Test
+    void syncNowOnALinkOnlyAccountIsRefusedAndAnotherUserSeesItAsMissing() throws Exception {
+        Cookie ana = signUp("a@example.com", "ana");
+        Cookie bia = signUp("b@example.com", "bia");
+        String body = link(ana, "STORYGRAPH", "ana").andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        long id = ((Number) JsonPath.read(body, "$.id")).longValue();
+
+        mvc.perform(post("/api/linked-accounts/" + id + "/sync").cookie(ana).with(RealCsrf.token(mvc)))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$.error").value("SYNC_NOT_SUPPORTED"));
+        mvc.perform(post("/api/linked-accounts/" + id + "/sync").cookie(bia).with(RealCsrf.token(mvc)))
+                .andExpect(status().isNotFound()).andExpect(jsonPath("$.error").value("LINKED_ACCOUNT_NOT_FOUND"));
+        mvc.perform(post("/api/linked-accounts/" + id + "/sync").with(RealCsrf.token(mvc)))
+                .andExpect(status().isUnauthorized());
+        assertThat(jdbc.queryForObject("select count(*) from sync_runs", Integer.class)).isZero();
+    }
+
+    @Test
+    void theProfileUrlOfAnAccountComesFromTheStoredUsernameNeverFromTheBody() throws Exception {
+        Cookie session = signUp("a@example.com", "leandro");
+        mvc.perform(post("/api/linked-accounts").cookie(session).with(RealCsrf.token(mvc))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"provider\":\"BACKLOGGD\",\"username\":\"leandro\",\"profileUrl\":\"https://evil.example/\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.profileUrl").value("https://backloggd.com/u/leandro/"));
     }
 
     // --- list ---

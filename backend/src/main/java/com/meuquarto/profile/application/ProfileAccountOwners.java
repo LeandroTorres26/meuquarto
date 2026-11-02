@@ -18,10 +18,12 @@ class ProfileAccountOwners implements AccountOwners {
 
     private final ProfileRepository profiles;
     private final ProfileCollection collection;
+    private final PublicProfileCache publicProfiles;
 
-    ProfileAccountOwners(ProfileRepository profiles, ProfileCollection collection) {
+    ProfileAccountOwners(ProfileRepository profiles, ProfileCollection collection, PublicProfileCache publicProfiles) {
         this.profiles = profiles;
         this.collection = collection;
+        this.publicProfiles = publicProfiles;
     }
 
     @Override
@@ -39,5 +41,11 @@ class ProfileAccountOwners implements AccountOwners {
     public void recordSyncedItem(long profileId, long linkedAccountId, String provider, MediaCategory category,
             long mediaItemId, Instant occurredAt) {
         collection.recordSyncedItem(profileId, category, mediaItemId, provider, linkedAccountId, occurredAt);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void platformLinksChanged(long profileId) {
+        profiles.findById(profileId).ifPresent(publicProfiles::evictAfterCommit);
     }
 }

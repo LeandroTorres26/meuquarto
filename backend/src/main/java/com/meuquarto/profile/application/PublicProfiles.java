@@ -1,6 +1,7 @@
 package com.meuquarto.profile.application;
 
 import com.meuquarto.media.application.MediaSummaries;
+import com.meuquarto.media.application.PlatformLinks;
 import com.meuquarto.profile.application.PublicProfile.Detail;
 import com.meuquarto.profile.application.PublicProfile.Entry;
 import com.meuquarto.profile.application.PublicProfile.Link;
@@ -57,6 +58,7 @@ public class PublicProfiles {
     private final CollectionItemRepository items;
     private final HighlightListRepository lists;
     private final MediaSummaries summaries;
+    private final PlatformLinks platformLinks;
     private final PlanResolver plans;
     private final NowBlocks nowBlocks;
     private final NowEntryRepository nowEntries;
@@ -64,12 +66,14 @@ public class PublicProfiles {
     private final TransactionTemplate readOnly;
 
     public PublicProfiles(ProfileRepository profiles, CollectionItemRepository items, HighlightListRepository lists,
-            MediaSummaries summaries, PlanResolver plans, NowBlocks nowBlocks, NowEntryRepository nowEntries,
+            MediaSummaries summaries, PlatformLinks platformLinks, PlanResolver plans, NowBlocks nowBlocks,
+            NowEntryRepository nowEntries,
             PublicProfileCache cache, PlatformTransactionManager transactionManager) {
         this.profiles = profiles;
         this.items = items;
         this.lists = lists;
         this.summaries = summaries;
+        this.platformLinks = platformLinks;
         this.plans = plans;
         this.nowBlocks = nowBlocks;
         this.nowEntries = nowEntries;
@@ -216,7 +220,9 @@ public class PublicProfiles {
                 nowBlocks.resolve(profile.id(), nowEntries.findByProfileId(profile.id())).values());
         return new PublicProfile(profile.slug(), profile.displayName().orElse(profile.slug()),
                 profile.bio().orElse(null), profile.avatarKey().map(Avatars::urlPath).orElse(null),
-                profile.theme().id(), profile.theme().premium(), now, favorites, List.copyOf(sections));
+                profile.theme().id(), profile.theme().premium(), now, favorites, List.copyOf(sections),
+                platformLinks.forProfile(profile.id()).stream()
+                        .map(link -> new PublicProfile.PlatformLink(link.platform(), link.url())).toList());
     }
 
     /** The list's items in the owner's order, keeping only those still shown (and of the category, if the list has one). */

@@ -29,4 +29,10 @@ public interface AccountOwners {
      */
     void recordSyncedItem(long profileId, long linkedAccountId, String provider, MediaCategory category,
             long mediaItemId, Instant occurredAt);
+
+    /**
+     * Called after the profile's linked platforms changed (a link was added), so what the public profile
+     * shows is rebuilt. Unlinking already goes through {@link #releaseCollectionItems}.
+     */
+    void platformLinksChanged(long profileId);
 }

@@ -3,6 +3,7 @@ package com.meuquarto.media.infra;
 import com.meuquarto.media.domain.LinkedAccount;
 import com.meuquarto.media.domain.ProviderId;
 import java.time.Instant;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Pageable;
@@ -36,15 +37,18 @@ public interface LinkedAccountRepository extends JpaRepository<LinkedAccount, Lo
 
     /**
      * What the scheduler picks (BR-03, ADR 0007): never synced or last success {@code staleBefore} or
-     * older, not backing off, not synced by hand in the cooldown. Oldest first, never-synced first of all.
+     * older, not backing off, not synced by hand in the cooldown, and not on a link-only platform (ADR 0023).
+     * Oldest first, never-synced first of all.
      */
     @Query("""
             select a from LinkedAccount a
             where (a.lastSyncedAt is null or a.lastSyncedAt <= :staleBefore)
               and (a.nextAttemptAt is null or a.nextAttemptAt <= :now)
               and (a.lastSyncStartedAt is null or a.lastSyncStartedAt <= :cooldownLimit)
+              and a.provider not in :linkOnly
             order by a.lastSyncedAt asc nulls first, a.id asc
             """)
     List<LinkedAccount> findDue(@Param("staleBefore") Instant staleBefore, @Param("now") Instant now,
-            @Param("cooldownLimit") Instant cooldownLimit, Pageable page);
+            @Param("cooldownLimit") Instant cooldownLimit, @Param("linkOnly") Collection<ProviderId> linkOnly,
+            Pageable page);
 }

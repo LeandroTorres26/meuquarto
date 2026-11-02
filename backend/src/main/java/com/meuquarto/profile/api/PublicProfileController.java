@@ -51,16 +51,20 @@ public class PublicProfileController {
 
     public record ProfileResponse(String slug, String displayName, String bio, String avatarUrl, String theme,
             boolean premiumTheme, List<NowResponse> now, List<ItemResponse> favorites,
-            List<SectionResponse> categories) {
+            List<SectionResponse> categories, List<PlatformLinkResponse> platforms) {
 
         static ProfileResponse of(PublicProfile profile) {
             return new ProfileResponse(profile.slug(), profile.displayName(), profile.bio(), profile.avatarUrl(),
                     profile.theme(), profile.premiumTheme(),
                     profile.now().stream().map(NowResponse::of).toList(),
                     profile.favorites().stream().map(ItemResponse::of).toList(),
-                    profile.categories().stream().map(SectionResponse::of).toList());
+                    profile.categories().stream().map(SectionResponse::of).toList(),
+                    profile.platforms().stream().map(p -> new PlatformLinkResponse(p.platform(), p.url())).toList());
         }
     }
+
+    /** A linked platform (FR-12a): its id and the profile URL the server built from the fixed template. */
+    public record PlatformLinkResponse(String platform, String url) {}
 
     /**
      * One "Agora" entry (FR-15): {@code source} is {@code MANUAL} for a pin, else the platform name;
