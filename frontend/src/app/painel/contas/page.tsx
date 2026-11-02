@@ -6,7 +6,7 @@ import { ConnectedCard } from "@/components/linked/ConnectedCard";
 import { LinkCard } from "@/components/linked/LinkCard";
 import { SoonCard } from "@/components/linked/SoonCard";
 import { PanelNav } from "@/components/PanelNav";
-import { comingSoonProviders, linkableProviders, nowMs } from "@/lib/linked-accounts";
+import { inProviderOrder, nowMs, unlinkedProviders } from "@/lib/linked-accounts";
 import { fetchLinkedAccounts } from "@/lib/linked-accounts-server";
 import { getSession } from "@/lib/session";
 import { Logo } from "@/components/Logo";
@@ -20,14 +20,16 @@ async function LinkedAccounts() {
   if (!session) redirect("/entrar");
   const accounts = await fetchLinkedAccounts();
   const serverNow = nowMs();
+  const unlinked = accounts ? unlinkedProviders(accounts) : [];
 
   return (
     <>
       <div className="page-head">
         <h1 className="t-h1">Contas vinculadas</h1>
         <p className="t-body muted measure">
-          Lemos só o que é público e atualizamos sozinhos a cada 6 horas. O que vem daqui entra na
-          sua coleção; o que você adicionou à mão e os seus destaques nunca mudam.
+          Vincule seus perfis: todos viram links no topo do seu perfil. Os das plataformas que
+          deixam ler a lista também atualizam sua coleção sozinhos, a cada 6 horas. O que você
+          adicionou à mão e os seus destaques nunca mudam.
         </p>
       </div>
 
@@ -40,10 +42,10 @@ async function LinkedAccounts() {
           {accounts.length > 0 && (
             <section className="stack" aria-labelledby="ativas-h">
               <h2 id="ativas-h" className="t-h2">
-                Conectadas
+                Vinculadas
               </h2>
               <div className="cards">
-                {accounts.map((account) => (
+                {inProviderOrder(accounts).map((account) => (
                   <ConnectedCard
                     key={account.id}
                     account={account}
@@ -55,38 +57,27 @@ async function LinkedAccounts() {
             </section>
           )}
 
-          <section className="stack next" aria-labelledby="novas-h">
-            <div className="pair-2">
-              <h2 id="novas-h" className="t-h2">
-                Conectar mais
-              </h2>
-              <p className="help">Basta o nome de usuário. O perfil precisa estar público.</p>
-            </div>
-            <div className="cards">
-              {linkableProviders(accounts).map((provider) => (
-                <LinkCard key={provider.id} provider={provider} />
-              ))}
-              {comingSoonProviders().map((provider) => (
-                <SoonCard key={provider.id} provider={provider} />
-              ))}
-              <div className="region region--line" role="group" aria-labelledby="csv-h">
-                <h3 id="csv-h" className="t-h3">
-                  Outra plataforma
-                </h3>
-                <p className="t-sm">
-                  Usa Skoob, StoryGraph ou Backloggd? Importação por arquivo CSV chega em uma
-                  próxima versão. Séries você adiciona à mão em Destaques.
+          {unlinked.length > 0 && (
+            <section className="stack next" aria-labelledby="novas-h">
+              <div className="pair-2">
+                <h2 id="novas-h" className="t-h2">
+                  Vincular mais
+                </h2>
+                <p className="help">
+                  Basta o nome de usuário. Para atualizar sozinho, o perfil precisa estar público.
                 </p>
-                <button
-                  type="button"
-                  className="mq-btn mq-btn--secondary mq-btn--sm self-start region__act"
-                  disabled
-                >
-                  Em breve
-                </button>
               </div>
-            </div>
-          </section>
+              <div className="cards">
+                {unlinked.map((provider) =>
+                  provider.available ? (
+                    <LinkCard key={provider.id} provider={provider} />
+                  ) : (
+                    <SoonCard key={provider.id} provider={provider} />
+                  ),
+                )}
+              </div>
+            </section>
+          )}
         </>
       )}
     </>
