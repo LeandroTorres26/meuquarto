@@ -14,7 +14,9 @@ public final class AccountRuleException extends DomainException {
         PASSWORD_TOO_COMMON,
         PASSWORD_SAME_AS_EMAIL,
         /** The current password given to confirm a sensitive action is wrong. */
-        WRONG_PASSWORD
+        WRONG_PASSWORD,
+        /** A password reset link is unknown, tampered with, expired or already used (one code for all, on purpose). */
+        INVALID_RESET_TOKEN
     }
 
     private final Rule rule;

@@ -30,13 +30,21 @@ const securityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
 ];
 
+// The password reset page (S20) has the reset token in its address: no Referer to anyone, ever.
+const referrerPolicy = (value: string) => ({ key: "Referrer-Policy", value });
+const withReferrerPolicy = (value: string) =>
+  securityHeaders.map((h) => (h.key === "Referrer-Policy" ? referrerPolicy(value) : h));
+
 const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   output: "standalone",
   poweredByHeader: false,
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/((?!redefinir-senha).*)", headers: securityHeaders },
+      { source: "/redefinir-senha", headers: withReferrerPolicy("no-referrer") },
+    ];
   },
 };
 
