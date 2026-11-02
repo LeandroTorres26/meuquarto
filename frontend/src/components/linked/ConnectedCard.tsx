@@ -212,6 +212,7 @@ export function ConnectedCard({
       <UnlinkDialog
         open={confirming}
         providerName={provider.name}
+        syncs={account.syncs}
         sending={unlinking}
         error={unlinkError}
         onCancel={() => setConfirming(false)}

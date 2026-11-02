@@ -11,6 +11,7 @@ import { useCloseWhenHidden } from "@/components/useCloseWhenHidden";
 export function UnlinkDialog({
   open,
   providerName,
+  syncs,
   sending,
   error,
   onCancel,
@@ -18,6 +19,8 @@ export function UnlinkDialog({
 }: {
   open: boolean;
   providerName: string;
+  /** False for a link-only platform: only the link leaves the profile, the collection is untouched. */
+  syncs: boolean;
   sending: boolean;
   error: string | null;
   onCancel: () => void;
@@ -48,8 +51,9 @@ export function UnlinkDialog({
           Desvincular {providerName}?
         </h2>
         <p className="t-body">
-          Para de ler essa conta. As obras que vieram só dela saem da sua coleção. As que você
-          destacou ou escreveu uma nota continuam, e passam a contar como adicionadas à mão.
+          {syncs
+            ? "Para de ler essa conta. As obras que vieram só dela saem da sua coleção. As que você destacou ou escreveu uma nota continuam, e passam a contar como adicionadas à mão."
+            : "O link sai do seu perfil. Sua coleção não muda."}
         </p>
         {error && <AlertBox>{error}</AlertBox>}
         <div className="actions actions--end">
