@@ -51,6 +51,15 @@ public class MediaItem {
     @Column(name = "metadata_source", nullable = false)
     private String metadataSource;
 
+    @Column(name = "mal_id")
+    private Integer malId;
+
+    @Column(name = "music_artist")
+    private String musicArtist;
+
+    @Column(name = "music_album")
+    private String musicAlbum;
+
     protected MediaItem() {
         // for JPA
     }
@@ -81,6 +90,11 @@ public class MediaItem {
 
     public Instant fetchedAt() {
         return fetchedAt;
+    }
+
+    /** What is stored only to link the work on other platforms (FR-10a). */
+    public LinkHints linkHints() {
+        return new LinkHints(malId, musicArtist, musicAlbum);
     }
 
     /** Who wrote the metadata last: a canonical catalog name, or the activity source that created the row. */

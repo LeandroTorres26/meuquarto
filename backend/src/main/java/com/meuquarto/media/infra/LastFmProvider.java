@@ -6,6 +6,7 @@ import com.meuquarto.media.domain.ActivityProvider;
 import com.meuquarto.media.domain.ActivitySnapshot;
 import com.meuquarto.media.domain.ActivityType;
 import com.meuquarto.media.domain.CatalogEntry;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.LinkedAccountException.Problem;
 import com.meuquarto.media.domain.ProviderId;
@@ -269,13 +270,17 @@ public final class LastFmProvider implements ActivityProvider {
     private static final class Album {
         private final String key;
         private final String title;
+        private final String artist;
+        private final String name;
         private String cover;
         private int scrobbles;
         private Instant latest = Instant.EPOCH;
 
-        private Album(String key, String title, String cover) {
+        private Album(String key, String title, String artist, String name, String cover) {
             this.key = key;
             this.title = title;
+            this.artist = artist;
+            this.name = name;
             this.cover = cover;
         }
 
@@ -294,7 +299,8 @@ public final class LastFmProvider implements ActivityProvider {
         }
 
         CatalogEntry work() {
-            return new CatalogEntry(MediaCategory.MUSIC, ProviderId.LASTFM.name(), key, title, null, cover, false);
+            return new CatalogEntry(MediaCategory.MUSIC, ProviderId.LASTFM.name(), key, title, null, cover, false,
+                    LinkHints.ofAlbum(artist, name)); // the names address the album's Last.fm page (FR-10a)
         }
     }
 
@@ -305,7 +311,7 @@ public final class LastFmProvider implements ActivityProvider {
             return Optional.empty();
         }
         String title = bounded(name + " - " + artist, MAX_TITLE);
-        return Optional.of(new Album(keyOf(artist, name), title, cover(track.path("image"))));
+        return Optional.of(new Album(keyOf(artist, name), title, artist, name, cover(track.path("image"))));
     }
 
     private static Instant scrobbledAt(JsonNode track) {

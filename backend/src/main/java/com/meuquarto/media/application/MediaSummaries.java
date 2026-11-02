@@ -1,6 +1,8 @@
 package com.meuquarto.media.application;
 
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.MediaItem;
+import com.meuquarto.media.domain.MediaKey;
 import com.meuquarto.media.domain.MediaLinks;
 import com.meuquarto.media.infra.MediaItemRepository;
 import com.meuquarto.shared.domain.MediaCategory;
@@ -9,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -83,15 +84,23 @@ public class MediaSummaries {
 
     private static Summary summary(MediaItem item) {
         return new Summary(item.id(), item.key().category(), item.key().provider(), item.key().externalId(),
-                item.title(), item.year(), item.imageUrl());
+                item.title(), item.year(), item.imageUrl(), item.linkHints());
     }
 
     public record Summary(long id, MediaCategory category, String provider, String externalId, String title,
-            Integer year, String imageUrl) {
+            Integer year, String imageUrl, LinkHints hints) {
 
-        /** Link to the work on its canonical catalog, built from a fixed allowlist (never from user input). */
-        public Optional<String> externalUrl() {
-            return MediaLinks.urlFor(category, provider, externalId);
+        /**
+         * Links to the work's own page on each platform that has one (FR-10a), the platform the item came
+         * from first. {@code sources} are the item's source names ({@code LETTERBOXD}, {@code MANUAL}...).
+         * Built from stored ids on fixed hosts, never from user input and never by calling a provider.
+         */
+        public List<Link> links(Collection<String> sources) {
+            return MediaLinks.forWork(new MediaKey(category, provider, externalId), hints, sources).stream()
+                    .map(link -> new Link(link.platform().name(), link.url())).toList();
         }
     }
+
+    /** {@code provider} names the platform ({@code TMDB}, {@code LETTERBOXD}...); the url is on a fixed host. */
+    public record Link(String provider, String url) {}
 }

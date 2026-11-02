@@ -47,7 +47,7 @@ public record PublicProfile(String slug, String displayName, String bio, String 
     /** {@code source} is {@code MANUAL} or a provider name such as {@code LETTERBOXD}. */
     public record Origin(String source, Instant firstSeenAt) {}
 
-    /** {@code provider} names the platform ("TMDB"); the url comes from a fixed allowlist of hosts. */
+    /** {@code provider} names the platform ("LETTERBOXD", "TMDB"...); the url is the work's own page, on a fixed host (FR-10a). */
     public record Link(String provider, String url) {}
 
     /** One page of S18; {@code highlighted} is the badge. */
