@@ -2,7 +2,7 @@
 
 ## Scope: MVP (P2) vs roadmap
 **In P2:** everything in `requirements.md` FR-01..FR-20 (room as minimal prototype).
-**Roadmap (TCC):** full room (inventory, layout editor, premium objects), taste compatibility, embeddable widgets, story cards, yearly recap, "recommend me something", mixed collections, spoiler/private profile, visit stats, subscriptions, dedicated item page `/{slug}/item/{id}` and global work page `/obra/{id}` ("who else has it"), more integrations (see table below), CSV import (Skoob etc.), OAuth account linking, account export, admin panel, MAL, Google login, queue-based sync.
+**Roadmap (TCC):** full room (inventory, layout editor, premium objects), taste compatibility, embeddable widgets, story cards, yearly recap, "recommend me something", mixed collections, spoiler/private profile, visit stats, subscriptions, dedicated item page `/{slug}/item/{id}` and global work page `/obra/{id}` ("who else has it"), more integrations (see table below), CSV import (Skoob etc.), OAuth account linking, account export, admin panel, Google login, queue-based sync.
 
 ### Roadmap: future integrations (each = one new `ActivityProvider`)
 Feasibility is a first guess and must be checked per platform (API availability and terms) before committing.
@@ -16,7 +16,7 @@ Feasibility is a first guess and must be checked per platform (API availability 
 | Games | Backloggd, HowLongToBeat | No official API; CSV import | Low |
 | Movies/Series | Trakt, Simkl | Official public APIs | High |
 | Movies/Series | IMDb | CSV export import | Medium |
-| Anime/Manga | MyAnimeList | API v2 with client id | High |
+| Anime/Manga | MyAnimeList | API v2 with client id (moved into P2, ADR 0023) | High |
 | Anime/Manga | Kitsu | Public API | High |
 | Books | StoryGraph, Skoob | CSV import (no scraping) | Medium |
 | Music | Spotify (top items, now playing), ListenBrainz | OAuth / public API | Medium-high |
