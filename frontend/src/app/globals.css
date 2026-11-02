@@ -150,6 +150,53 @@
 .search-box .input {
   padding-left: 42px;
 }
+/* Add-work dialog: the head (title, category, search) stays at the top of the sheet while the results
+   scroll under it. It runs to the sheet's edges (negative inset) so nothing shows through around it. */
+.add-work__head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--l2);
+  margin: calc(-1 * var(--inset)) calc(-1 * var(--inset)) 0;
+  padding: var(--inset) var(--inset) var(--l2);
+  background: var(--surface-200);
+  border-bottom: 1px solid var(--border);
+}
+/* The 44px target stays, without making the title row taller; the icon lines up with the field edges. */
+.add-work__close {
+  margin-block: calc(-1 * var(--space-2));
+  margin-right: calc(-1 * var(--space-3));
+}
+.add-work .list > li:first-child {
+  border-top: 0;
+}
+/* A result: cover, text, action. In a narrow sheet the action goes under the text, lined up with it,
+   so the title keeps the width instead of wrapping word by word. */
+.add-work {
+  container-type: inline-size;
+}
+.add-work .add-result {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  column-gap: var(--space-3);
+  row-gap: var(--space-2);
+  align-items: center;
+}
+@container (max-width: 439.98px) {
+  .add-work .add-result {
+    grid-template-columns: 56px minmax(0, 1fr);
+  }
+  .add-work .add-result > .thumb {
+    grid-row: span 2;
+    align-self: start;
+  }
+  .add-work .add-result > :last-child {
+    grid-column: 2;
+    justify-self: start;
+  }
+}
 .add-empty {
   padding-block: var(--space-6);
   text-align: center;
