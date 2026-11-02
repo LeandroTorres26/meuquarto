@@ -26,48 +26,58 @@
     <main class="pmain">
       <div class="page-head">
         <h1 class="t-h1">Contas vinculadas</h1>
-        <p class="t-body muted measure">Lemos só o que é público e atualizamos sozinhos a cada 6 horas. O que vem daqui entra na sua coleção; o que você adicionou à mão e os seus destaques nunca mudam.</p>
+        <p class="t-body muted measure">Vincule seus perfis: todos viram links no topo do seu perfil. Os das plataformas que deixam ler a lista também atualizam sua coleção sozinhos, a cada 6 horas. O que você adicionou à mão e os seus destaques nunca mudam.</p>
       </div>
 
       <section class="stack" aria-labelledby="ativas-h">
-        <h2 id="ativas-h" class="t-h2">Conectadas</h2>
+        <h2 id="ativas-h" class="t-h2">Vinculadas</h2>
         <div class="cards">
           <article class="region" aria-labelledby="p-lb">
             <div class="row row--between"><h3 id="p-lb" class="t-h3">Letterboxd</h3><span class="mq-tag mq-tag--movie"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#clapperboard"/></svg>Filme</span></div>
             <div class="pair">
-              <p class="t-body">letterboxd.com/leandro</p>
-              <p class="t-cap">Entra na coleção: seu diário recente; o histórico se acumula a partir de agora.</p>
+              <a href="https://letterboxd.com/leandro" target="_blank" rel="noopener noreferrer" class="t-body">letterboxd.com/leandro<svg class="icon icon--inline" aria-hidden="true"><use href="icons.svg#external-link"/></svg><span class="sr"> (abre em nova aba)</span></a>
               <p class="status status--ok"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 3 minutos</p>
             </div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span><strong>Atualiza sozinho.</strong> O que você registra no diário. Filmes marcados como vistos fora do diário o Letterboxd não compartilha; esses você destaca à mão.</span></p>
             <div class="actions region__act">
-              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#clock"/></svg>Atualizar em 12 min</button>
-              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
+              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" disabled><svg class="icon" aria-hidden="true"><use href="icons.svg#clock"/></svg>Aguarde 12 min</button>
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desvincular</button>
             </div>
           </article>
           <article class="region" aria-labelledby="p-al">
             <div class="row row--between"><h3 id="p-al" class="t-h3">AniList</h3><span class="row"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-copy"/></svg>Mangá</span></span></div>
             <div class="pair">
-              <p class="t-body">anilist.co/user/leandrot</p>
-              <p class="t-cap">Entra na coleção: completos, assistindo, pausados e revendo.</p>
+              <a href="https://anilist.co/user/leandrot" target="_blank" rel="noopener noreferrer" class="t-body">anilist.co/user/leandrot<svg class="icon icon--inline" aria-hidden="true"><use href="icons.svg#external-link"/></svg><span class="sr"> (abre em nova aba)</span></a>
               <p class="status status--ok" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#check"/></svg>Atualizado há 2 horas</p>
               <p class="status" data-estado="sincronizando" role="status" style="color: var(--ink-muted);"><span class="mq-spinner" aria-hidden="true" style="margin-top: 2px;"></span>Buscando sua lista no AniList…</p>
             </div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span><strong>Atualiza sozinho.</strong> Completos, assistindo, pausados e revendo.</span></p>
             <div class="actions region__act">
-              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Atualizar agora</button>
+              <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="normal"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Sincronizar agora</button>
               <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm" data-estado="sincronizando" disabled aria-busy="true"><span class="mq-spinner" aria-hidden="true"></span>Sincronizando…</button>
-              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desvincular</button>
             </div>
           </article>
           <article class="region region--danger" aria-labelledby="p-fm">
             <div class="row row--between"><h3 id="p-fm" class="t-h3">Last.fm</h3><span class="mq-tag mq-tag--music"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#disc-3"/></svg>Música</span></div>
             <div class="pair">
-              <p class="t-body">last.fm/user/leandro_t</p>
-              <p class="t-cap">Entra na coleção: faixas amadas e álbuns que você mais ouve.</p>
+              <a href="https://last.fm/user/leandro_t" target="_blank" rel="noopener noreferrer" class="t-body">last.fm/user/leandro_t<svg class="icon icon--inline" aria-hidden="true"><use href="icons.svg#external-link"/></svg><span class="sr"> (abre em nova aba)</span></a>
               <p class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>O Last.fm não respondeu às 14:20. Tentamos de novo às 14:40; o que já está no perfil continua lá.</p>
             </div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span><strong>Atualiza sozinho.</strong> Os álbuns que você mais ouve e o que está tocando agora.</span></p>
             <div class="actions region__act">
               <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg>Tentar agora</button>
-              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desconectar</button>
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desvincular</button>
+            </div>
+          </article>
+          <article class="region" aria-labelledby="p-bl">
+            <div class="row row--between"><h3 id="p-bl" class="t-h3">Backloggd</h3><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span></div>
+            <div class="pair">
+              <a href="https://backloggd.com/u/leandrot" target="_blank" rel="noopener noreferrer" class="t-body">backloggd.com/u/leandrot<svg class="icon icon--inline" aria-hidden="true"><use href="icons.svg#external-link"/></svg><span class="sr"> (abre em nova aba)</span></a>
+            </div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#link"/></svg><span><strong>Só o link.</strong> O Backloggd não deixa ler sua lista. Seus jogos você destaca à mão.</span></p>
+            <div class="actions region__act">
+              <button type="button" class="mq-btn mq-btn--ghost mq-btn--sm">Desvincular</button>
             </div>
           </article>
         </div>
@@ -75,31 +85,40 @@
 
       <section class="stack next" aria-labelledby="novas-h">
         <div class="pair-2">
-          <h2 id="novas-h" class="t-h2">Conectar mais</h2>
-          <p class="help">Basta o nome de usuário. O perfil precisa estar público.</p>
+          <h2 id="novas-h" class="t-h2">Vincular mais</h2>
+          <p class="help">Basta o nome de usuário. Para atualizar sozinho, o perfil precisa estar público.</p>
         </div>
         <div class="cards">
+          <form class="region region--line" aria-labelledby="p-mal">
+            <div class="row row--between"><h3 id="p-mal" class="t-h3">MyAnimeList</h3><span class="row"><span class="mq-tag mq-tag--anime"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#sparkles"/></svg>Anime</span><span class="mq-tag mq-tag--manga"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-copy"/></svg>Mangá</span></span></div>
+            <div class="field"><label class="label" for="mal">Usuário do MyAnimeList</label><input id="mal" class="input" placeholder="seunome" autocomplete="off"><p class="help">Como aparece em myanimelist.net/profile/nome.</p></div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span><strong>Atualiza sozinho.</strong> Completos, assistindo, pausados e revendo. Com o AniList também vinculado, nada aparece duas vezes.</span></p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Vincular MyAnimeList</button>
+          </form>
           <form class="region region--line" aria-labelledby="p-st">
             <div class="row row--between"><h3 id="p-st" class="t-h3">Steam</h3><span class="mq-tag mq-tag--game"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#gamepad-2"/></svg>Game</span></div>
-            <div class="field"><label class="label" for="steam">Perfil do Steam</label><input id="steam" class="input" placeholder="steamcommunity.com/id/seunome"><p class="help">A lista de jogos também precisa estar pública.</p></div>
-            <p class="t-cap region__note">Entra na coleção: jogos com tempo de jogo.</p>
-            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Conectar Steam</button>
+            <div class="field"><label class="label" for="steam">Perfil do Steam</label><input id="steam" class="input" placeholder="seunome" autocomplete="off"><p class="help">Como aparece em steamcommunity.com/id/nome. A lista de jogos também precisa estar pública.</p></div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span><strong>Atualiza sozinho.</strong> Jogos com tempo de jogo.</span></p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Vincular Steam</button>
           </form>
           <form class="region region--line" aria-labelledby="p-gr">
             <div class="row row--between"><h3 id="p-gr" class="t-h3">Goodreads</h3><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span></div>
-            <div class="field">
-              <label class="label" for="gr">Usuário do Goodreads</label>
-              <input id="gr" class="input input--error" value="leandro-torres" aria-invalid="true" aria-describedby="gr-err">
-              <p id="gr-err" class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>Esse perfil não existe ou está privado. Confira o nome na URL do seu perfil.</p>
-            </div>
-            <p class="t-cap region__note">Entra na coleção: estantes lidos e lendo.</p>
-            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Conectar Goodreads</button>
+            <div class="field"><label class="label" for="gr">Número do seu perfil no Goodreads</label><input id="gr" class="input input--error" value="leandro-torres" aria-invalid="true" aria-describedby="gr-err"><p id="gr-err" class="status status--bad"><svg class="icon" aria-hidden="true"><use href="icons.svg#alert"/></svg>Use o número que aparece no endereço do seu perfil, em goodreads.com/user/show/12345678-nome.</p></div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#refresh"/></svg><span><strong>Atualiza sozinho.</strong> Estantes lidos e lendo.</span></p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Vincular Goodreads</button>
           </form>
-          <div class="region region--line" aria-labelledby="p-csv">
-            <h3 id="p-csv" class="t-h3">Outra plataforma</h3>
-            <p class="t-sm">Usa Skoob, StoryGraph ou Backloggd? Importação por arquivo CSV chega em uma próxima versão. Séries você adiciona à mão em Destaques.</p>
-            <button type="button" class="mq-btn mq-btn--secondary mq-btn--sm self-start region__act" disabled>Em breve</button>
-          </div>
+          <form class="region region--line" aria-labelledby="p-sz">
+            <div class="row row--between"><h3 id="p-sz" class="t-h3">Serializd</h3><span class="mq-tag mq-tag--series"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#tv"/></svg>Série</span></div>
+            <div class="field"><label class="label" for="sz">Usuário do Serializd</label><input id="sz" class="input" placeholder="seunome" autocomplete="off"><p class="help">Como aparece em serializd.com/user/nome.</p></div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#link"/></svg><span><strong>Só o link.</strong> O Serializd não deixa ler sua lista. Suas séries você destaca à mão.</span></p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Vincular Serializd</button>
+          </form>
+          <form class="region region--line" aria-labelledby="p-sg">
+            <div class="row row--between"><h3 id="p-sg" class="t-h3">StoryGraph</h3><span class="mq-tag mq-tag--book"><svg class="mq-icon icon" aria-hidden="true"><use href="icons.svg#book-open"/></svg>Livro</span></div>
+            <div class="field"><label class="label" for="sg">Usuário do StoryGraph</label><input id="sg" class="input" placeholder="seunome" autocomplete="off"><p class="help">Como aparece em app.thestorygraph.com/profile/nome.</p></div>
+            <p class="t-cap sync-note region__note"><svg class="icon" aria-hidden="true"><use href="icons.svg#link"/></svg><span><strong>Só o link.</strong> O StoryGraph não deixa ler sua lista. Seus livros você destaca à mão.</span></p>
+            <button type="submit" class="mq-btn mq-btn--primary mq-btn--sm self-start region__act">Vincular StoryGraph</button>
+          </form>
         </div>
       </section>
     </main>

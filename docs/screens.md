@@ -8,12 +8,12 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S1 | Landing | `/` | no | Pitch, example profile, CTA to sign up |
 | S2 | Sign up | `/cadastro` | no | e-mail, password, desired slug |
 | S3 | Sign in | `/entrar` | no | e-mail + password |
-| S4 | Public profile | `/{slug}` | no | Header (avatar, name, bio), "Agora", "Favoritos de tudo", highlights per category, "Ver quarto" button, TMDB/provider attribution footer |
+| S4 | Public profile | `/{slug}` | no | Header (avatar, name, bio, links to the owner's profiles on other platforms, ADR 0023), "Agora", "Favoritos de tudo", highlights per category, "Ver quarto" button, TMDB/provider attribution footer |
 | S5 | Room view | `/{slug}/quarto` (or modal) | no | Isometric scene built from highlights; back to profile |
 | S6 | Editor: profile | `/painel` | yes | Name, bio, avatar upload, slug, theme picker |
 | S7 | Editor: collection and highlights | `/painel/destaques` | yes | Tabs per category + "Favoritos de tudo". Per category: the highlights strip (reorder, limit indicator and upsell) and the whole collection below (search, sort, source badge, note, "Destacar", "Ocultar"/"Remover", "Adicionar obra" opens S8) |
 | S8 | Search/pin dialog | modal in S7 | yes | Search catalog, result cards, pin |
-| S9 | Linked accounts | `/painel/contas` | yes | Provider cards: link username, status, last sync, "sync now" (cooldown), unlink. Last.fm is linked here too (its help text says the recent activity must be public); only Steam is still "Em breve" |
+| S9 | Linked accounts | `/painel/contas` | yes | One card per platform, same rows for all (ADR 0023): head (name, category stickers), body (username field, or the profile link and the sync status), note ("Atualiza sozinho." with what enters the collection, or "Só o link." for platforms without a readable list), action ("Vincular X"; "Sincronizar agora" with cooldown and "Desvincular"; link-only cards only "Desvincular"). Sections "Vinculadas" and "Vincular mais". Platforms: Letterboxd, AniList, MyAnimeList, Last.fm, Steam, Goodreads (sync); Backloggd, Serializd, StoryGraph (link only) |
 | S10 | "Agora" settings | `/painel/agora` | yes | Per category: auto item, pin manually, hide |
 | S11 | Store | `/painel/loja` | yes | Theme/pack catalog, preview, buy |
 | S12 | Checkout result | `/painel/loja/sucesso` `/cancelado` | yes | Return from Stripe; waits for webhook confirmation |
@@ -42,6 +42,7 @@ Public screens are built for three viewers, and every new screen must say what c
 | S2 Cadastro, S3 Entrar, S19 Esqueci a senha | form | redirect to `/painel` | n/a |
 | Room S5 panel "Crie o seu quarto" | shown | hidden | hidden (the room has its own share button) |
 | Empty states on the owner's own profile (S4, S18) | neutral text | neutral text | text + link to `/painel/destaques` |
+| Platform links in the S4 header (ADR 0023) | shown | shown | shown; with no linked account, "Vincule seus perfis" to `/painel/contas` instead (visitors see nothing) |
 | Theme (ADR 0022) | `noite` (or the last theme kept on that browser) | their own theme, except S4, S18 and S5, which show the owner's | their own theme |
 
 Notes:
