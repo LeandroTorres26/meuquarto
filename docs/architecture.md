@@ -49,4 +49,4 @@ Public profile is served from a pre-assembled view (profile + highlights + now) 
 Checkout Session (Pix + card) → user pays → `checkout.session.completed` / `payment_intent.succeeded` webhook (signature verified, idempotent by event id) → `orders` paid → `entitlements` granted.
 
 ## Decisions
-Recorded in [`docs/adr/`](adr/README.md) (0001 to 0012, 0014). Still open: 0013, room rendering technology, decided in epic E6.
+Recorded in [`docs/adr/`](adr/README.md) (0001 and following). [0013](adr/0013-room-rendering-technology.md) chose CSS 3D in React for the room.

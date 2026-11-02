@@ -73,7 +73,7 @@ public abstract class RssActivityProvider implements ActivityProvider {
     @Override
     public final AccountCheck checkAccountExists(String username) {
         try {
-            Download download = download(feedUri(username));
+            Download download = download(feedUri(username, feedQueries().getFirst()));
             if (download.status() == 404 || download.status() == 410) {
                 return AccountCheck.NOT_FOUND;
             }
@@ -93,12 +93,16 @@ public abstract class RssActivityProvider implements ActivityProvider {
     @Override
     public final ActivitySnapshot fetchActivity(String username) {
         try {
-            Download download = download(feedUri(username));
-            if (download.status() != 200) {
-                throw failed("HTTP " + download.status());
+            List<ActivityEntry> entries = new ArrayList<>();
+            for (String query : feedQueries()) {
+                Download download = download(feedUri(username, query));
+                if (download.status() != 200) {
+                    throw failed("HTTP " + download.status());
+                }
+                Element root = parse(download.body()).getDocumentElement();
+                entries.addAll(mapItems(root.getElementsByTagName("item"), query));
             }
-            Element root = parse(download.body()).getDocumentElement();
-            return new ActivitySnapshot(mapItems(root.getElementsByTagName("item")));
+            return new ActivitySnapshot(entries);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw failed("interrupted");
@@ -111,12 +115,12 @@ public abstract class RssActivityProvider implements ActivityProvider {
         }
     }
 
-    private List<ActivityEntry> mapItems(NodeList items) {
+    private List<ActivityEntry> mapItems(NodeList items, String feedQuery) {
         List<ActivityEntry> entries = new ArrayList<>();
         int count = Math.min(items.getLength(), MAX_ITEMS);
         for (int i = 0; i < count; i++) {
             try {
-                toEntry((Element) items.item(i)).ifPresent(entries::add);
+                toEntry((Element) items.item(i), feedQuery).ifPresent(entries::add);
             } catch (RuntimeException brokenItem) {
                 // One malformed item must not hide the others.
                 log.warn("Activity {} skipped an unreadable item ({})", id(), brokenItem.getClass().getSimpleName());
@@ -130,7 +134,7 @@ public abstract class RssActivityProvider implements ActivityProvider {
      * username is refused here too if the format rules do not accept it, then URL-encoded, and the
      * result must keep the scheme, host and port of the base (a path can never move the request elsewhere).
      */
-    private URI feedUri(String username) {
+    private URI feedUri(String username, String query) {
         if (username == null || validateUsernameFormat(username).isPresent()) {
             throw new IllegalArgumentException("invalid username");
         }
@@ -143,7 +147,7 @@ public abstract class RssActivityProvider implements ActivityProvider {
         if (!sameOrigin) {
             throw new IllegalStateException("feed URL left the allowed host");
         }
-        return uri;
+        return query.isEmpty() ? uri : URI.create(uri + "?" + query);
     }
 
     private record Download(int status, byte[] body) {}
@@ -205,9 +209,20 @@ public abstract class RssActivityProvider implements ActivityProvider {
     protected abstract String feedPath(String encodedUsername);
 
     /**
-     * Turns one {@code <item>} of the feed into an entry, or empty to skip it (for example a list that
-     * is not a film). May throw; the template skips that one item. Text from the feed is untrusted:
-     * take only what is needed and bound it.
+     * The fixed query strings (without {@code ?}) of the feeds to read, one request each. Default: one feed
+     * without a query (Letterboxd). A platform with one feed per shelf (Goodreads) lists them here. These
+     * are constants of the leaf, never built from user input, so the user still only fills the path.
      */
-    protected abstract Optional<ActivityEntry> toEntry(Element item);
+    protected List<String> feedQueries() {
+        return List.of("");
+    }
+
+    /**
+     * Turns one {@code <item>} of the feed into an entry, or empty to skip it (for example a list that
+     * is not a film). {@code feedQuery} is the query of the feed the item came from (see
+     * {@link #feedQueries}), so a leaf can tell the shelves apart; leaves with one feed ignore it. May
+     * throw; the template skips that one item. Text from the feed is untrusted: take only what is needed
+     * and bound it.
+     */
+    protected abstract Optional<ActivityEntry> toEntry(Element item, String feedQuery);
 }

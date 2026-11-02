@@ -7,9 +7,12 @@ import java.util.List;
 /**
  * What an anonymous visitor may see (FR-04), assembled from local data only. Immutable, so it can be
  * cached and shared. It deliberately holds no e-mail, user id, hidden or adult item.
+ * {@code displayName} is the owner's name, or the slug until one is set; {@code bio} and {@code avatarUrl}
+ * are null when empty; {@code avatarUrl} is a same-origin path served by this API; {@code theme} is the
+ * {@code data-theme} id.
  */
-public record PublicProfile(String slug, String displayName, List<NowItem> now, List<PublicItem> favorites,
-        List<Section> categories) {
+public record PublicProfile(String slug, String displayName, String bio, String avatarUrl, String theme,
+        List<NowItem> now, List<PublicItem> favorites, List<Section> categories) {
 
     /**
      * One category block of the home. {@code total} is the visible collection size ("Ver todos", FR-10b).

@@ -42,10 +42,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
                 new Limit("login", paths.matcher(HttpMethod.POST, "/api/auth/login"), props.login()),
                 new Limit("slug-availability", paths.matcher(HttpMethod.GET, "/api/slugs/*/availability"),
                         props.slugAvailability()),
+                new Limit("password-reset", paths.matcher(HttpMethod.POST, "/api/auth/password-reset"), props.passwordReset()),
+                new Limit("password-reset-confirm", paths.matcher(HttpMethod.POST, "/api/auth/password-reset/confirm"),
+                        props.passwordResetConfirm()),
                 new Limit("catalog-search", paths.matcher(HttpMethod.GET, "/api/catalog/search"), props.catalogSearch()),
                 new Limit("collection-add", paths.matcher(HttpMethod.POST, "/api/collection"), props.collectionAdd()),
                 new Limit("link-account", paths.matcher(HttpMethod.POST, "/api/linked-accounts"), props.linkAccount()),
                 new Limit("manual-sync", paths.matcher(HttpMethod.POST, "/api/linked-accounts/*/sync"), props.manualSync()),
+                new Limit("avatar-upload", paths.matcher(HttpMethod.POST, "/api/profile/avatar"), props.avatarUpload()),
                 new Limit("public-read", paths.matcher(HttpMethod.GET, "/api/public/**"), props.publicRead()));
         this.anonymous = props.anonymous();
     }

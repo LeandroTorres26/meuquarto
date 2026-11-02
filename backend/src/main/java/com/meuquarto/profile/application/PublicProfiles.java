@@ -212,10 +212,11 @@ public class PublicProfiles {
         sectionIds.forEach((category, ids) -> sections.add(new Section(category, recentByCategory.get(category).size(),
                 mostRecent.contains(category),
                 ids.stream().map(loaded::get).map(item -> publicItem(item, media.get(item.mediaItemId()))).toList())));
-        // The display name is edited in #15; until then the slug stands in for it.
         List<PublicProfile.NowItem> now = List.copyOf(
                 nowBlocks.resolve(profile.id(), nowEntries.findByProfileId(profile.id())).values());
-        return new PublicProfile(profile.slug(), profile.slug(), now, favorites, List.copyOf(sections));
+        return new PublicProfile(profile.slug(), profile.displayName().orElse(profile.slug()),
+                profile.bio().orElse(null), profile.avatarKey().map(Avatars::urlPath).orElse(null),
+                profile.theme().id(), now, favorites, List.copyOf(sections));
     }
 
     /** The list's items in the owner's order, keeping only those still shown (and of the category, if the list has one). */

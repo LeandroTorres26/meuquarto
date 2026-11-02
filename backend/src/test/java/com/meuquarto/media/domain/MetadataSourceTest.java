@@ -35,6 +35,13 @@ class MetadataSourceTest {
     }
 
     @Test
+    void br04AProvisionalGoodreadsBookIsNeverOverwrittenOnlyFilled() {
+        CatalogEntry book = new CatalogEntry(MediaCategory.BOOK, "GOODREADS", "234225", "Dune", 1965, null, false);
+
+        assertThat(MetadataSource.activity(ProviderId.GOODREADS).overwrites(book)).isFalse();
+    }
+
+    @Test
     void aSourceNeedsAName() {
         assertThatThrownBy(() -> new MetadataSource(" ")).isInstanceOf(IllegalArgumentException.class);
         assertThatThrownBy(() -> new MetadataSource(null)).isInstanceOf(IllegalArgumentException.class);

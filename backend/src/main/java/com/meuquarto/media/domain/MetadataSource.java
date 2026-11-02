@@ -27,8 +27,16 @@ public record MetadataSource(String name) {
         return new MetadataSource(platform.name());
     }
 
+    /**
+     * Rows keyed by a platform that only stands in for the real catalog (a Goodreads book, until it is
+     * mapped to Open Library). The platform "owns" them by name, but its two shelves describe the same book
+     * with different fields (a cover on one, none on the other), so nobody overwrites: the first values
+     * stay and later ones only fill the gaps.
+     */
+    private static final java.util.Set<String> PROVISIONAL = java.util.Set.of("GOODREADS");
+
     /** True when this source owns the metadata of the entry, so its values replace the stored ones. */
     public boolean overwrites(CatalogEntry entry) {
-        return name.equalsIgnoreCase(entry.provider());
+        return name.equalsIgnoreCase(entry.provider()) && !PROVISIONAL.contains(entry.provider().toUpperCase(java.util.Locale.ROOT));
     }
 }

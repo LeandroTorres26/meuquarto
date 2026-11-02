@@ -74,7 +74,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - AniList activity adapter
 - Last.fm adapter (now playing, top tracks/artists)
 - Steam adapter (recently played; appid → IGDB mapping)
-- Goodreads RSS adapter
+- Goodreads RSS adapter (done, #34; provisional rows, see ADR 0005)
 - Sync upserts collection items per platform rules (BR-10); unlink keeps highlighted/noted items as manual (FR-16)
 - Sync scheduler + manual sync with cooldown (BR-03) + `sync_runs` + backoff
 - "Agora" block auto + override (BR-06) + adult filter (BR-08)
@@ -87,7 +87,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Stripe test→live checklist (MEI, account activation)
 
 ### E6 Room prototype (M4)
-- Design spike and ADR 0013 (technology)
+- Design spike and ADR 0013 (technology): accepted in [ADR 0013](adr/0013-room-rendering-technology.md)
 - Scene from highlights (posters, shelf, vinyl, console, board)
 - "Ver quarto" entry from profile; lazy loading
 

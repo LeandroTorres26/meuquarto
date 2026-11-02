@@ -29,9 +29,25 @@
   cursor: not-allowed;
 }
 
-/* Profile header without the polaroid (the API has no avatar yet): a single column. */
-.mq-profile--solo {
-  grid-template-columns: minmax(0, 1fr);
+/* Avatar placeholder inside the polaroid: the owner's initial, in the poster face. */
+.mq-art--initial {
+  display: grid;
+  place-items: center;
+  background: var(--surface-300);
+  color: var(--ink);
+  font: 900 56px/1 var(--font-display);
+}
+
+/* The owner's theme wraps the profile content (data-theme); it needs its own surface and ink. */
+.profile-themed {
+  background: var(--surface-100);
+  color: var(--ink);
+}
+
+/* The bio keeps the owner's line breaks. */
+.bio-text {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
 }
 
 /* S7 / S8 additions (collection and highlights screens). */

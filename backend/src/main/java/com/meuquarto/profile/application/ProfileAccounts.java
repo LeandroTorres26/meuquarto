@@ -16,11 +16,14 @@ public class ProfileAccounts {
     private final ProfileRepository profiles;
     private final SlugAvailability availability;
     private final PublicProfileCache cache;
+    private final Avatars avatars;
 
-    public ProfileAccounts(ProfileRepository profiles, SlugAvailability availability, PublicProfileCache cache) {
+    public ProfileAccounts(ProfileRepository profiles, SlugAvailability availability, PublicProfileCache cache,
+            Avatars avatars) {
         this.profiles = profiles;
         this.availability = availability;
         this.cache = cache;
+        this.avatars = avatars;
     }
 
     /** Runs inside the caller's transaction, so a failed sign-up leaves no profile behind. */
@@ -39,11 +42,15 @@ public class ProfileAccounts {
 
     /**
      * Called by the account deletion, in its transaction (LGPD, FR-02): once it commits, the user's public
-     * profile is dropped from the cache so it stops being served at once, not when the TTL ends.
+     * profile is dropped from the cache so it stops being served at once, not when the TTL ends, and the
+     * avatar picture is deleted from storage (best effort, after the commit).
      */
     @Transactional(propagation = Propagation.MANDATORY)
     public void forgetPublicProfile(long userId) {
-        profiles.findByUserId(userId).ifPresent(profile -> cache.evictAfterCommit(profile.slug()));
+        profiles.findByUserId(userId).ifPresent(profile -> {
+            cache.evictAfterCommit(profile.slug());
+            profile.avatarKey().ifPresent(avatars::deleteAfterCommit);
+        });
     }
 
     @Transactional(readOnly = true)

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Ana's bookshelf: currently-reading</title>
+    <link>https://www.goodreads.com/review/list/12345678-ana?shelf=currently-reading</link>
+    <description>Ana's bookshelf: currently-reading</description>
+    <!-- 1. Being read: IN_PROGRESS at the date added. -->
+    <item>
+      <title>Neuromancer</title>
+      <book_id>22328</book_id>
+      <book_medium_image_url>https://images.gr-assets.com/books/1285/22328.jpg</book_medium_image_url>
+      <user_read_at></user_read_at>
+      <user_date_added><![CDATA[Tue, 20 Oct 2026 08:00:00 -0300]]></user_date_added>
+      <user_shelves>currently-reading</user_shelves>
+      <book_published>1984</book_published>
+    </item>
+    <!-- 2. Dune again, as a re-read in progress: same canonical key as in the read shelf. -->
+    <item>
+      <title>Dune (Dune, #1)</title>
+      <book_id>234225</book_id>
+      <user_date_added><![CDATA[Wed, 28 Oct 2026 08:00:00 +0000]]></user_date_added>
+      <book_published>1965</book_published>
+    </item>
+  </channel>
+</rss>

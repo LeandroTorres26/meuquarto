@@ -25,10 +25,13 @@ The product will be monetized (cosmetics). Several data sources restrict commerc
 | Letterboxd RSS | activity films (public per-user RSS, implemented in #30) | pending: feed terms not yet confirmed from an authoritative source | pending (credit Letterboxd on the profile if required) | none published; fetched only on sync (15 min cooldown, backoff), 5 s timeout, no redirects | pending |
 | Last.fm | activity music | – | – | – | pending |
 | Steam Web API | activity games | – | – | – | pending |
-| Goodreads RSS | activity books | – | – | – | pending |
+| Goodreads RSS | activity books (public per-shelf RSS, `read` and `currently-reading`, implemented in #34) | pending: feed terms not yet confirmed from an authoritative source | pending (credit Goodreads on the profile; the footer already does) | none published; fetched only on sync (15 min cooldown, backoff), 2 requests per sync (one per shelf), 5 s timeout, no redirects | pending |
 
 ## Consequences
 - Possible blocker for the SaaS challenge if TMDB refuses or charges; the fallback is a different film catalog, which would change ADR 0005.
 
 ## Alternatives considered
 - Defer the review until after P2: no cost now, but risks blocking monetization late.
+
+## As built: Goodreads RSS (issue #34)
+Hosts: requests go to `www.goodreads.com` only (`/review/list_rss/{numeric id}?shelf=read|currently-reading&per_page=200`); covers are shown from `i.gr-assets.com`, `images.gr-assets.com` and `s.gr-assets.com`. No key, no login; the profile and its shelves must be public. Terms for commercial use of the feed are still unconfirmed (the "pending" cells above stay open until the owner checks them).

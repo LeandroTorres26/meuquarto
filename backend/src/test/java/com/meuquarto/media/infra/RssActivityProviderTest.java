@@ -83,7 +83,7 @@ class RssActivityProviderTest {
         }
 
         @Override
-        protected Optional<ActivityEntry> toEntry(Element item) {
+        protected Optional<ActivityEntry> toEntry(Element item, String feedQuery) {
             var ids = item.getElementsByTagNameNS(NS, "id");
             if (ids.getLength() == 0) {
                 return Optional.empty();

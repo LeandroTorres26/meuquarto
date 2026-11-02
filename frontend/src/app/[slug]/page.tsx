@@ -27,8 +27,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const media = visibleSections(profile.categories).map((s) =>
     CATEGORY_META[s.category].heading.toLowerCase(),
   );
-  const description =
-    media.length > 0
+  const description = profile.bio
+    ? profile.bio
+    : media.length > 0
       ? `Os destaques de ${profile.displayName}: ${media.join(", ")}.`
       : `O quarto de ${profile.displayName} no meuquarto.`;
   const title = `${profile.displayName} · meuquarto`;
@@ -66,7 +67,8 @@ async function Profile({ params }: { params: Props["params"] }) {
   const sections = visibleSections(profile.categories);
   const serverNow = nowMs();
   return (
-    <>
+    // The owner's theme applies to the whole profile through data-theme (tokens are scoped to it).
+    <div data-theme={profile.theme} className="profile-themed">
       <section className="profile-top">
         <div className="wrap profile-top__in">
           <ProfileHeader profile={profile} />
@@ -94,7 +96,7 @@ async function Profile({ params }: { params: Props["params"] }) {
       </main>
 
       <ItemDialog slug={profile.slug} ownerName={profile.displayName} />
-    </>
+    </div>
   );
 }
 
