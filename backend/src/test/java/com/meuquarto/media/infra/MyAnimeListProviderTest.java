@@ -289,6 +289,14 @@ class MyAnimeListProviderTest {
     }
 
     @Test
+    void theAniListWorkCarriesTheMalIdItWasFoundBy() {
+        mal.user("ana_l", List.of(MyAnimeListStub.anime(7, "completed", UPDATED)), List.of());
+        knowAnime(7);
+
+        assertThat(entries().getFirst().work().hints().malId()).isEqualTo(7); // so the MyAnimeList page can be linked
+    }
+
+    @Test
     void anAdultWorkNeverComesOut() {
         mal.user("ana_l", List.of(MyAnimeListStub.anime(1, "completed", UPDATED),
                 MyAnimeListStub.anime(2, "completed", UPDATED)), List.of());

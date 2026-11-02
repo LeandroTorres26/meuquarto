@@ -50,7 +50,8 @@ public class MediaSnapshots {
     @Transactional
     public Snapshot snapshot(CatalogEntry entry, MetadataSource source) {
         items.upsert(entry.category().name(), entry.provider(), entry.externalId(), entry.title(), entry.year(),
-                entry.imageUrl(), entry.adult(), clock.instant(), source.name(), source.overwrites(entry));
+                entry.imageUrl(), entry.adult(), clock.instant(), source.name(), source.overwrites(entry),
+                entry.hints().malId(), entry.hints().artist(), entry.hints().album());
         MediaItem item = items.findByCategoryAndCanonicalProviderAndExternalId(
                 entry.category(), entry.provider(), entry.externalId()).orElseThrow();
         return new Snapshot(item.id(), entry.category(), entry.provider(), entry.externalId(), item.title(),

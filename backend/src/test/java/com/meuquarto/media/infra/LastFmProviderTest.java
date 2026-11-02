@@ -10,6 +10,7 @@ import com.meuquarto.media.domain.AccountCheck;
 import com.meuquarto.media.domain.ActivityEntry;
 import com.meuquarto.media.domain.ActivityProvider;
 import com.meuquarto.media.domain.ActivityType;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.MediaKey;
 import com.meuquarto.media.domain.ProviderId;
@@ -113,6 +114,16 @@ class LastFmProviderTest {
         assertThat(entry.work().title()).isEqualTo("OK Computer - Radiohead");
         assertThat(entry.work().adult()).isFalse();
         assertThat(entry.work().imageUrl()).isEqualTo(LastFmStub.COVER);
+    }
+
+    @Test
+    void theArtistAndAlbumNamesAreKeptAsLinkHintsForTheAlbumPage() {
+        stub.answer = LastFmStub.pageOf(LastFmStub.plays("Radiohead", "OK Computer", 10, NEWEST, LastFmStub.COVER));
+
+        LinkHints hints = entries(provider()).getFirst().work().hints();
+
+        assertThat(hints.artist()).isEqualTo("Radiohead");
+        assertThat(hints.album()).isEqualTo("OK Computer");
     }
 
     @Test

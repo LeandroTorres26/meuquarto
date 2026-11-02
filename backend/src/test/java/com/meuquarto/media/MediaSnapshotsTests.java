@@ -8,6 +8,7 @@ import com.meuquarto.media.application.MediaSnapshots.Snapshot;
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
 import com.meuquarto.media.domain.CatalogRegistry;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.MetadataSource;
 import com.meuquarto.media.domain.ProviderId;
 import com.meuquarto.shared.domain.MediaCategory;
@@ -208,6 +209,75 @@ class MediaSnapshotsTests {
 
         assertThat(rows()).isEqualTo(1);
         assertThat(jdbc.queryForObject("select title from media_items", String.class)).isEqualTo("Matrix (pt-BR)");
+    }
+
+    // --- FR-10a: the ids and names that only a link needs ---
+
+    private static CatalogEntry anime(String title, LinkHints hints) {
+        return new CatalogEntry(MediaCategory.ANIME, "ANILIST", "154587", title, 2023, null, false, hints);
+    }
+
+    private Integer malId() {
+        return jdbc.queryForObject("select mal_id from media_items", Integer.class);
+    }
+
+    @Test
+    void theMalIdIsStoredWithTheAniListWork() {
+        Snapshot saved = snapshots.snapshot(anime("Frieren", LinkHints.ofMalId(52991)));
+
+        assertThat(saved.externalId()).isEqualTo("154587");
+        assertThat(malId()).isEqualTo(52991);
+    }
+
+    @Test
+    void aWorkSavedBeforeMalIdsExistedGetsItOnTheNextSyncOrCatalogRead() {
+        snapshots.snapshot(anime("Frieren", LinkHints.NONE)); // a row from before this column
+        assertThat(malId()).isNull();
+
+        snapshots.snapshot(anime("Frieren", LinkHints.ofMalId(52991)), MetadataSource.activity(ProviderId.ANILIST));
+
+        assertThat(rows()).isEqualTo(1);
+        assertThat(malId()).isEqualTo(52991);
+    }
+
+    @Test
+    void aLaterAnswerWithoutIdMalNeverErasesTheStoredOne() {
+        snapshots.snapshot(anime("Frieren", LinkHints.ofMalId(52991)));
+
+        snapshots.snapshot(anime("Frieren", LinkHints.NONE));
+        snapshots.snapshot(anime("Frieren", LinkHints.NONE), MetadataSource.activity(ProviderId.MYANIMELIST));
+
+        assertThat(malId()).isEqualTo(52991);
+    }
+
+    @Test
+    void theCanonicalCatalogCorrectsAMalIdThatChanged() {
+        snapshots.snapshot(anime("Frieren", LinkHints.ofMalId(1)));
+
+        snapshots.snapshot(anime("Frieren", LinkHints.ofMalId(52991)));
+
+        assertThat(malId()).isEqualTo(52991);
+    }
+
+    @Test
+    void theDatabaseRefusesAMalIdThatIsNotPositive() {
+        assertThatThrownBy(() -> jdbc.update(
+                "insert into media_items (category, canonical_provider, external_id, title, metadata_source, mal_id) values ('ANIME','ANILIST','9','A','ANILIST',0)"))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void theLastFmNamesAreStoredAndFillARowSavedWithoutThem() {
+        CatalogEntry bare = new CatalogEntry(MediaCategory.MUSIC, "LASTFM", "abc", "Acabou Chorare - Novos Baianos", null, null, false);
+        CatalogEntry named = new CatalogEntry(MediaCategory.MUSIC, "LASTFM", "abc", "Acabou Chorare - Novos Baianos", null, null,
+                false, LinkHints.ofAlbum("Novos Baianos", "Acabou Chorare"));
+        snapshots.snapshot(bare, MetadataSource.activity(ProviderId.LASTFM));
+
+        snapshots.snapshot(named, MetadataSource.activity(ProviderId.LASTFM));
+        snapshots.snapshot(bare, MetadataSource.activity(ProviderId.LASTFM));
+
+        assertThat(jdbc.queryForObject("select music_artist || '/' || music_album from media_items", String.class))
+                .isEqualTo("Novos Baianos/Acabou Chorare");
     }
 
     @Test

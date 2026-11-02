@@ -23,13 +23,18 @@ public interface MediaItemRepository extends JpaRepository<MediaItem, Long> {
      * {@code overwrite} says whether the writer is the canonical catalog (see {@code MetadataSource}).
      * If so the stored metadata is replaced. If not, the existing row keeps its title and only has its
      * null year and image filled in; a missing row is created either way.
+     * <p>
+     * The link hints (FR-10a: {@code mal_id}, Last.fm names) are facts about the work, not metadata that
+     * can disagree: a value that is offered is kept, and an absent one never erases what is stored. A
+     * canonical writer's value wins over the stored one, any other writer only fills a null. This is how an
+     * existing row gets its {@code mal_id} on the next sync or catalog read.
      */
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query(nativeQuery = true, value = """
             INSERT INTO media_items (category, canonical_provider, external_id, title, year, image_url, adult,
-                                     fetched_at, metadata_source)
+                                     fetched_at, metadata_source, mal_id, music_artist, music_album)
             VALUES (:category, :provider, :externalId, :title, CAST(:year AS integer), CAST(:imageUrl AS text), :adult,
-                    :now, :source)
+                    :now, :source, CAST(:malId AS integer), CAST(:artist AS text), CAST(:album AS text))
             ON CONFLICT (category, canonical_provider, external_id) DO UPDATE SET
                 title = CASE WHEN CAST(:overwrite AS boolean) THEN EXCLUDED.title ELSE media_items.title END,
                 year = CASE WHEN CAST(:overwrite AS boolean) THEN EXCLUDED.year
@@ -40,12 +45,21 @@ public interface MediaItemRepository extends JpaRepository<MediaItem, Long> {
                 fetched_at = CASE WHEN CAST(:overwrite AS boolean) THEN EXCLUDED.fetched_at
                                   ELSE media_items.fetched_at END,
                 metadata_source = CASE WHEN CAST(:overwrite AS boolean) THEN EXCLUDED.metadata_source
-                                       ELSE media_items.metadata_source END
+                                       ELSE media_items.metadata_source END,
+                mal_id = CASE WHEN CAST(:overwrite AS boolean) THEN COALESCE(EXCLUDED.mal_id, media_items.mal_id)
+                              ELSE COALESCE(media_items.mal_id, EXCLUDED.mal_id) END,
+                music_artist = CASE WHEN CAST(:overwrite AS boolean)
+                                    THEN COALESCE(EXCLUDED.music_artist, media_items.music_artist)
+                                    ELSE COALESCE(media_items.music_artist, EXCLUDED.music_artist) END,
+                music_album = CASE WHEN CAST(:overwrite AS boolean)
+                                   THEN COALESCE(EXCLUDED.music_album, media_items.music_album)
+                                   ELSE COALESCE(media_items.music_album, EXCLUDED.music_album) END
             """)
     void upsert(@Param("category") String category, @Param("provider") String provider,
             @Param("externalId") String externalId, @Param("title") String title, @Param("year") Integer year,
             @Param("imageUrl") String imageUrl, @Param("adult") boolean adult, @Param("now") Instant now,
-            @Param("source") String source, @Param("overwrite") boolean overwrite);
+            @Param("source") String source, @Param("overwrite") boolean overwrite,
+            @Param("malId") Integer malId, @Param("artist") String artist, @Param("album") String album);
 
     @Query("select m.id from MediaItem m where m.id in :ids order by lower(m.title), m.id")
     List<Long> idsByTitle(@Param("ids") Collection<Long> ids);

@@ -233,6 +233,11 @@ describe("links and images", () => {
     expect(linkLabel("TMDB")).toBe("Ver no TMDB");
     expect(linkLabel("ANILIST")).toBe("Ver no AniList");
     expect(linkLabel("STEAM")).toBe("Ver na Steam");
+    expect(linkLabel("LETTERBOXD")).toBe("Ver no Letterboxd");
+    expect(linkLabel("MYANIMELIST")).toBe("Ver no MyAnimeList");
+    expect(linkLabel("OPENLIBRARY")).toBe("Ver na Open Library");
+    expect(linkLabel("LASTFM")).toBe("Ver no Last.fm");
+    expect(linkLabel("DEEZER")).toBe("Ver na Deezer");
     expect(linkLabel("NEWTHING")).toBe("Ver no Newthing");
   });
 });

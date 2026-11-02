@@ -9,6 +9,7 @@ import com.meuquarto.media.domain.ActivityProvider;
 import com.meuquarto.media.domain.ActivityType;
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.ProviderId;
 import com.meuquarto.shared.domain.MediaCategory;
@@ -70,7 +71,19 @@ class AniListProviderTest {
 
         assertThat(results).extracting(CatalogEntry::externalId).containsExactly("1", "2", "4", "5");
         assertThat(results.get(0)).isEqualTo(new CatalogEntry(MediaCategory.ANIME, "ANILIST", "1", "Cowboy Bebop", 1998,
-                "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1-GCsPm7waJ4kS.png", false));
+                "https://s4.anilist.co/file/anilistcdn/media/anime/cover/medium/bx1-GCsPm7waJ4kS.png", false,
+                LinkHints.ofMalId(1)));
+    }
+
+    @Test
+    void theMyAnimeListIdIsKeptAsALinkHintAndMissingOrBrokenOnesAreDropped() {
+        List<CatalogEntry> results = anilist.search(MediaCategory.ANIME, "bebop");
+
+        assertThat(results.get(0).hints().malId()).isEqualTo(1);
+        assertThat(results.get(1).hints().malId()).isNull(); // idMal absent from the answer
+        assertThat(anilist.fetch(MediaCategory.ANIME, "154587")).get().extracting(entry -> entry.hints().malId())
+                .isEqualTo(52991);
+        assertThat(stub.requests).allSatisfy(request -> assertThat(request.body()).contains("idMal")); // asked for, not guessed
     }
 
     @Test
@@ -222,6 +235,9 @@ class AniListProviderTest {
         assertThat(entries).extracting(entry -> entry.work().externalId())
                 .containsExactlyInAnyOrder("154587", "139630", "100", "101", "200", "300", "30002", "30013");
         // not in the list: planning 400, dropped 500, adult 666, only in a custom list 777, entry without id 0
+
+        assertThat(of(entries, "154587").work().hints().malId()).isEqualTo(52991); // the sync backfills idMal
+        assertThat(of(entries, "139630").work().hints().malId()).isNull();
 
         assertThat(of(entries, "139630")).satisfies(entry -> {
             assertThat(entry.type()).isEqualTo(ActivityType.FINISHED);

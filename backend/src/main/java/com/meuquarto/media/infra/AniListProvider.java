@@ -6,6 +6,7 @@ import com.meuquarto.media.domain.ActivityProvider;
 import com.meuquarto.media.domain.ActivitySnapshot;
 import com.meuquarto.media.domain.ActivityType;
 import com.meuquarto.media.domain.CatalogEntry;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.LinkedAccountException;
 import com.meuquarto.media.domain.LinkedAccountException.Problem;
 import com.meuquarto.media.domain.ProviderId;
@@ -99,9 +100,12 @@ public final class AniListProvider extends HttpCatalogProvider implements Activi
     private static final Pattern NUMERIC_ID = Pattern.compile("[0-9]{1,10}");
     private static final List<MediaCategory> ACTIVITY_CATEGORIES = List.of(MediaCategory.ANIME, MediaCategory.MANGA);
 
-    /** The fields of a work, shared by the search and the detail queries. */
+    /**
+     * The fields of a work, shared by the search, detail, list and MyAnimeList-lookup queries. {@code idMal} is
+     * kept as a link hint (the work's MyAnimeList page, FR-10a); it is null for works MyAnimeList lacks.
+     */
     private static final String MEDIA_FIELDS =
-            "id isAdult title { romaji english } startDate { year } seasonYear coverImage { large }";
+            "id idMal isAdult title { romaji english } startDate { year } seasonYear coverImage { large }";
 
     private static final String SEARCH_QUERY = "query ($search: String, $type: MediaType) {"
             + " Page(page: 1, perPage: " + MAX_RESULTS + ") {"
@@ -129,7 +133,7 @@ public final class AniListProvider extends HttpCatalogProvider implements Activi
     /** The works that carry the given MyAnimeList ids, for {@link #worksByMalId}. {@code idMal} is only a key here. */
     private static final String MAL_QUERY = "query ($ids: [Int], $type: MediaType) {"
             + " Page(page: 1, perPage: " + MAL_BATCH + ") {"
-            + " media(idMal_in: $ids, type: $type) { idMal " + MEDIA_FIELDS + " } } }";
+            + " media(idMal_in: $ids, type: $type) { " + MEDIA_FIELDS + " } } }";
 
     /** The AniList list statuses we accept and what each one means for us (BR-10). PLANNING and DROPPED are absent. */
     private enum ListStatus {
@@ -393,7 +397,8 @@ public final class AniListProvider extends HttpCatalogProvider implements Activi
         }
         Integer year = year(media.path("startDate").path("year")).or(() -> year(media.path("seasonYear"))).orElse(null);
         return Optional.of(new CatalogEntry(category, CATALOG_NAME, Long.toString(id), title, year,
-                cover(media.path("coverImage").path("large").asString("")), media.path("isAdult").asBoolean(false)));
+                cover(media.path("coverImage").path("large").asString("")), media.path("isAdult").asBoolean(false),
+                LinkHints.ofMalId(media.path("idMal").asLong(0))));
     }
 
     private static String firstText(JsonNode first, JsonNode second) {

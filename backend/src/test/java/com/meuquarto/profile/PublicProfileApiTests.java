@@ -338,11 +338,103 @@ class PublicProfileApiTests {
                 .andExpect(jsonPath("$.origin.length()").value(1))
                 .andExpect(jsonPath("$.origin[0].source").value("MANUAL"))
                 .andExpect(jsonPath("$.origin[0].firstSeenAt").exists())
-                .andExpect(jsonPath("$.links[0].provider").value("TMDB"))
-                .andExpect(jsonPath("$.links[0].url").value("https://www.themoviedb.org/movie/heat_1995"));
+                .andExpect(jsonPath("$.links.length()").value(2))
+                .andExpect(jsonPath("$.links[0].provider").value("LETTERBOXD"))
+                .andExpect(jsonPath("$.links[0].url").value("https://letterboxd.com/tmdb/heat_1995/"))
+                .andExpect(jsonPath("$.links[1].provider").value("TMDB"))
+                .andExpect(jsonPath("$.links[1].url").value("https://www.themoviedb.org/movie/heat_1995"));
         // TMDB has no book pages: no link rather than a made-up one
         mvc.perform(get("/api/public/profiles/detail/items/" + book)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.links.length()").value(0));
+    }
+
+    // --- S17: links to the work's own page on each platform (FR-10a) ---
+
+    /** A work and its place in the owner's collection, written straight to the tables (no catalog is called). */
+    private long insertItem(String slug, String category, String provider, String externalId, Integer malId,
+            String artist, String album, String... sources) {
+        long mediaId = jdbc.queryForObject("""
+                insert into media_items (category, canonical_provider, external_id, title, metadata_source, mal_id,
+                                         music_artist, music_album)
+                values (?, ?, ?, 'A work', ?, ?, ?, ?) returning id""", Long.class,
+                category, provider, externalId, provider, malId, artist, album);
+        long itemId = jdbc.queryForObject("""
+                insert into collection_items (profile_id, media_item_id, category)
+                select p.id, ?, ? from profiles p where p.slug = ? returning id""", Long.class, mediaId, category, slug);
+        for (String source : sources) {
+            jdbc.update("insert into collection_item_sources (collection_item_id, source) values (?, ?)", itemId, source);
+        }
+        return itemId;
+    }
+
+    private List<String> linkUrls(String slug, long itemId) throws Exception {
+        String json = mvc.perform(get("/api/public/profiles/" + slug + "/items/" + itemId)).andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        List<String> providers = JsonPath.read(json, "$.links[*].provider");
+        List<String> urls = JsonPath.read(json, "$.links[*].url");
+        return java.util.stream.IntStream.range(0, providers.size()).mapToObj(i -> providers.get(i) + " " + urls.get(i)).toList();
+    }
+
+    @Test
+    void anAnimeFromMyAnimeListLeadsWithMyAnimeListThenAniListUsingTheStoredIdMal() throws Exception {
+        signUp("linksanime");
+        long id = insertItem("linksanime", "ANIME", "ANILIST", "154587", 52991, null, null, "MYANIMELIST");
+
+        assertThat(linkUrls("linksanime", id)).containsExactly(
+                "MYANIMELIST https://myanimelist.net/anime/52991", "ANILIST https://anilist.co/anime/154587");
+    }
+
+    @Test
+    void aMangaFromAniListLeadsWithAniListAndWithoutIdMalHasNoMyAnimeListLink() throws Exception {
+        signUp("linksmanga");
+        long withMal = insertItem("linksmanga", "MANGA", "ANILIST", "30656", 656, null, null, "ANILIST");
+        long withoutMal = insertItem("linksmanga", "MANGA", "ANILIST", "30002", null, null, null, "ANILIST");
+
+        assertThat(linkUrls("linksmanga", withMal)).containsExactly(
+                "ANILIST https://anilist.co/manga/30656", "MYANIMELIST https://myanimelist.net/manga/656");
+        assertThat(linkUrls("linksmanga", withoutMal)).containsExactly("ANILIST https://anilist.co/manga/30002");
+    }
+
+    @Test
+    void aFilmFromLetterboxdLinksLetterboxdThenTmdbAndASeriesLinksTmdbAsTv() throws Exception {
+        signUp("linksfilm");
+        long film = insertItem("linksfilm", "MOVIE", "TMDB", "976893", null, null, null, "LETTERBOXD");
+        long series = insertItem("linksfilm", "SERIES", "TMDB", "1920", null, null, null, "MANUAL");
+
+        assertThat(linkUrls("linksfilm", film)).containsExactly(
+                "LETTERBOXD https://letterboxd.com/tmdb/976893/", "TMDB https://www.themoviedb.org/movie/976893");
+        assertThat(linkUrls("linksfilm", series)).containsExactly("TMDB https://www.themoviedb.org/tv/1920");
+    }
+
+    @Test
+    void booksGamesAndMusicLinkOnlyWhereAnIdOrNamesAreStored() throws Exception {
+        signUp("linksmisc");
+        long book = insertItem("linksmisc", "BOOK", "OPENLIBRARY", "OL24141556W", null, null, null, "MANUAL");
+        long goodreads = insertItem("linksmisc", "BOOK", "GOODREADS", "88", null, null, null, "GOODREADS");
+        long game = insertItem("linksmisc", "GAME", "IGDB", "1942", null, null, null, "MANUAL");
+        long lastFm = insertItem("linksmisc", "MUSIC", "LASTFM", "abc123", null, "Elis Regina", "Elis & Tom", "LASTFM");
+        long lastFmOldRow = insertItem("linksmisc", "MUSIC", "LASTFM", "def456", null, null, null, "LASTFM");
+        long deezer = insertItem("linksmisc", "MUSIC", "DEEZER", "302127", null, null, null, "MANUAL");
+
+        assertThat(linkUrls("linksmisc", book)).containsExactly("OPENLIBRARY https://openlibrary.org/works/OL24141556W");
+        assertThat(linkUrls("linksmisc", goodreads)).isEmpty();
+        assertThat(linkUrls("linksmisc", game)).isEmpty();
+        assertThat(linkUrls("linksmisc", lastFm)).containsExactly(
+                "LASTFM https://www.last.fm/music/Elis+Regina/Elis+%26+Tom");
+        assertThat(linkUrls("linksmisc", lastFmOldRow)).isEmpty(); // names arrive with the next sync
+        assertThat(linkUrls("linksmisc", deezer)).containsExactly("DEEZER https://www.deezer.com/album/302127");
+    }
+
+    @Test
+    void aHostileStoredIdOrNameNeverBecomesALinkToAnotherHost() throws Exception {
+        signUp("linkshostile");
+        long film = insertItem("linkshostile", "MOVIE", "TMDB", "1/../../evil?x=1#y", null, null, null, "LETTERBOXD");
+        long album = insertItem("linkshostile", "MUSIC", "LASTFM", "zzz", null, "../..", "a\r\nHost: evil", "LASTFM");
+
+        assertThat(linkUrls("linkshostile", film)).isEmpty();
+        // names are data: percent-encoded into the one fixed path, never copied raw
+        assertThat(linkUrls("linkshostile", album)).containsExactly(
+                "LASTFM https://www.last.fm/music/..%2F../a%0D%0AHost%3A+evil");
     }
 
     @Test

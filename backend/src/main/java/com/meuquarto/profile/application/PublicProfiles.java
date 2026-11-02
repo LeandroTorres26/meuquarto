@@ -108,7 +108,11 @@ public class PublicProfiles {
         List<Origin> origin = item.sources().stream()
                 .sorted(Comparator.comparing(ItemSource::source))
                 .map(source -> new Origin(source.source(), source.firstSeenAt())).toList();
-        List<Link> links = media.externalUrl().map(url -> new Link(media.provider(), url)).stream().toList();
+        // The platform the item came from leads the links (FR-10a); with several sources, the oldest first.
+        List<String> cameFrom = item.sources().stream()
+                .sorted(Comparator.comparing(ItemSource::firstSeenAt).thenComparing(ItemSource::source))
+                .map(ItemSource::source).toList();
+        List<Link> links = media.links(cameFrom).stream().map(link -> new Link(link.provider(), link.url())).toList();
         return new Detail(publicItem(item, media), origin, links);
     }
 

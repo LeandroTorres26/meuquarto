@@ -316,9 +316,12 @@ export function sourceName(source: string): string {
   return SOURCE_NAMES[source] ?? source.charAt(0) + source.slice(1).toLowerCase();
 }
 
-/** Link label: "Ver no TMDB", "Ver na Steam". */
+/** Platforms whose name takes "na" ("Ver na Open Library"); the others take "no". */
+const FEMININE_LINK_PLATFORMS = new Set(["STEAM", "OPENLIBRARY", "DEEZER"]);
+
+/** Link label: "Ver no TMDB", "Ver na Steam", "Ver na Open Library". */
 export function linkLabel(provider: string): string {
-  const preposition = provider === "STEAM" ? "na" : "no";
+  const preposition = FEMININE_LINK_PLATFORMS.has(provider) ? "na" : "no";
   return `Ver ${preposition} ${sourceName(provider)}`;
 }
 
