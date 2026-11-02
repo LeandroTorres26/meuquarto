@@ -45,6 +45,22 @@ export const FACE_SHADE: Record<Face, number> = {
 export const LAMP_OFF_DIM = 0.3;
 const MAX_SHADE = 0.85;
 
+/**
+ * Authoring size of the world: every length drawn to the DOM is this many times the room unit, and the
+ * camera scales the world down by the same factor (camera.ts). A browser rasterizes a 3D face at its
+ * CSS size and then magnifies the bitmap when the world is scaled up, which pixelates the covers; drawn
+ * 3x larger and scaled down, a face is never magnified (zoom 3.5 still shows it at about 1.2x).
+ */
+export const RASTER_SCALE = 3;
+
+/** Multiplies every `px` length of a CSS value (transform, border, gradient stops) by RASTER_SCALE. */
+export function scalePx(css: string): string {
+  return css.replace(
+    /(-?\d*\.?\d+)px/g,
+    (_, n: string) => `${+(parseFloat(n) * RASTER_SCALE).toFixed(3)}px`,
+  );
+}
+
 export const FACES: readonly Face[] = ["front", "back", "right", "left", "top"];
 
 export type FaceGeometry = {

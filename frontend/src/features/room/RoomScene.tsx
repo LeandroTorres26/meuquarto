@@ -21,8 +21,10 @@ import {
   useRef,
   useState,
   useSyncExternalStore,
+  type CSSProperties,
 } from "react";
 import { parseItemRef } from "@/lib/profile-view";
+import { RASTER_SCALE } from "./box";
 import { PITCH_HOME, YAW_HOME, YAW_STEP, ZOOM_STEP, frameTarget, isSideLayout } from "./camera";
 import { measureRoomLayout, visibleArea } from "./layout";
 import { LabelLayer } from "./LabelLayer";
@@ -340,7 +342,11 @@ export default function RoomScene({ slug, ownerName, sections }: Props) {
     <div ref={roomRef} className={className}>
       <div ref={stageRef} className="room-stage" role="group" aria-label={sceneLabel}>
         <div className="room-anchor" ref={(el) => camera.registerAnchor(el)}>
-          <div className="room-world" ref={(el) => camera.registerWorld(el)}>
+          <div
+            className="room-world"
+            ref={(el) => camera.registerWorld(el)}
+            style={{ "--k": RASTER_SCALE } as CSSProperties}
+          >
             {objects.map((object) => (
               <ObjectView
                 key={object.id}

@@ -2,7 +2,7 @@
 // Pure functions over plain numbers (no React, no DOM), unit tested. The numbers come from the
 // S5 section of docs/design/telas/README.md and the prototype quarto.html.
 
-import type { Bounds3, Point3 } from "./box";
+import { RASTER_SCALE, type Bounds3, type Point3 } from "./box";
 
 export type Range = readonly [number, number];
 
@@ -184,10 +184,16 @@ export function stepCamera(
   return { camera: next, moving };
 }
 
-/** CSS transform of the world for a camera (scale, tilt, rotation, floor lift). */
+/**
+ * CSS transform of the world for a camera (scale, tilt, rotation, floor lift). The DOM is drawn
+ * RASTER_SCALE times larger than the room units (see box.ts), so the scale is divided by it and the
+ * lift multiplied: the picture is the same, but the browser rasterizes the faces at the larger size.
+ * The depth is scaled by 1/RASTER_SCALE only: `scale(s)` leaves z alone, and the perspective of the
+ * stage (S5 look) depends on it, so it has to end up as many px as before.
+ */
 export function worldTransform(cam: Camera): string {
-  const s = cam.fs * cam.zoom;
-  return `scale(${s.toFixed(4)}) rotateX(${(-cam.pitch).toFixed(2)}deg) rotateY(${cam.yaw.toFixed(2)}deg) translateY(${WORLD_LIFT}px)`;
+  const s = (cam.fs * cam.zoom) / RASTER_SCALE;
+  return `scale3d(${s.toFixed(4)},${s.toFixed(4)},${(1 / RASTER_SCALE).toFixed(4)}) rotateX(${(-cam.pitch).toFixed(2)}deg) rotateY(${cam.yaw.toFixed(2)}deg) translateY(${WORLD_LIFT * RASTER_SCALE}px)`;
 }
 
 /** Left and top of the anchor so that zoom keeps the room's center on the center of the free area. */
