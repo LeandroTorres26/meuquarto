@@ -26,7 +26,7 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | [0020](0020-media-reaches-profile-through-a-port.md) | Media reaches the profile through a port | Accepted |
 | [0021](0021-local-s3-server-and-avatar-serving.md) | Local S3 server and avatar serving through the API | Accepted |
 | [0022](0022-site-wide-theme-from-a-cookie.md) | Site-wide theme from a cookie read before the first paint | Accepted |
-| [0023](0023-every-platform-is-a-profile-link.md) | Every platform is a profile link; sync where the platform allows | Proposed |
+| [0023](0023-every-platform-is-a-profile-link.md) | Every platform is a profile link; sync where the platform allows | Accepted |
 
 ## Template
 

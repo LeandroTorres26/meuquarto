@@ -1,6 +1,6 @@
 # 0023. Every platform is a profile link; sync where the platform allows
 
-- Status: Proposed (layout waiting for the owner's approval)
+- Status: Accepted (layout approved by the owner on 2026-11-02)
 - Date: 2026-11-02
 - Amends: 0004 (linking by username stays), 0010 (MyAnimeList row)
 
