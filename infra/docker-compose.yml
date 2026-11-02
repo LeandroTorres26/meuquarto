@@ -57,6 +57,8 @@ services:
       DB_USER: ${POSTGRES_USER}
       DB_PASSWORD: ${POSTGRES_PASSWORD}
       TMDB_API_KEY: ${TMDB_API_KEY:-}
+      TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID:-}
+      TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET:-}
       # Links in e-mails are built from this origin only (validated at startup). Local default below.
       SITE_URL: ${SITE_URL:-http://localhost:3000}
       # Outgoing e-mail: Mailpit by default; point these at a transactional provider in production.

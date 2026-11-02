@@ -1,0 +1,8 @@
+[
+  {"id":1942,"cover":{"id":89386,"image_id":"co1wyy"},"first_release_date":1431993600,"name":"The Witcher 3: Wild Hunt","themes":[1,17,38]},
+  {"id":7346,"cover":{"id":170331,"image_id":"co3p2d"},"first_release_date":1488499200,"name":"The Legend of Zelda: Breath of the Wild","themes":[1,17,38,43]},
+  {"id":119133,"name":"Sem capa nem data"},
+  {"id":555,"cover":{"id":1,"image_id":"co1abc"},"first_release_date":1262304000,"name":"Jogo adulto","themes":[42,1]},
+  {"id":556,"cover":{"id":2,"image_id":"../evil"},"first_release_date":946684800,"name":"Capa estranha"},
+  {"cover":{"id":3,"image_id":"co1abd"},"name":"Sem id"}
+]
