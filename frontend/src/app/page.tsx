@@ -44,7 +44,7 @@ const INTEGRATIONS = [
   { name: "AniList", categories: ["ANIME", "MANGA"], ready: true },
   { name: "Goodreads", categories: ["BOOK"], ready: true },
   { name: "Steam", categories: ["GAME"], ready: false },
-  { name: "Last.fm", categories: ["MUSIC"], ready: false },
+  { name: "Last.fm", categories: ["MUSIC"], ready: true },
 ] as const;
 
 export default function Landing() {
@@ -111,8 +111,8 @@ export default function Landing() {
               </span>
               <h3 className="t-h3">Conecte suas contas</h3>
               <p className="t-sm">
-                O que você registra no Letterboxd, no AniList e no Goodreads entra na sua coleção.
-                Last.fm e Steam chegam em breve.
+                O que você registra no Letterboxd, no AniList, no Goodreads e no Last.fm entra na
+                sua coleção. A Steam chega em breve.
               </p>
             </li>
             <li className="span-all t-span-4 d-span-4 step">
