@@ -137,9 +137,11 @@ type Props = {
   sections: RoomSection[];
   /** Server-rendered, session-aware call to action for the panel (RoomInvite). */
   invite: ReactNode;
+  /** The owner's theme: the room is part of their profile, so it never takes the visitor's. */
+  theme: string;
 };
 
-export default function RoomScene({ slug, ownerName, sections, invite }: Props) {
+export default function RoomScene({ slug, ownerName, sections, invite, theme }: Props) {
   const objects = useMemo(() => buildRoom(sections), [sections]);
   const selectable = useMemo(() => objects.filter((o) => o.isSelectable()), [objects]);
   const byId = useMemo(() => new Map(selectable.map((o) => [o.id, o])), [selectable]);
@@ -149,6 +151,14 @@ export default function RoomScene({ slug, ownerName, sections, invite }: Props) 
     camera.setPins(pins);
   }, [camera, pins]);
   useEffect(() => () => camera.dispose(), [camera]);
+
+  // The page under the room never scrolls (site.css `html.room-open`). A layout effect, so the lock goes
+  // away as soon as the room is left: Next.js keeps visited pages hidden in the document (Activity).
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("room-open");
+    return () => root.classList.remove("room-open");
+  }, []);
 
   const touch = useMedia("(hover: none)");
   const viewport = useViewport();
@@ -346,7 +356,7 @@ export default function RoomScene({ slug, ownerName, sections, invite }: Props) 
     : "Quarto em 3D. Arraste para girar e inclinar; para mover, arraste com o botão direito ou com Espaço apertado; a roda aproxima. Clique num objeto para ver o que tem ali.";
 
   return (
-    <div ref={roomRef} className={className}>
+    <div ref={roomRef} className={className} data-theme={theme}>
       <div ref={stageRef} className="room-stage" role="group" aria-label={sceneLabel}>
         <div className="room-anchor" ref={(el) => camera.registerAnchor(el)}>
           <div

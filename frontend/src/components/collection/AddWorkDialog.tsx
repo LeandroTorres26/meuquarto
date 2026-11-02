@@ -3,6 +3,7 @@
 import { Check, Plus, RefreshCw, Search, X } from "lucide-react";
 import { useEffect, useId, useRef, useState } from "react";
 import { AlertBox } from "@/components/AlertBox";
+import { useCloseWhenHidden } from "@/components/useCloseWhenHidden";
 import { addToCollection, ApiError, searchCatalog } from "@/lib/api-client";
 import {
   CATEGORIES,
@@ -65,6 +66,7 @@ export function AddWorkDialog({
       element.close();
     }
   }, [open]);
+  useCloseWhenHidden(dialog);
 
   function handleClose() {
     onClose();
@@ -152,57 +154,65 @@ function AddWorkPanel({
   }
 
   return (
-    <>
-      <div className="row row--between row--nowrap">
-        <h2 id="add-h" className="t-h2">
-          Adicionar obra
-        </h2>
-        <button type="button" className="ib" aria-label="Fechar" onClick={onClose}>
-          <X className="icon" aria-hidden="true" />
-        </button>
-      </div>
-
-      <div className="field">
-        <label htmlFor={`${id}-cat`} className="t-label">
-          Categoria
-        </label>
-        <select
-          id={`${id}-cat`}
-          className="input"
-          value={category}
-          onChange={(event) => setCategory(event.target.value as Category)}
-        >
-          {CATEGORIES.map((c) => (
-            <option key={c} value={c}>
-              {CATEGORY_META[c].sticker}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div className="field">
-        <label htmlFor={`${id}-q`} className="sr">
-          Buscar {CATEGORY_META[category].noun}
-        </label>
-        <div className="search-box">
-          <Search className="icon" aria-hidden="true" />
-          <input
-            id={`${id}-q`}
-            className="input"
-            type="search"
-            value={query}
-            placeholder={`Buscar ${CATEGORY_META[category].noun}`}
-            autoComplete="off"
-            maxLength={100}
-            data-autofocus
-            aria-describedby={`${id}-help`}
-            onChange={(event) => setQuery(event.target.value)}
-          />
+    <div className="dialog__body add-work">
+      {/* Title, category and search stay in place while the results scroll under them. */}
+      <div className="add-work__head">
+        <div className="row row--between row--nowrap">
+          <h2 id="add-h" className="t-h2">
+            Adicionar obra
+          </h2>
+          <button
+            type="button"
+            className="ib add-work__close"
+            aria-label="Fechar"
+            onClick={onClose}
+          >
+            <X className="icon" aria-hidden="true" />
+          </button>
         </div>
-        <p id={`${id}-help`} className="help">
-          A coleção não tem limite. Busca no catálogo do {CATALOG_NAME[category]}; digite pelo menos{" "}
-          {SEARCH_MIN_CHARS} letras.
-        </p>
+
+        <div className="field">
+          <label htmlFor={`${id}-cat`} className="t-label">
+            Categoria
+          </label>
+          <select
+            id={`${id}-cat`}
+            className="input"
+            value={category}
+            onChange={(event) => setCategory(event.target.value as Category)}
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {CATEGORY_META[c].sticker}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="field">
+          <label htmlFor={`${id}-q`} className="sr">
+            Buscar {CATEGORY_META[category].noun}
+          </label>
+          <div className="search-box">
+            <Search className="icon" aria-hidden="true" />
+            <input
+              id={`${id}-q`}
+              className="input"
+              type="search"
+              value={query}
+              placeholder={`Buscar ${CATEGORY_META[category].noun}`}
+              autoComplete="off"
+              maxLength={100}
+              data-autofocus
+              aria-describedby={`${id}-help`}
+              onChange={(event) => setQuery(event.target.value)}
+            />
+          </div>
+          <p id={`${id}-help`} className="help">
+            A coleção não tem limite. Busca no catálogo do {CATALOG_NAME[category]}; digite pelo
+            menos {SEARCH_MIN_CHARS} letras.
+          </p>
+        </div>
       </div>
 
       <div aria-live="polite" aria-busy={view === "loading"} className="stack">
@@ -317,6 +327,6 @@ function AddWorkPanel({
       <p className="sr" role="status" aria-live="polite">
         {announcement}
       </p>
-    </>
+    </div>
   );
 }

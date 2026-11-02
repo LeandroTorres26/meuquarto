@@ -54,34 +54,36 @@ export function LinkCard({ provider }: { provider: ProviderInfo }) {
         </h3>
         <ProviderTags provider={provider} />
       </div>
-      {error?.field === "form" && <AlertBox>{error.message}</AlertBox>}
-      <div className="field">
-        <label className="label" htmlFor={`${id}-user`}>
-          {provider.label}
-        </label>
-        <input
-          id={`${id}-user`}
-          className={`input${invalid ? " input--error" : ""}`}
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder={provider.placeholder}
-          autoComplete="off"
-          autoCapitalize="none"
-          spellCheck={false}
-          maxLength={100}
-          required
-          aria-invalid={invalid ? true : undefined}
-          aria-describedby={`${id}-help ${id}-erro`}
-        />
-        <p id={`${id}-help`} className="help">
-          {provider.hint}
-        </p>
-        <FieldError id={`${id}-erro`}>{invalid ? error?.message : undefined}</FieldError>
+      <div className="stack">
+        {error?.field === "form" && <AlertBox>{error.message}</AlertBox>}
+        <div className="field">
+          <label className="label" htmlFor={`${id}-user`}>
+            {provider.label}
+          </label>
+          <input
+            id={`${id}-user`}
+            className={`input${invalid ? " input--error" : ""}`}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder={provider.placeholder}
+            autoComplete="off"
+            autoCapitalize="none"
+            spellCheck={false}
+            maxLength={100}
+            required
+            aria-invalid={invalid ? true : undefined}
+            aria-describedby={`${id}-help ${id}-erro`}
+          />
+          <p id={`${id}-help`} className="help">
+            {provider.hint}
+          </p>
+          <FieldError id={`${id}-erro`}>{invalid ? error?.message : undefined}</FieldError>
+        </div>
       </div>
-      <p className="t-cap">{broughtCaption(provider)}</p>
+      <p className="t-cap region__note">{broughtCaption(provider)}</p>
       <button
         type="submit"
-        className={`mq-btn mq-btn--primary mq-btn--sm self-start${sending ? " is-loading" : ""}`}
+        className={`mq-btn mq-btn--primary mq-btn--sm self-start region__act${sending ? " is-loading" : ""}`}
         disabled={sending}
         aria-busy={sending}
       >

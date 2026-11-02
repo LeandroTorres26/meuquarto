@@ -1,7 +1,7 @@
 "use client";
 
 import { Ellipsis, Eye, EyeOff, Star, Trash2 } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import {
   checkNote,
   isSynced,
@@ -87,6 +87,8 @@ export function CollectionRow({
   const [menuOpen, setMenuOpen] = useState(false);
   const menu = useRef<HTMLDivElement>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
+  // A page that is left stays in the document, hidden (Next.js Activity): it comes back with the menu closed.
+  useLayoutEffect(() => () => setMenuOpen(false), []);
 
   useEffect(() => {
     if (!menuOpen) return;

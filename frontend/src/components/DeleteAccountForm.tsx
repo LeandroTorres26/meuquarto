@@ -6,6 +6,7 @@ import { AlertBox } from "@/components/AlertBox";
 import { FieldError } from "@/components/FieldError";
 import { accountMessageFor, accountNetworkError, type AccountError } from "@/lib/account-errors";
 import { ApiError, deleteAccount } from "@/lib/api-client";
+import { forgetTheme } from "@/lib/theme";
 
 /** S14, danger zone: typing the password is the confirmation step (docs/design/telas/conta.html). */
 export function DeleteAccountForm({ address }: { address: string }) {
@@ -21,6 +22,7 @@ export function DeleteAccountForm({ address }: { address: string }) {
     setSending(true);
     try {
       await deleteAccount({ password });
+      forgetTheme();
       // The API ended the session and cleared the cookie; the refresh drops cached signed-in pages.
       router.replace("/");
       router.refresh();

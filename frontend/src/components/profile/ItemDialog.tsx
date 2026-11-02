@@ -2,6 +2,7 @@
 
 import { X } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCloseWhenHidden } from "@/components/useCloseWhenHidden";
 import { ApiError, getJson } from "@/lib/api-client";
 import {
   CATEGORY_META,
@@ -84,6 +85,7 @@ export function ItemDialog({ slug, ownerName }: { slug: string; ownerName: strin
       opener.current = null;
     }
   }, [open]);
+  useCloseWhenHidden(dialog);
 
   useEffect(() => {
     function onClick(event: MouseEvent) {
