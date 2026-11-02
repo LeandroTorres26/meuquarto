@@ -43,6 +43,11 @@ class ActivityProviderTest {
     }
 
     @Test
+    void aPlatformThatNeedsNoKeyIsAvailableByDefault() {
+        assertThat(provider.isAvailable()).isTrue();
+    }
+
+    @Test
     void theRegistryFindsByIdWithoutAskingTheClass() {
         ActivityProvider fake = new FakeActivityProvider();
         ActivityRegistry registry = new ActivityRegistry(List.of(fake));
