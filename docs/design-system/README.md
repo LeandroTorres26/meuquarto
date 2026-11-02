@@ -35,7 +35,7 @@ Each medium keeps one physical shape in the grid and in the room scene. Ratios a
 | Livro | `mq-item--book` + `mq-item--volume` | 2:3 | 0.18 | spine shade left, page block right |
 | Mangá | `mq-item--manga` | 5:7.4 | 0.10 | flat cover with square corners and no spine shade; page block on the left (read right to left), flush with the cover, light grey; the volume number goes in the subline |
 | Música | `mq-item--vinyl` | sleeve 1:1, record 0.92 of the sleeve | 0.02 | record (`mq-record`) slides out to the right |
-| Game | `mq-item--game` | 5:7 | 0.12 | black console band (`mq-gamebar`) above the art, no text |
+| Game | `mq-item--game` | 5:7 | 0.12 | black console band (`mq-gamebar`) above the art, no text; its icon sits on the right, because the sticker covers the top-left corner |
 
 Anime used to be a DVD case (`mq-item--dvd`, `mq-spine`); it is a poster now, in the grid and in the room scene.
 
@@ -80,6 +80,8 @@ BR-05: a premium theme can only be applied by an account that bought it; purchas
 ## Iconography
 
 Icons are Lucide (ISC license), 24px grid, 2px stroke, `currentColor`, shown at 14px inside stickers and 18px inside buttons. Inline the SVG with `class="mq-icon"`. Category icons: Filme `clapperboard`, Série `tv`, Anime `sparkles`, Mangá `book-copy`, Livro `book-open`, Música `disc-3`, Game `gamepad-2`. Action icons: `copy`, `door-open`, `share-2`.
+
+Platform marks (the profile's platform links and the S9 cards) come from Simple Icons (CC0; the marks belong to their owners and are used only to name the platform a link goes to): `brand-letterboxd`, `brand-anilist`, `brand-myanimelist`, `brand-lastfm`, `brand-steam`, `brand-goodreads`, `brand-storygraph`, `brand-trakt`. They are filled shapes (`icon--brand`: `fill: currentColor`, no stroke), one color, never the brand colors. A platform without a mark there (Backloggd) uses its category icon.
 
 ## Marks
 

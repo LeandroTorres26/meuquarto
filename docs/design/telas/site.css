@@ -27,6 +27,7 @@ html,body{margin:0;background:var(--surface-100)}
 .page :focus-visible{outline:2px solid var(--focus);outline-offset:2px}
 :where(.page) :where(h1,h2,h3,p,ul,ol,figure){margin:0}  /* zero specificity: layout classes always win */
 .icon{width:1em;height:1em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-0.125em}
+.icon--brand{fill:currentColor;stroke:none}   /* platform marks (Simple Icons) are filled shapes */
 .icon--inline{width:14px;height:14px;margin-left:var(--space-1);vertical-align:-2px}   /* after a link that opens in a new tab */
 .mq-btn .icon{width:18px;height:18px}
 [hidden]{display:none !important}
@@ -225,6 +226,9 @@ html,body{margin:0;background:var(--surface-100)}
 .sync-note{display:flex;align-items:flex-start;gap:var(--space-2)}
 .sync-note > .icon{width:14px;height:14px;margin-top:1px}
 .sync-note strong{font-weight:600;color:var(--ink)}
+/* the platform's mark before its name, the same one the public profile shows next to the link */
+.platform-name{display:inline-flex;align-items:center;gap:var(--space-2)}
+.platform-name > .platform-mark{width:20px;height:20px}
 
 /* ---------- pinned work row (Destaques): drag handle, cover, title; the note lines up under the title ---------- */
 .pin-row{display:grid;grid-template-columns:auto 40px minmax(0,1fr) auto;column-gap:var(--space-3);row-gap:var(--space-2);align-items:center;padding:var(--space-3);background:var(--surface-200);border-radius:var(--radius-lg)}

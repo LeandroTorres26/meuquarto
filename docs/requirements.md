@@ -21,12 +21,12 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - FR-09 The owner can add, remove and hide collection items; hiding a synced item keeps it out of the collection on later syncs.
 - FR-09a **Highlights** are the collection items the owner marks "Destacar"; they are the only ones shown on the profile home, in the owner's order (BR-02). With no highlight marked, the profile shows the most recent items of the collection.
 - FR-10 Optional short personal note per collection item ("why it is here").
-- FR-10a Clicking any item (highlight, "Agora" or listing) opens a details modal (S17) with the note, origin and links to the item on its platforms; state kept in the URL (`?item=`).
+- FR-10a Clicking any item (highlight, "Agora" or listing) opens a details modal (S17) with the note, origin and links to the item on its platforms; state kept in the URL (`?item=`). Every link opens the work's own page, built from a stored id (Letterboxd through `letterboxd.com/tmdb/{id}`, MyAnimeList through AniList's `idMal`), never a search; a platform with no id for the work has no link.
 - FR-10b "Ver todos" per category opens the public listing `/{slug}/{categoria}` (S18): the whole visible collection as a cover grid with search by title, sort (recent, title, year), pagination or infinite scroll; highlights carry a badge.
 - FR-11 A mixed list "Favoritos de tudo" with items picked from any collection (highlight-only, no listing).
 
 ### Integrations
-- FR-12 Link an external account by public username (ADR 0023). Platforms that sync: Letterboxd (RSS), AniList (GraphQL, anime + manga), MyAnimeList (API v2 with the project's client ID, anime + manga, mapped to the AniList catalog), Last.fm (JSON API with the project's key; recent listening must be public), Steam, Goodreads (RSS); validate that the account exists and is public. Link-only platforms (no readable list): Backloggd, Serializd, StoryGraph; validate the username format only.
+- FR-12 Link an external account by public username (ADR 0023). Platforms that sync: Letterboxd (RSS), AniList (GraphQL, anime + manga), MyAnimeList (API v2 with the project's client ID, anime + manga, mapped to the AniList catalog), Last.fm (JSON API with the project's key; recent listening must be public), Steam, Goodreads (RSS); validate that the account exists and is public. Link-only platforms (lists not read): Backloggd, Trakt, StoryGraph; validate the username format only.
 - FR-12a The public profile (S4) links to every linked account, in a fixed platform order, built from the username and a fixed URL template per platform (never a URL typed by the user); the links open in a new tab.
 - FR-13 Scheduled sync (every ~6 h) plus manual "sync now" button (BR-03).
 - FR-14 Show sync status per account (last success, last error).

@@ -1,22 +1,36 @@
 /* S17 Detalhes do item. Data and markup shared by perfil.html (dialog) and quarto.html (room panel).
-   In the app the item comes from the API and the links are the stored external URLs; here the data is a fixed
-   table and the links are platform searches. State lives in the URL: ?item=<id>, plus &estado=carregando to see
+   In the app the item comes from the API and the links are built from the stored ids; here the data is a fixed
+   table and the ids below are real (checked on each platform on 2026-11-02). A link always opens the work's own page,
+   never a search: a platform without an id for the work simply has no link. State lives in the URL: ?item=<id>, plus &estado=carregando to see
    the loading slot. An id that is not in the table shows the "saiu do quarto" state. */
 (function () {
   var OWNER = 'Leandro';
   var CAT = { movie: ['Filme', 'clapperboard', 'poster'], series: ['Série', 'tv', 'poster'], anime: ['Anime', 'sparkles', 'poster'], manga: ['Mangá', 'book-copy', 'manga'], book: ['Livro', 'book-open', 'book'], game: ['Game', 'gamepad-2', 'game'], music: ['Música', 'disc-3', 'vinyl'] };
   /* [activity platform, only for synced items; catalog] */
   var SRC = { movie: ['Letterboxd', 'TMDB'], series: [null, 'TMDB'], anime: ['AniList', 'AniList'], manga: ['AniList', 'AniList'], book: ['Goodreads', 'Open Library'], game: ['Steam', 'IGDB'], music: ['Last.fm', 'Deezer'] };
+  /* platform: [preposition, page of the work from its ids or null]. Letterboxd has no ids of its own here: letterboxd.com/tmdb/{id}
+     redirects to the film. MyAnimeList ids come from AniList (idMal). Last.fm pages are built from the artist and album names. */
   var PLAT = {
-    'Letterboxd': ['no', function (q, c) { return 'https://letterboxd.com/search/' + q + '/'; }],
-    'TMDB': ['no', function (q) { return 'https://www.themoviedb.org/search?query=' + q; }],
-    'AniList': ['no', function (q, c) { return 'https://anilist.co/search/' + (c === 'manga' ? 'manga' : 'anime') + '?search=' + q; }],
-    'Goodreads': ['no', function (q) { return 'https://www.goodreads.com/search?q=' + q; }],
-    'Open Library': ['na', function (q) { return 'https://openlibrary.org/search?q=' + q; }],
-    'Steam': ['na', function (q) { return 'https://store.steampowered.com/search/?term=' + q; }],
-    'IGDB': ['no', function (q) { return 'https://www.igdb.com/search?q=' + q; }],
-    'Last.fm': ['no', function (q) { return 'https://www.last.fm/search?q=' + q; }],
-    'Deezer': ['na', function (q) { return 'https://www.deezer.com/search/' + q; }]
+    'Letterboxd': ['no', function (x) { return x.tmdb ? 'https://letterboxd.com/tmdb/' + x.tmdb + '/' : null; }],
+    'TMDB': ['no', function (x, c) { return x.tmdb ? 'https://www.themoviedb.org/' + (c === 'series' ? 'tv' : 'movie') + '/' + x.tmdb : null; }],
+    'AniList': ['no', function (x, c) { return x.anilist ? 'https://anilist.co/' + (c === 'manga' ? 'manga' : 'anime') + '/' + x.anilist : null; }],
+    'MyAnimeList': ['no', function (x, c) { return x.mal ? 'https://myanimelist.net/' + (c === 'manga' ? 'manga' : 'anime') + '/' + x.mal : null; }],
+    'Open Library': ['na', function (x) { return x.ol ? 'https://openlibrary.org/works/' + x.ol : null; }],
+    'Steam': ['na', function (x) { return x.steam ? 'https://store.steampowered.com/app/' + x.steam + '/' : null; }],
+    'Last.fm': ['no', function (x) { return x.lastfm ? 'https://www.last.fm/music/' + x.lastfm.map(function (n) { return encodeURIComponent(n).replace(/%20/g, '+'); }).join('/') : null; }]
+  };
+  /* platforms linked per category, the activity platform first */
+  var LINKS = { movie: ['Letterboxd', 'TMDB'], series: ['TMDB'], anime: ['AniList', 'MyAnimeList'], manga: ['AniList', 'MyAnimeList'], book: ['Open Library'], game: ['Steam'], music: ['Last.fm'] };
+  var EXT = {
+    'perfect-days': { tmdb: 976893 }, 'paris-texas': { tmdb: 655 }, 'central-do-brasil': { tmdb: 666 }, 'aftersun': { tmdb: 965150 }, 'cidade-de-deus': { tmdb: 598 },
+    'twin-peaks': { tmdb: 1920 }, 'familia-soprano': { tmdb: 1398 }, 'fleabag': { tmdb: 67070 },
+    'frieren': { anilist: 154587, mal: 52991 }, 'cowboy-bebop': { anilist: 1, mal: 1 }, 'mob-psycho-100': { anilist: 21507, mal: 32182 },
+    'neon-genesis-evangelion': { anilist: 30, mal: 30 }, 'mushishi': { anilist: 457, mal: 457 },
+    'vagabond': { anilist: 30656, mal: 656 }, 'oyasumi-punpun': { anilist: 34632, mal: 4632 }, 'monster': { anilist: 30001, mal: 1 }, 'yotsuba': { anilist: 30104, mal: 104 },
+    'outer-wilds': { steam: 753640 }, 'hollow-knight': { steam: 367520 }, 'celeste': { steam: 504230 }, 'disco-elysium': { steam: 632470 }, 'hades': { steam: 1145360 },
+    'torto-arado': { ol: 'OL24141556W' }, 'grande-sertao-veredas': { ol: 'OL1756937W' }, 'dom-casmurro': { ol: 'OL1003040W' }, 'a-hora-da-estrela': { ol: 'OL1002120W' },
+    'clube-da-esquina': { lastfm: ['Milton Nascimento', 'Clube da Esquina'] }, 'acabou-chorare': { lastfm: ['Novos Baianos', 'Acabou Chorare'] },
+    'elis-e-tom': { lastfm: ['Elis Regina', 'Elis & Tom'] }, 'da-lama-ao-caos': { lastfm: ['Chico Science & Nação Zumbi', 'Da Lama ao Caos'] }
   };
   /* id: [category, title, year, subtitle, cover, tilt factor, former tape or pin (unused), owner note, origin ('' = chosen by hand)] */
   var ROWS = {
@@ -151,11 +165,10 @@
   }
 
   function links(it) {
-    var src = SRC[it.cat], out = [], q = encodeURIComponent(it.title);
-    if (it.origin && src[0]) out.push(src[0]);
-    if (out.indexOf(src[1]) < 0) out.push(src[1]);
-    return out.map(function (p) {
-      return '<a class="mq-btn mq-btn--secondary" href="' + PLAT[p][1](q, it.cat) + '" target="_blank" rel="noopener noreferrer">Ver ' + PLAT[p][0] + ' ' + p + icon('external-link') + '<span class="sr"> (abre em nova aba)</span></a>';
+    var x = EXT[it.id] || {};
+    return LINKS[it.cat].map(function (p) {
+      var url = PLAT[p][1](x, it.cat);
+      return url ? '<a class="mq-btn mq-btn--secondary" href="' + url + '" target="_blank" rel="noopener noreferrer">Ver ' + PLAT[p][0] + ' ' + p + icon('external-link') + '<span class="sr"> (abre em nova aba)</span></a>' : '';
     }).join('');
   }
 
@@ -170,7 +183,7 @@
           (it.note ? '<p class="detail__note"><span class="sr">Nota de ' + OWNER + ': </span>' + esc(it.note) + '</p>' : '') +
           '<p class="t-cap">' + (it.origin || 'Escolhido à mão') + '</p>' +
         '</div>' +
-        '<div class="detail__links">' + links(it) + '</div>' +
+        (links(it) ? '<div class="detail__links">' + links(it) + '</div>' : '') +
       '</div></article>';
   }
 
