@@ -35,6 +35,11 @@ export type PublicNowItem = {
 export type PublicProfileData = {
   slug: string;
   displayName: string;
+  bio: string | null;
+  /** Same-origin path served by the API, or null without avatar. */
+  avatarUrl: string | null;
+  /** `data-theme` id of the owner's theme. */
+  theme: string;
   now: PublicNowItem[];
   favorites: PublicItem[];
   categories: PublicSection[];

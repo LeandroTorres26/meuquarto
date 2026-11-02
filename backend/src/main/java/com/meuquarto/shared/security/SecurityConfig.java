@@ -69,6 +69,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/slugs/*/availability").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/auth/csrf").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/public/profiles/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/public/avatars/*").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup", "/api/auth/login").permitAll()
                         .anyRequest().authenticated())
                 .csrf(csrf -> csrf.spa())
