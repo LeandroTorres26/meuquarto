@@ -13,6 +13,7 @@ import type {
 import type { NowEntry, NowMode } from "@/lib/now";
 import type { LinkedAccount, ProviderId, SyncResult } from "@/lib/linked-accounts";
 import type { Category } from "@/lib/profile-view";
+import type { OwnProfile, ProfileChange } from "@/lib/profile-editor";
 
 export class ApiError extends Error {
   constructor(
@@ -78,15 +79,17 @@ async function sendRaw<T>(
 ): Promise<{ status: number; data: T }> {
   for (let attempt = 0; attempt < 2; attempt++) {
     const token = await ensureCsrfToken(deps, attempt > 0);
+    // FormData sets its own multipart Content-Type (with the boundary); JSON bodies set theirs.
+    const isForm = typeof FormData !== "undefined" && body instanceof FormData;
     const res = await deps.fetch(path, {
       method,
       credentials: "same-origin",
       headers: {
-        "Content-Type": "application/json",
+        ...(isForm ? {} : { "Content-Type": "application/json" }),
         Accept: "application/json",
         [CSRF_HEADER]: token,
       },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isForm ? (body as FormData) : JSON.stringify(body),
     });
     if (res.status === 403 && attempt === 0) continue;
     if (!res.ok) throw await toError(res);
@@ -206,3 +209,13 @@ export const changeNow = (category: Category, mode: NowMode, collectionItemId?: 
     mode,
     ...(collectionItemId === undefined ? {} : { collectionItemId }),
   });
+
+// Profile editor (S6). The avatar goes up as multipart; the server validates by content, not by name.
+export const getOwnProfile = (deps?: ClientDeps) => getJson<OwnProfile>("/api/profile", deps);
+export const saveProfile = (change: ProfileChange) => putJson<OwnProfile>("/api/profile", change);
+export function uploadAvatar(file: File): Promise<{ avatarUrl: string }> {
+  const form = new FormData();
+  form.append("file", file);
+  return postJson<{ avatarUrl: string }>("/api/profile/avatar", form);
+}
+export const removeAvatar = () => deleteRequest("/api/profile/avatar");

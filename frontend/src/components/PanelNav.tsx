@@ -7,7 +7,7 @@ type Item = { label: string; href?: string };
 // its screen is built, so nothing links to a 404.
 const GROUPS: Item[][] = [
   [
-    { label: "Perfil" },
+    { label: "Perfil", href: "/painel" },
     { label: "Destaques", href: "/painel/destaques" },
     { label: "Agora", href: "/painel/agora" },
     { label: "Contas vinculadas", href: "/painel/contas" },

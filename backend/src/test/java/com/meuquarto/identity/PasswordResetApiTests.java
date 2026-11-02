@@ -11,6 +11,7 @@ import com.meuquarto.support.RealCsrf;
 import com.meuquarto.support.RecordingMailer;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,8 +34,10 @@ import org.springframework.test.web.servlet.ResultActions;
 @ExtendWith(OutputCaptureExtension.class)
 class PasswordResetApiTests {
 
-    private static final String PASSWORD = "cavalo bateria grampo";
-    private static final String NEW_PASSWORD = "lampada azul no telhado";
+    // Generated per run: no credential-looking literals in the repository.
+    private static final String PASSWORD = "pw " + UUID.randomUUID();
+    private static final String NEW_PASSWORD = "pw " + UUID.randomUUID();
+    private static final String ANOTHER_PASSWORD = "pw " + UUID.randomUUID();
     private static final String EMAIL = "leandro@example.com";
 
     @Autowired
@@ -146,7 +149,7 @@ class PasswordResetApiTests {
         String token = mailer.lastTokenFor(EMAIL);
 
         confirm(token, NEW_PASSWORD).andExpect(status().isNoContent());
-        confirm(token, "outra senha bem longa").andExpect(status().isBadRequest())
+        confirm(token, ANOTHER_PASSWORD).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("INVALID_RESET_TOKEN"));
 
         login(EMAIL, NEW_PASSWORD); // the second attempt changed nothing
@@ -163,7 +166,7 @@ class PasswordResetApiTests {
 
         confirm(newer, NEW_PASSWORD).andExpect(status().isNoContent());
 
-        confirm(older, "outra senha bem longa").andExpect(status().isBadRequest())
+        confirm(older, ANOTHER_PASSWORD).andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.error").value("INVALID_RESET_TOKEN"));
     }
 

@@ -9,6 +9,7 @@ import com.meuquarto.shared.ratelimit.FixedWindowLimiter;
 import com.meuquarto.support.RealCsrf;
 import com.meuquarto.support.RecordingMailer;
 import com.meuquarto.support.TestcontainersConfiguration;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +35,8 @@ import org.springframework.test.web.servlet.ResultActions;
         "meuquarto.rate-limit.password-reset-email.limit=1",
         "meuquarto.rate-limit.password-reset-email.window=1h"})
 class PasswordResetRateLimitApiTests {
+
+    private static final String PASSWORD = "pw " + UUID.randomUUID(); // generated per run
 
     @Autowired
     MockMvc mvc;
@@ -93,12 +96,12 @@ class PasswordResetRateLimitApiTests {
 
     private ResultActions confirm() throws Exception {
         return mvc.perform(post("/api/auth/password-reset/confirm").with(RealCsrf.token(mvc)).contentType(MediaType.APPLICATION_JSON)
-                .content("{\"token\":\"%s\",\"password\":\"lampada azul no telhado\"}".formatted("A".repeat(43))));
+                .content("{\"token\":\"%s\",\"password\":\"%s\"}".formatted("A".repeat(43), PASSWORD)));
     }
 
     private void signUp(String email) throws Exception {
         mvc.perform(post("/api/auth/signup").with(RealCsrf.token(mvc)).contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\":\"%s\",\"password\":\"cavalo bateria grampo\",\"slug\":\"leandro\"}".formatted(email)))
+                        .content("{\"email\":\"%s\",\"password\":\"%s\",\"slug\":\"leandro\"}".formatted(email, PASSWORD)))
                 .andExpect(status().isCreated());
     }
 }

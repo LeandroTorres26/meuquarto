@@ -18,6 +18,16 @@ class PasswordResetRulesTest {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    private static String sha256Hex(String text) {
+        try {
+            byte[] digest = java.security.MessageDigest.getInstance("SHA-256")
+                    .digest(text.getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+            return java.util.HexFormat.of().formatHex(digest);
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
     @Nested
     class Token {
 
@@ -41,8 +51,8 @@ class PasswordResetRulesTest {
         void isStoredAsItsSha256Hex() {
             ResetToken token = ResetToken.parse("A".repeat(43));
 
-            // SHA-256 of 43 times "A", computed independently (Python hashlib).
-            assertThat(token.hash()).isEqualTo("0f007385b6f9d4b7eeb2748605afe1a984a0a3bfa3f014d09e2a784ce9e5cd1a");
+            // Computed here with the JDK directly, independently of ResetToken.
+            assertThat(token.hash()).isEqualTo(sha256Hex("A".repeat(43)));
             assertThat(token.hash()).isNotEqualTo(ResetToken.parse("B".repeat(43)).hash());
         }
 

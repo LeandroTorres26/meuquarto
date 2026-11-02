@@ -30,7 +30,20 @@
 		<java.version>21</java.version>
 		<archunit.version>1.5.1</archunit.version>
 		<bouncycastle.version>1.86</bouncycastle.version>
+		<awssdk.version>2.57.8</awssdk.version>
 	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<!-- AWS SDK v2: one pinned version for every module (S3 client for object storage, ADR 0009). -->
+			<dependency>
+				<groupId>software.amazon.awssdk</groupId>
+				<artifactId>bom</artifactId>
+				<version>${awssdk.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -129,6 +142,26 @@
 		<dependency>
 			<groupId>com.github.ben-manes.caffeine</groupId>
 			<artifactId>caffeine</artifactId>
+		</dependency>
+		<!-- S3 client for the private avatar bucket (path-style, any S3-compatible server). The lighter
+		     URLConnection HTTP client is used; the default Apache and Netty clients are left out. -->
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>s3</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>apache-client</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>software.amazon.awssdk</groupId>
+					<artifactId>netty-nio-client</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>url-connection-client</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
