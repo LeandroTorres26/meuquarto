@@ -16,6 +16,12 @@ spring:
   flyway:
     locations: classpath:db/migration
   # Sessions in PostgreSQL (ADR 0012); tables come from Flyway (V4), never auto-created.
+  # Avatar upload (FR-05): Tomcat refuses anything bigger before it reaches our code, and the avatar
+  # use case checks the size again. A little headroom over the 2 MB file limit is for the multipart framing.
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
   session:
     timeout: 30d
     jdbc:
@@ -54,6 +60,15 @@ management:
       show-components: never
 
 meuquarto:
+  # Private S3-compatible bucket (ADR 0009, 0021). Endpoint, region and bucket have local defaults;
+  # the keys come only from the environment.
+  storage:
+    endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
+    region: ${STORAGE_REGION:us-east-1}
+    bucket: ${STORAGE_BUCKET:meuquarto}
+    access-key: ${STORAGE_ACCESS_KEY:}
+    secret-key: ${STORAGE_SECRET_KEY:}
+
   catalog:
     tmdb:
       # TMDB API Read Access Token (v4, sent as a Bearer header). Empty = TMDB reports itself unavailable.
