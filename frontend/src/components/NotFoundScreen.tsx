@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { NotFoundSessionAction } from "@/components/SessionActions";
 import { ProfileTopBar } from "@/components/profile/ProfileTopBar";
 
 /**
@@ -63,9 +64,7 @@ function ProfileCopy() {
         </p>
       </div>
       <div className="actions">
-        <Link href="/cadastro" prefetch={false} className="mq-btn mq-btn--primary">
-          Usar esse endereço
-        </Link>
+        <NotFoundSessionAction primary="claim" />
         <Link href="/" className="mq-btn mq-btn--secondary">
           Ir para o início
         </Link>
@@ -88,9 +87,7 @@ function RouteCopy() {
         <Link href="/" className="mq-btn mq-btn--primary">
           Ir para o início
         </Link>
-        <Link href="/cadastro" prefetch={false} className="mq-btn mq-btn--secondary">
-          Crie o seu
-        </Link>
+        <NotFoundSessionAction primary="home" />
       </div>
     </>
   );

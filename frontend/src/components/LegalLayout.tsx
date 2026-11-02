@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { Logo } from "@/components/Logo";
+import { SessionActions } from "@/components/SessionActions";
 import { LEGAL_UPDATED_ISO, LEGAL_UPDATED_LABEL } from "@/lib/legal";
 
 type Props = {
@@ -16,9 +17,7 @@ export function LegalLayout({ current, title, children }: Props) {
       <header className="topbar">
         <div className="wrap topbar__in">
           <Logo href="/" />
-          <Link href="/entrar" prefetch={false} className="mq-btn mq-btn--ghost mq-btn--sm">
-            Entrar
-          </Link>
+          <SessionActions />
         </div>
       </header>
 

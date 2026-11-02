@@ -22,6 +22,7 @@ import {
   useState,
   useSyncExternalStore,
   type CSSProperties,
+  type ReactNode,
 } from "react";
 import { parseItemRef } from "@/lib/profile-view";
 import { RASTER_SCALE } from "./box";
@@ -130,9 +131,15 @@ function ShareRoom({ slug }: { slug: string }) {
   );
 }
 
-type Props = { slug: string; ownerName: string; sections: RoomSection[] };
+type Props = {
+  slug: string;
+  ownerName: string;
+  sections: RoomSection[];
+  /** Server-rendered, session-aware call to action for the panel (RoomInvite). */
+  invite: ReactNode;
+};
 
-export default function RoomScene({ slug, ownerName, sections }: Props) {
+export default function RoomScene({ slug, ownerName, sections, invite }: Props) {
   const objects = useMemo(() => buildRoom(sections), [sections]);
   const selectable = useMemo(() => objects.filter((o) => o.isSelectable()), [objects]);
   const byId = useMemo(() => new Map(selectable.map((o) => [o.id, o])), [selectable]);
@@ -459,6 +466,7 @@ export default function RoomScene({ slug, ownerName, sections }: Props) {
       <RoomPanel
         slug={slug}
         ownerName={ownerName}
+        invite={invite}
         objects={selectable}
         activeId={activeId}
         itemRaw={itemRaw}

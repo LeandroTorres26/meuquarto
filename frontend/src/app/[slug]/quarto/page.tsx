@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { RoomInvite } from "@/components/SessionSlots";
 import { RoomLoader } from "@/features/room/RoomLoader";
 import type { RoomSection } from "@/features/room/objects/buildRoom";
 import { getPublicProfile, siteUrl } from "@/lib/public-profile";
@@ -60,7 +61,14 @@ async function Room({ params }: { params: Props["params"] }) {
       imageUrl: item.imageUrl,
     })),
   }));
-  return <RoomLoader slug={profile.slug} ownerName={profile.displayName} sections={sections} />;
+  return (
+    <RoomLoader
+      slug={profile.slug}
+      ownerName={profile.displayName}
+      sections={sections}
+      invite={<RoomInvite ownerSlug={profile.slug} />}
+    />
+  );
 }
 
 export default function RoomPage({ params }: Props) {

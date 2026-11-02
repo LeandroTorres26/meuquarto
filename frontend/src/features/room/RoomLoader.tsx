@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import type { RoomSection } from "./objects/buildRoom";
+import type { ComponentProps } from "react";
 
 // The room is loaded only when this page is opened, as its own chunk: the profile (S4) never pays
 // for it. It cannot render on the server (it measures the window and reads the input model), so the
@@ -17,6 +17,6 @@ const RoomScene = dynamic(() => import("./RoomScene"), {
   ),
 });
 
-export function RoomLoader(props: { slug: string; ownerName: string; sections: RoomSection[] }) {
+export function RoomLoader(props: ComponentProps<typeof RoomScene>) {
   return <RoomScene {...props} />;
 }
