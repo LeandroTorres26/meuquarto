@@ -82,10 +82,10 @@ export const PROVIDERS: ProviderInfo[] = [
     name: "Goodreads",
     categories: ["BOOK"],
     brings: "Estantes lidos e lendo.",
-    label: "Usuário do Goodreads",
-    hint: "Seu nome de usuário no Goodreads, como aparece na URL do seu perfil.",
-    placeholder: "seunome",
-    available: false,
+    label: "Número do seu perfil no Goodreads",
+    hint: "O número que aparece no endereço do seu perfil, em goodreads.com/user/show/12345678-nome. Seu perfil e suas estantes precisam estar públicos.",
+    placeholder: "12345678",
+    available: true,
   },
 ];
 

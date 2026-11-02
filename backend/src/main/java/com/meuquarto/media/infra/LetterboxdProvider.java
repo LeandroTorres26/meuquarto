@@ -120,7 +120,7 @@ public final class LetterboxdProvider extends RssActivityProvider {
     }
 
     @Override
-    protected Optional<ActivityEntry> toEntry(Element item) {
+    protected Optional<ActivityEntry> toEntry(Element item, String feedQuery) {
         if (!isDiaryEntry(text(item, "guid"))) {
             return Optional.empty(); // a list, or something that is not a film log
         }
