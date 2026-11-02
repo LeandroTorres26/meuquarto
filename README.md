@@ -14,7 +14,7 @@ A link-in-bio for media taste: one public profile showing the films, series, ani
 Requirements: Docker Desktop. For development outside Docker: JDK 21 and Node 22.
 
 ```bash
-cp .env.example .env   # then set POSTGRES_PASSWORD
+cp .env.example .env   # then set POSTGRES_PASSWORD, STORAGE_ACCESS_KEY and STORAGE_SECRET_KEY (random values)
 docker compose -f infra/docker-compose.yml --env-file .env up --build
 ```
 

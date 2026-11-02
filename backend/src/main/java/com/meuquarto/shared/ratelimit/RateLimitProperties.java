@@ -14,6 +14,7 @@ public record RateLimitProperties(
         @DefaultValue Rule collectionAdd,
         @DefaultValue Rule linkAccount,
         @DefaultValue Rule manualSync,
+        @DefaultValue Rule avatarUpload,
         @DefaultValue Rule publicRead,
         @DefaultValue Rule anonymous) {
 
@@ -25,6 +26,7 @@ public record RateLimitProperties(
         collectionAdd = collectionAdd.orElse(30, Duration.ofMinutes(1));
         linkAccount = linkAccount.orElse(10, Duration.ofMinutes(10));
         manualSync = manualSync.orElse(30, Duration.ofMinutes(10));
+        avatarUpload = avatarUpload.orElse(20, Duration.ofMinutes(10));
         publicRead = publicRead.orElse(120, Duration.ofMinutes(1));
         anonymous = anonymous.orElse(300, Duration.ofMinutes(1));
     }
