@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Suspense } from "react";
-import {
-  HeroActions,
-  SignedOutHeroActions,
-  SignedOutTopBarActions,
-  TopBarActions,
-} from "@/components/landing/AccountActions";
+import { HeroSessionActions, SessionActions } from "@/components/SessionActions";
 import { ExampleShelf } from "@/components/landing/ExampleShelf";
 import { CookieNotice } from "@/components/CookieNotice";
 import { CategoryTag } from "@/components/profile/CategoryTag";
@@ -33,10 +27,10 @@ export const metadata: Metadata = {
 
 // S1 (docs/design/telas/landing.html). The page is a static shell (Cache Components): everything
 // is prerendered except the two spots that depend on the session (top bar actions and the hero
-// call to action), which stream in inside <Suspense> and swap "Crie o seu" for "Ir para o painel"
-// when the visitor is signed in. The fallbacks are the signed-out buttons, so the shell is complete
-// and the common case (anonymous visitor) has no layout shift. proxy.ts is not used here on purpose:
-// a redirect would take signed-in visitors away from the landing page they may want to read.
+// call to action, components/SessionActions.tsx), which stream in inside <Suspense>. The fallback
+// is an invisible button of the same size, so there is no layout shift and no wrong call to action
+// (docs/screens.md, "Session states"). proxy.ts is not used here on purpose: a redirect would take
+// signed-in visitors away from the landing page they may want to read.
 
 // Integrations: only what exists is presented as working (docs/backlog.md, M2).
 const INTEGRATIONS = [
@@ -53,11 +47,7 @@ export default function Landing() {
       <header className="topbar">
         <div className="wrap topbar__in">
           <Logo href="/" id="site-home" />
-          <nav className="actions" aria-label="Conta">
-            <Suspense fallback={<SignedOutTopBarActions />}>
-              <TopBarActions />
-            </Suspense>
-          </nav>
+          <SessionActions />
         </div>
       </header>
 
@@ -82,11 +72,7 @@ export default function Landing() {
               className="stack-tight"
               style={{ display: "flex", flexDirection: "column", gap: "var(--l1)" }}
             >
-              <div className="actions">
-                <Suspense fallback={<SignedOutHeroActions />}>
-                  <HeroActions />
-                </Suspense>
-              </div>
+              <HeroSessionActions />
               <p className="t-sm">Grátis. Seu endereço fica meuquarto.com.br/seunome.</p>
             </div>
           </div>

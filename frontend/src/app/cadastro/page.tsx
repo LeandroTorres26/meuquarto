@@ -5,7 +5,7 @@ import { SignupForm } from "@/components/SignupForm";
 
 export const metadata: Metadata = { title: "Criar conta no meuquarto" };
 
-// Signed-in visitors are redirected to /painel/conta by proxy.ts.
+// Signed-in visitors are redirected to /painel by proxy.ts.
 export default function SignUpPage() {
   return (
     <AuthLayout

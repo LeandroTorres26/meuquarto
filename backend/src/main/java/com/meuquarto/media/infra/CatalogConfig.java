@@ -11,7 +11,8 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Spring wiring for the catalogs, kept outside the hierarchy on purpose: the provider classes know
- * nothing about Spring. The TMDB token comes only from the environment ({@code TMDB_API_KEY}).
+ * nothing about Spring. The TMDB token and the IGDB (Twitch) credentials come only from the environment
+ * ({@code TMDB_API_KEY}, {@code TWITCH_CLIENT_ID}, {@code TWITCH_CLIENT_SECRET}).
  */
 @Configuration
 class CatalogConfig {
@@ -21,6 +22,14 @@ class CatalogConfig {
             @Value("${meuquarto.catalog.tmdb.token:}") String token,
             @Value("${meuquarto.catalog.tmdb.base-url:https://api.themoviedb.org/3}") String baseUrl) {
         return new TmdbCatalog(HttpCatalogProvider.newClient(), Clock.systemUTC(), Duration.ofMinutes(10), baseUrl, token);
+    }
+
+    /** IGDB: the Twitch app id and secret come only from the environment; without them it is unavailable. */
+    @Bean
+    CatalogProvider igdbCatalog(
+            @Value("${meuquarto.catalog.igdb.client-id:}") String clientId,
+            @Value("${meuquarto.catalog.igdb.client-secret:}") String clientSecret) {
+        return new IgdbCatalog(Clock.systemUTC(), clientId, clientSecret);
     }
 
     /** Open Library and Deezer need no key: fixed hosts, nothing to configure. */

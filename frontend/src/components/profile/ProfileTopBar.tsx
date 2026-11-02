@@ -1,14 +1,13 @@
-import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { SessionActions, type OwnerSlug } from "@/components/SessionActions";
 
-export function ProfileTopBar() {
+/** `ownerSlug`: the profile the page shows, so the bar can tell the owner from other signed-in viewers. */
+export function ProfileTopBar({ ownerSlug }: { ownerSlug?: OwnerSlug }) {
   return (
     <header className="topbar">
       <div className="wrap topbar__in">
         <Logo href="/" />
-        <Link href="/cadastro" prefetch={false} className="mq-btn mq-btn--ghost mq-btn--sm">
-          Crie o seu
-        </Link>
+        <SessionActions ownerSlug={ownerSlug} />
       </div>
     </header>
   );

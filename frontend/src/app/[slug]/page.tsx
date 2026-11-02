@@ -8,6 +8,7 @@ import { ItemDialog } from "@/components/profile/ItemDialog";
 import { ProfileFooter } from "@/components/profile/ProfileFooter";
 import { ProfileHeader } from "@/components/profile/ProfileHeader";
 import { ProfileTopBar } from "@/components/profile/ProfileTopBar";
+import { OwnerHighlightsLink } from "@/components/SessionSlots";
 import { CATEGORY_META, isProfileEmpty, visibleSections } from "@/lib/profile-view";
 import { nowMs } from "@/lib/linked-accounts";
 import { getPublicProfile, siteUrl } from "@/lib/public-profile";
@@ -90,6 +91,7 @@ async function Profile({ params }: { params: Props["params"] }) {
               <p className="t-sm">
                 {profile.displayName} ainda não destacou nenhuma obra. Volte daqui a pouco.
               </p>
+              <OwnerHighlightsLink ownerSlug={profile.slug} />
             </div>
           </section>
         ) : null}
@@ -113,13 +115,16 @@ function ProfileSkeleton() {
 }
 
 export default function ProfilePage({ params }: Props) {
+  // The top bar and footer learn whose page this is from the route params and who is looking from
+  // the session cookie, each inside its own Suspense hole; the page itself stays prerenderable.
+  const ownerSlug = params.then((p) => p.slug);
   return (
     <div className="page">
-      <ProfileTopBar />
+      <ProfileTopBar ownerSlug={ownerSlug} />
       <Suspense fallback={<ProfileSkeleton />}>
         <Profile params={params} />
       </Suspense>
-      <ProfileFooter />
+      <ProfileFooter ownerSlug={ownerSlug} />
     </div>
   );
 }

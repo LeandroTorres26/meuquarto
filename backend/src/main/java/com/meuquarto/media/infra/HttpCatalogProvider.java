@@ -133,6 +133,17 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
     }
 
     private Optional<String> download(Call call) throws IOException, InterruptedException {
+        Reply reply = attempt(call);
+        if (reply.status() == 401 && onUnauthorized()) {
+            reply = attempt(call); // one retry, with whatever credential the leaf renewed
+        }
+        if (reply.status() != 200) {
+            return failed("HTTP " + reply.status());
+        }
+        return Optional.of(reply.body());
+    }
+
+    private Reply attempt(Call call) throws IOException, InterruptedException {
         HttpRequest.Builder request = HttpRequest.newBuilder(call.uri())
                 .timeout(requestTimeout)
                 .header("Accept", "application/json");
@@ -142,11 +153,7 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
             request.header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(call.body()));
         }
         authorize(request);
-        Reply reply = send(request.build());
-        if (reply.status() != 200) {
-            return failed("HTTP " + reply.status());
-        }
-        return Optional.of(reply.body());
+        return send(request.build());
     }
 
     /**
@@ -227,6 +234,15 @@ public abstract class HttpCatalogProvider implements CatalogProvider {
     /** Optional step, like {@link #searchBody}, for the detail request. */
     protected String fetchBody(MediaCategory category, String externalId) {
         return null;
+    }
+
+    /**
+     * Optional step: the platform answered 401. A leaf whose credential expires (IGDB's Twitch token)
+     * drops it here and returns {@code true}, and the template repeats the call once; the default
+     * {@code false} keeps the 401 as a plain failure.
+     */
+    protected boolean onUnauthorized() {
+        return false;
     }
 
     /** Optional step with a default that does nothing: platforms that need a key override it. */

@@ -1,8 +1,7 @@
 "use client";
 
 import { ArrowLeft, ChevronDown, PanelRightClose } from "lucide-react";
-import Link from "next/link";
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from "react";
 import {
   ItemDetailBody,
   ItemDetailError,
@@ -74,6 +73,8 @@ function ItemPanel({
 type Props = {
   slug: string;
   ownerName: string;
+  /** Session-aware call to action under the chips (visitors only), from the server page. */
+  invite: ReactNode;
   /** The selectable objects, in chip order. */
   objects: readonly RoomObject[];
   activeId: string | null;
@@ -91,12 +92,13 @@ type Props = {
 
 /**
  * The info panel of S5: side panel or bottom sheet. Top to bottom: the title, the selected object's
- * items (or S17 when an item is open), the object chips and "Crie o seu quarto". No how-to text here:
+ * items (or S17 when an item is open), the object chips and the visitors-only "Crie o seu quarto". No how-to text here:
  * it is the scene's accessible description.
  */
 export function RoomPanel({
   slug,
   ownerName,
+  invite,
   objects,
   activeId,
   itemRaw,
@@ -289,13 +291,7 @@ export function RoomPanel({
           </button>
         ))}
       </div>
-      <Link
-        href="/cadastro"
-        prefetch={false}
-        className="mq-btn mq-btn--primary self-start room-cta"
-      >
-        Crie o seu quarto
-      </Link>
+      {invite}
     </section>
   );
 }
