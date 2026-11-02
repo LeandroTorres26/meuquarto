@@ -399,8 +399,9 @@ html:has(.room){overflow:hidden;overscroll-behavior:none}
 .fc{position:absolute;box-sizing:border-box;backface-visibility:hidden;overflow:hidden}
 .fc img{display:block;width:100%;height:100%;object-fit:cover}
 /* object glow: a soft brand edge on every face of the object, like a selection highlight in a game */
-.bx[data-g]:not([data-g=""]) .fc{outline:2px solid transparent;outline-offset:-2px;transition:outline-color .18s ease-out,filter .18s ease-out}
-.bx.is-lit[data-g]:not([data-g=""]) .fc{outline-color:var(--brand);filter:drop-shadow(0 0 4px var(--brand))}   /* same specificity as the resting rule above, so the outline shows */
+/* --k is the room's authoring scale (RASTER_SCALE in box.ts: the world is drawn k times larger and scaled down). The glow is a box-shadow, never a filter: a filter flattens the face and blurs the cover. */
+.bx[data-g]:not([data-g=""]) .fc{--fc-glow:0 0 0 0 transparent;outline:calc(2px * var(--k,1)) solid transparent;outline-offset:calc(-2px * var(--k,1));transition:outline-color .18s ease-out,box-shadow .18s ease-out}
+.bx.is-lit[data-g]:not([data-g=""]) .fc{outline-color:var(--brand);--fc-glow:0 0 calc(4px * var(--k,1)) var(--brand)}   /* same specificity as the resting rule above, so the outline shows */
 
 /* labels: one button per object; the label fades in above the object */
 .pin-anchor{position:absolute;left:0;top:0;pointer-events:none}   /* only a shown label (or a touch dot) takes the pointer */
@@ -477,7 +478,7 @@ html:has(.room){overflow:hidden;overscroll-behavior:none}
 .room--touch .room-expand{min-height:44px;bottom:calc(var(--space-4) + env(safe-area-inset-bottom,0px))}
 @media (prefers-reduced-motion:reduce){
   .room-pin__label{translate:none;transition:opacity .1s linear}
-  .bx[data-g]:not([data-g=""]) .fc{transition:outline-color .1s linear,filter .1s linear}
+  .bx[data-g]:not([data-g=""]) .fc{transition:outline-color .1s linear,box-shadow .1s linear}
   .room--touch .room-pin__dot{animation:none}
   .room--touch .room-info{transition:none}
 }

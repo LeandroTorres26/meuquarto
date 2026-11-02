@@ -1,5 +1,5 @@
 import { memo, useMemo, type CSSProperties } from "react";
-import { boxTransform, faceGeometry, type Box } from "./box";
+import { RASTER_SCALE, boxTransform, faceGeometry, scalePx, type Box } from "./box";
 import type { RoomObject } from "./objects/RoomObject";
 
 function faceStyle(
@@ -9,16 +9,20 @@ function faceStyle(
 ): CSSProperties {
   const texture = box.textures?.[face.face];
   return {
-    left: face.left,
-    top: face.top,
-    width: face.width,
-    height: face.height,
-    transform: face.transform,
-    background: texture?.background ?? box.color,
-    border: texture?.border || undefined,
-    borderRadius: texture?.borderRadius,
+    left: face.left * RASTER_SCALE,
+    top: face.top * RASTER_SCALE,
+    width: face.width * RASTER_SCALE,
+    height: face.height * RASTER_SCALE,
+    transform: scalePx(face.transform),
+    background: scalePx(texture?.background ?? box.color),
+    border: texture?.border ? scalePx(texture.border) : undefined,
+    borderRadius: texture?.borderRadius ? scalePx(texture.borderRadius) : undefined,
+    // The glow of a lit object is `--fc-glow` (site.css): the first shadow of the list, so the shade
+    // stays inline and the cover is never run through a filter, which would flatten its raster.
     boxShadow:
-      face.shade > 0 ? `inset 0 0 0 9999px hsl(240 33% 5% / ${face.shade.toFixed(2)})` : undefined,
+      face.shade > 0
+        ? `var(--fc-glow,0 0 0 0 transparent),inset 0 0 0 9999px hsl(240 33% 5% / ${face.shade.toFixed(2)})`
+        : "var(--fc-glow,0 0 0 0 transparent)",
   };
 }
 
@@ -27,7 +31,7 @@ function BoxView({ box, lamp, lit }: { box: Box; lamp: boolean; lit: boolean }) 
     <div
       className={lit ? "bx is-lit" : "bx"}
       data-g={box.group || undefined}
-      style={{ transform: boxTransform(box) }}
+      style={{ transform: scalePx(boxTransform(box)) }}
     >
       {faceGeometry(box, lamp).map((face) => {
         const image = box.textures?.[face.face]?.image;

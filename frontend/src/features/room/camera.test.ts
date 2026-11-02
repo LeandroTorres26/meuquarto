@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { RASTER_SCALE } from "./box";
 import {
   HOME_CAMERA,
   LIMITS,
@@ -15,6 +16,7 @@ import {
   softPitch,
   stepCamera,
   wheelZoom,
+  worldTransform,
   type Camera,
 } from "./camera";
 
@@ -169,5 +171,26 @@ describe("isSideLayout", () => {
     expect(isSideLayout(390, 844, true)).toBe(false);
     expect(isSideLayout(844, 390, true)).toBe(true);
     expect(isSideLayout(1024, 900, true)).toBe(false);
+  });
+});
+
+describe("worldTransform", () => {
+  it("scales the world down by the authoring scale, so the DOM is drawn larger than it is shown", () => {
+    const cam = { ...HOME_CAMERA, fs: 0.9, zoom: 3 };
+    const match =
+      /^scale3d\(([\d.]+),([\d.]+),([\d.]+)\) rotateX\(-28\.00deg\) rotateY\(-45\.00deg\) translateY\((\d+)px\)$/.exec(
+        worldTransform(cam),
+      );
+    expect(match).not.toBeNull();
+    // the shown size is unchanged: drawn size (x RASTER_SCALE) times the CSS scale is fs * zoom
+    expect(parseFloat(match![1]) * RASTER_SCALE).toBeCloseTo(2.7, 3);
+    // depth: a CSS scale() leaves z alone, so z shrinks by the authoring scale only
+    expect(parseFloat(match![3]) * RASTER_SCALE).toBeCloseTo(1, 3);
+    expect(parseInt(match![4], 10)).toBe(130 * RASTER_SCALE);
+  });
+
+  it("never magnifies a face at the maximum zoom of a normal screen", () => {
+    const cam = { ...HOME_CAMERA, fs: 1, zoom: LIMITS.zoom[1] };
+    expect(parseFloat(/scale3d\(([\d.]+),/.exec(worldTransform(cam))![1])).toBeLessThan(1.25);
   });
 });
