@@ -35,7 +35,7 @@ export function themeCookie(theme: ThemeId | null, secure: boolean): string {
  */
 export const THEME_BOOT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|; )${THEME_COOKIE}=(${THEME_IDS.join("|")})(?:;|$)/);if(m)document.documentElement.setAttribute("data-theme",m[1])}catch(e){}})()`;
 
-/** Colours the whole site with `theme` right away, without keeping it (a locked theme being looked at). */
+/** Colours the whole site with `theme` right away, without keeping it. */
 export function showTheme(theme: string) {
   document.documentElement.setAttribute("data-theme", isThemeId(theme) ? theme : DEFAULT_THEME);
 }

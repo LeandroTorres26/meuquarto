@@ -94,7 +94,7 @@ async function Listing({ props }: { props: Props }) {
   const profileHref = `/${encodeURIComponent(profile.slug)}`;
 
   return (
-    <ProfileShell theme={profile.theme} premium={profile.premiumTheme} ownerSlug={slug}>
+    <ProfileShell theme={profile.theme} ownerSlug={slug}>
       <main
         className="wrap sections"
         style={{ paddingTop: "var(--page-top)", paddingBottom: "var(--l5)" }}

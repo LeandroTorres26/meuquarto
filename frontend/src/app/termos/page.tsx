@@ -54,13 +54,6 @@ export default function TermsPage() {
           As notas que você escreve são de sua responsabilidade.
         </p>
       </LegalSection>
-      <LegalSection title="Compras">
-        <p className="t-body">
-          Ainda não há nada à venda. Quando a loja abrir, packs e temas serão compras únicas e o
-          preço será mostrado antes do pagamento. Estes termos serão atualizados com as regras da
-          compra antes disso.
-        </p>
-      </LegalSection>
       <LegalSection title="Disponibilidade">
         <p className="t-body">
           O meuquarto é um projeto acadêmico em desenvolvimento e é oferecido como está, sem

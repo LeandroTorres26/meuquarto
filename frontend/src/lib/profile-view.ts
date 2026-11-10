@@ -42,7 +42,6 @@ export type PublicProfileData = {
   /** `data-theme` id of the owner's theme. */
   theme: string;
   /** True for a bought theme: the page then uses the one-color logo in `ink`. */
-  premiumTheme: boolean;
   now: PublicNowItem[];
   favorites: PublicItem[];
   categories: PublicSection[];

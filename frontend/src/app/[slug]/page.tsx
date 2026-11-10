@@ -70,8 +70,8 @@ async function Profile({ params }: { params: Props["params"] }) {
   const serverNow = nowMs();
   return (
     // The owner's theme applies to the whole page, top bar and footer included, through data-theme
-    // (tokens are scoped to it); a premium theme also switches the logo to the one-color symbol.
-    <ProfileShell theme={profile.theme} premium={profile.premiumTheme} ownerSlug={profile.slug}>
+    // (tokens are scoped to it).
+    <ProfileShell theme={profile.theme} ownerSlug={profile.slug}>
       <section className="profile-top">
         <div className="wrap profile-top__in">
           <ProfileHeader profile={profile} />

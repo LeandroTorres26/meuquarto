@@ -9,8 +9,6 @@ import {
   meterLabel,
   moveId,
   moveTo,
-  PACK_LIMIT,
-  showUpsell,
   type Highlight,
 } from "@/lib/collection";
 import type { Category } from "@/lib/profile-view";
@@ -115,27 +113,15 @@ export function HighlightStrip({
         <Meter count={count} limit={limit} />
       </div>
 
-      {showUpsell(count, limit) && (
-        <div className="mq-upsell">
-          <p className="mq-upsell__text" id="hl-full">
-            <strong>{fullTitle}</strong>
-            No plano grátis cabem {limit} destaques. Com o pack de destaques, cabem {PACK_LIMIT}. O
-            pack ainda não está à venda: chega em breve. A coleção continua sem limite.
-          </p>
-        </div>
-      )}
-      {full && limit >= PACK_LIMIT && (
+      {full && (
         <p className="help" id="hl-full">
-          Os {limit} destaques estão ocupados. Remova um para destacar outro.
+          <strong>{fullTitle}.</strong> Cabem {limit} destaques; remova um para liberar uma vaga. A
+          coleção continua sem limite.
         </p>
       )}
 
       {count > 0 ? (
-        <ol
-          ref={list}
-          className={`hl-strip${limit > 4 ? " hl-strip--pack" : ""}`}
-          aria-label="Destaques, na ordem da parede"
-        >
+        <ol ref={list} className="hl-strip" aria-label="Destaques, na ordem da parede">
           {items.map((item, index) => {
             const name = item.media.title;
             return (

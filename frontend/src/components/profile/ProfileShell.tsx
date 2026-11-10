@@ -10,18 +10,16 @@ import { ProfileTopBar } from "./ProfileTopBar";
  */
 export function ProfileShell({
   theme,
-  premium = false,
   ownerSlug,
   children,
 }: {
   theme?: string;
-  premium?: boolean;
   ownerSlug?: OwnerSlug;
   children: ReactNode;
 }) {
   return (
     <div className="page" data-theme={theme}>
-      <ProfileTopBar ownerSlug={ownerSlug} premium={premium} />
+      <ProfileTopBar ownerSlug={ownerSlug} />
       {children}
       <ProfileFooter ownerSlug={ownerSlug} />
     </div>

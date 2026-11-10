@@ -158,33 +158,6 @@ export default function Landing() {
             </p>
           </div>
         </section>
-
-        <section className="stack" style={{ gap: "var(--l3)" }} aria-labelledby="plano-h">
-          <div className="pair-2">
-            <h2 id="plano-h" className="t-h2">
-              Grátis, com extras se quiser
-            </h2>
-            <p className="t-body muted">
-              Os extras serão compra única, com Pix ou cartão. Nada de assinatura.
-            </p>
-          </div>
-          <div className="grid" style={{ rowGap: "var(--grid-gap, var(--col-gap))" }}>
-            <div className="span-all t-span-4 d-span-6 region region--line">
-              <h3 className="t-h3">Grátis</h3>
-              <p className="t-sm">
-                Perfil completo, as integrações disponíveis, 4 destaques por categoria e os temas
-                Noite e Dia.
-              </p>
-            </div>
-            <div className="span-all t-span-4 d-span-6 region region--tint">
-              <h3 className="t-h3">Pack de destaques e temas</h3>
-              <p className="t-sm" style={{ color: "var(--ink)" }}>
-                Até 12 destaques por categoria e temas originais para o perfil. Em breve, com preço
-                anunciado antes de abrir a loja.
-              </p>
-            </div>
-          </div>
-        </section>
       </main>
 
       <footer className="footer">

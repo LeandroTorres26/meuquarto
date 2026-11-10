@@ -58,8 +58,6 @@ export function DeleteAccountForm({ address }: { address: string }) {
         }}
       >
         <li>Apagamos perfil, foto, destaques e contas vinculadas.</li>
-        <li>Temas comprados são perdidos, sem reembolso.</li>
-        <li>Registros de pagamento ficam guardados sem seus dados, como a lei pede.</li>
       </ul>
       {error && !wrong && <AlertBox>{error.message}</AlertBox>}
       <div className="field">
