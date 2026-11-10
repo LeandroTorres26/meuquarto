@@ -216,6 +216,8 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
 
 **Chamadas às plataformas** (as classes em `media/infra/`, como `LetterboxdProvider` e `AniListProvider`). Usam o cliente HTTP do Java com tempo limite e sem seguir redirecionamentos. Uma plataforma fora do ar não derruba as outras. Os nomes de usuário são validados e codificados antes de ir na URL.
 
+**Imagem de prévia do link (Open Graph)** (`frontend/src/app/[slug]/opengraph-image.tsx`, `frontend/src/app/opengraph-image.tsx` e `frontend/src/lib/og-image.tsx`). É a imagem que aparece quando alguém cola o link do perfil no WhatsApp, no Discord ou no X. O Next gera um PNG de 1200x630 com o nome da pessoa, o endereço e a marca, usando o `ImageResponse` que já vem no próprio Next (`next/og`): a gente descreve a imagem com JSX e CSS simples e ele devolve o PNG. A imagem não usa capas nem foto, então o servidor nunca baixa imagem de plataforma nenhuma. Páginas sem dono (landing, termos, 404) usam a versão com o texto "Seu gosto num quarto só". A fonte é uma versão estática (TTF) da Big Shoulders Display, porque o `next/og` não lê os arquivos `woff2` do site.
+
 **GitHub Actions** (`.github/workflows/ci.yml` e `security.yml`). A cada pull request, o GitHub roda os testes do backend, a verificação do frontend (lint, tipos, formatação, build) e o build das imagens Docker. Só entra no `main` o que passa.
 
 ---
