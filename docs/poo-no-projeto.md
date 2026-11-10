@@ -12,11 +12,11 @@ Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Teste
 |---|---|---|
 | 1 | `ActivityProvider` (interface) -> `RssActivityProvider` (abstrata) -> `LetterboxdProvider`, `GoodreadsProvider` (final); `AniListProvider` (estende `HttpCatalogProvider` **e** implementa `ActivityProvider`), `SteamProvider`, `LastFmProvider`, `MyAnimeListProvider` implementam direto | base feita (issue #28: interface, abstrata, registro); `SyncService`, que percorre os provedores, feito (issue #29); `LetterboxdProvider` feito (issue #30); `AniListProvider` feito (issue #31, junto com a parte AniList da #22); `GoodreadsProvider` feito (issue #34); `LastFmProvider` feito (issue #32); `MyAnimeListProvider` feito (issue #126); Steam na issue #33 |
 | 2 | `CatalogProvider` (interface) -> `HttpCatalogProvider` (abstrata, template method) -> `TmdbCatalog`, `AniListProvider` (a mesma classe da hierarquia 1), `OpenLibraryCatalog`, `IgdbCatalog`, `DeezerCatalog` | `CatalogProvider`, `HttpCatalogProvider` e `TmdbCatalog` feitos (issue #21); `AniListProvider` feito (issue #31); `OpenLibraryCatalog`, `DeezerCatalog` e `IgdbCatalog` feitos (issue #22) |
-| 3 | `Plan` (interface) -> `FreePlan`, `PackPlan` | feito (issue #24); temas por posse feitos (issue #37); `PackPlan` só passa a ser entregue quando houver compra do pacote (issue #39) |
-| 4 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
-| 5 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException`, `NowException` | feito |
+| 3 | `ValidationRule<T, P>` (interface genérica) -> `LengthRule<T, P>` (abstrata) -> `SlugLengthRule`, `PasswordLengthRule`; mais cinco regras que implementam a interface | feito |
+| 4 | `DomainException` (abstrata) -> `AccountRuleException`, `InvalidSlugException`, `SlugUnavailableException`, `TooManyAttemptsException`, `CollectionException`, `HighlightException`, `PublicProfileException`, `LinkedAccountException`, `NowException` | feito |
+| 5 | `RoomObject` (abstrata, TypeScript no frontend) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`, `Decor` | feito (issue #43), na seção 5 abaixo |
 
-Opcional, feito na issue #43: `RoomObject` (abstrata, TypeScript no frontend) -> `Poster`, `Shelf`, `RecordPlayer`, `Tv`, `Decor` (hierarquia 6, abaixo).
+A hierarquia `Plan` (`FreePlan`, `PackPlan`) existiu nas issues #24 e #37 e foi removida junto com a loja (ADR 0024): não há mais planos nem compras no P2. O limite de 4 destaques por lista (BR-02) virou uma regra comum da `HighlightList`, sem hierarquia, e não deve ser citado como exemplo de herança.
 
 ## Regras da coleção (issue #23)
 
@@ -39,7 +39,7 @@ O professor disse que recursos do Spring Boot não contam como POO do projeto. N
 - `OncePerRequestFilter` e qualquer classe de `shared/ratelimit` ou `shared/security` que estenda ou implemente tipos do Spring.
 - Injeção de dependência (o Spring escolhe o objeto): não é a mesma coisa que polimorfismo escrito por você.
 
-Regra de bolso: se o `extends` ou `implements` aponta para um tipo que você não escreveu (`org.springframework...`, `jakarta...`), não é exemplo. Os exemplos válidos são os das hierarquias 4 e 5 abaixo, mais `RuntimeException` como superclasse da `DomainException`, que é a base normal da linguagem (e mesmo assim o foco é a `DomainException`, que é nossa).
+Regra de bolso: se o `extends` ou `implements` aponta para um tipo que você não escreveu (`org.springframework...`, `jakarta...`), não é exemplo. Os exemplos válidos são os das hierarquias 3 e 4 abaixo, mais `RuntimeException` como superclasse da `DomainException`, que é a base normal da linguagem (e mesmo assim o foco é a `DomainException`, que é nossa).
 
 Uma observação honesta: `Slug` e `PasswordCandidate` são `record`, assunto que pode não ter sido visto em aula. Se perguntarem, diga que `record` é uma classe com campos `final`, construtor e getters gerados pelo compilador. Os exemplos centrais deste guia usam classes comuns.
 
@@ -214,7 +214,7 @@ AniListProvider extends HttpCatalogProvider implements ActivityProvider      (e 
 
 ## Hierarquias, uma a uma
 
-### 4. ValidationRule (feito)
+### 3. ValidationRule (feito)
 
 ```
       interface ValidationRule<T, P>
@@ -233,7 +233,7 @@ final SlugLengthRule  final PasswordLengthRule
   - Por que o tamanho da senha usa `codePointCount`? Emoji ocupa dois `char`; contamos caracteres de verdade (ADR 0012). Isso é o que `PasswordLengthRule.lengthOf` faz diferente de `SlugLengthRule.lengthOf`, e por isso o método é abstrato na base.
   - O que acontece com `null`? `LengthRule.check` trata `null` como tamanho zero, então devolve "curto demais" antes das outras regras verem o `null`.
 
-### 5. DomainException (feito)
+### 4. DomainException (feito)
 
 ```
         abstract DomainException extends RuntimeException
@@ -251,7 +251,7 @@ final AccountRuleException  final InvalidSlugException  final SlugUnavailableExc
   - Por que a `DomainException` não conhece HTTP? O domínio não pode depender da camada de API (ArchUnit confere); o `ErrorKind` é a ponte neutra.
   - Onde um novo erro precisa ser registrado? Em lugar nenhum além da própria classe.
 
-### 6. RoomObject (opcional, feito na issue #43; é em TypeScript, no frontend)
+### 5. RoomObject (feito na issue #43; é em TypeScript, no frontend)
 
 ```
               abstract RoomObject
@@ -417,40 +417,14 @@ final LetterboxdProvider   final GoodreadsProvider   + implements ActivityProvid
   - Como a capa e o adulto são tratados? A capa é montada por nós a partir do `image_id` (só letras e dígitos) num host fixo (`images.igdb.com`); o tema 42 do IGDB (erótico) vira `adult = true` e a busca descarta esses jogos (BR-08).
   - Por que o método se chama `catalogName()` e não `id()`? Porque o `AniListProvider` implementa as duas interfaces, e o `id()` do `ActivityProvider` devolve `ProviderId`; dois métodos com o mesmo nome e retornos diferentes não compilam na mesma classe.
 
-### 3. Plan (feito na issue #24; temas na issue #37)
-
-```
-        interface Plan
- (code, highlightLimit, ownedThemes,
-  default canApply(ProfileTheme),
-  default hasRoomFor(int))
-             ^
-      +------+------+
-      |             |
-final FreePlan   final PackPlan
-(4 destaques)    (12 destaques)
-```
-
-- Temas (BR-05, issue #37): `canApply(theme)` é um método `default` da interface: tema grátis vale para todos; tema premium só se estiver em `ownedThemes()`, o conjunto dos temas que o usuário comprou. Cada plano recebe esse conjunto no construtor (`new FreePlan(owned)`), então `FreePlan` e `PackPlan` não repetem a conta e nenhum código pergunta "tem o pacote?". O pacote (12 destaques) não inclui temas: eles são vendidos um a um. Quem sabe o que o usuário comprou é o `billing` (`Entitlements`); o `profile/application/EntitlementPlans.java` converte isso em `ProfileTheme` e monta o plano. Se o usuário tenta aplicar um tema que o plano recusa, `ProfileEditor` lança `ProfileException(THEME_LOCKED)` (um `DomainException`, HTTP 400). Teste: `profile/domain/BR05PremiumThemeNeedsOwnershipTest.java`.
-- Arquivos: `profile/domain/Plan.java` (interface), `FreePlan.java`, `PackPlan.java`, `ThemeTier.java` (enum `FREE`/`PREMIUM`), `ProfileTheme.java` (enum com os quatro temas); quem decide qual plano o usuário tem: `profile/application/PlanResolver.java` (interface) e `EntitlementPlans.java` (hoje devolve `FreePlan` com os temas comprados; a issue #39 passa a devolver `PackPlan` para quem tem o pacote); quem usa: `HighlightList.highlight(item, plan)` em `profile/domain/HighlightList.java` e `profile/application/ProfileHighlights.java`. Testes: `profile/domain/PlanTest.java`, `profile/domain/HighlightListTest.java` (sem Spring), `profile/HighlightApiTests.java` (a mesma API com `FreePlan` e com `PackPlan`).
-- Roteiro para explicar: (1) a interface `Plan` diz o que qualquer plano responde: limite de destaques (BR-02) e se um tema pode ser aplicado (BR-05); (2) `FreePlan` e `PackPlan` são `final` e só devolvem números e respostas diferentes; (3) a regra "no máximo N destaques" está em `HighlightList.highlight`, que recebe um `Plan` e pergunta `plan.hasRoomFor(tamanho)`; ela nunca pergunta "o usuário comprou o pacote?"; (4) o método `default hasRoomFor` está na interface porque a conta é a mesma para todo plano, só o limite muda.
-- Comparação com a aula 9: `Plan` é o `Animal`/`Pet`, `FreePlan` e `PackPlan` são `Cachorro` e `Gato`, `HighlightList.highlight(item, plan)` é o `PetShop.gritaria(animal)`: o método recebe o tipo base e o comportamento muda conforme o objeto real. Trocar de plano é entregar outro objeto ao mesmo método.
-- Por que interface e não classe abstrata? Os dois planos não compartilham campos nem construtor; só um contrato (e uma conta pequena, o `default`). Classe abstrata seria herança sem nada para herdar, e ainda gastaria a única herança que a classe pode ter. Com interface, um plano futuro pode estender qualquer coisa.
-- Onde fica o único `if`? Na fábrica: o `PlanResolver` escolhe qual objeto entregar (hoje sempre `FreePlan`; na issue #39 devolverá `PackPlan` se o usuário tiver o entitlement do pacote). É a única decisão sobre quem tem o quê, e fica em um lugar só; ninguém depois dela testa o tipo do plano (sem `instanceof`).
-- Perguntas:
-  - Como trocar de plano sem `if`? O `ProfileHighlights` chama `plans.planOf(userId)`, recebe um `Plan` e passa adiante; o teste de API troca o `PlanResolver` por outro que devolve `PackPlan` e o limite vira 12 sem mexer em nenhuma linha de `HighlightList`.
-  - E se criarem um plano "Premium" com 30 destaques? Uma classe nova `PremiumPlan implements Plan` e o resolvedor passa a entregá-la; as regras de destaque e de tema não mudam.
-  - Por que `Plan` não tem anotação do Spring ou do JPA? É uma hierarquia nossa (ADR 0018): Java puro, testada sem contexto.
-  - Por que `canApply` recebe o tema (`ProfileTheme`) e não só o `ThemeTier`? Na issue #24 os temas ainda não existiam e o tier bastava. Com a issue #37 a posse é por tema (comprar a Locadora não libera a Estufa), então o método precisa saber qual tema é.
-  - Por que o erro de limite é `CONFLICT` (HTTP 409) e não `INVALID` (400)? O pedido é válido; ele conflita com o estado atual (a lista está cheia para o seu plano). Depois de remover um destaque, o mesmo pedido funciona.
-
 ## Destaques (issue #24)
 
 Regras de negócio em classes comuns: `profile/domain/HighlightList.java` (entidade com as regras: `highlight`, `unhighlight`, `dropItem`, `reorder`), `Highlight.java`, `HighlightException.java` (sexta subclasse de `DomainException`, com códigos como `HIGHLIGHT_LIMIT_REACHED`, `ALREADY_HIGHLIGHTED`, `INVALID_ORDER`); serviço em `profile/application/ProfileHighlights.java`.
 
 Leitura pública (issues #16 e #26): `profile/application/PublicProfiles.java` monta o modelo de leitura (`PublicProfile`, records imutáveis compostos: o perfil tem uma lista de `Section`, que tem uma lista de `PublicItem`) e `PublicProfileException.java` (sétima subclasse de `DomainException`, `PROFILE_NOT_FOUND` e `ITEM_NOT_FOUND`, sempre `NOT_FOUND`) é tratada pelo mesmo `DomainErrors`, sem `if` por tipo. `media/domain/MediaLinks.java` monta os links do item para a página da obra em cada plataforma (FR-10a) a partir de uma lista fixa de hospedeiros e de ids guardados; não é uma hierarquia, é uma função de domínio testada sem Spring.
 
-- BR-02 (limite pelo plano), BR-07 (uma obra uma vez por lista), FR-11 ("Favoritos de tudo" é a lista com categoria `null`, aceita qualquer categoria e usa o mesmo limite).
+- BR-02 (cada lista guarda no máximo 4 destaques, igual para todos: a constante `HighlightList.LIMIT` e a checagem dentro de `highlight`; teste sem Spring em `profile/domain/BR02HighlightLimitTest.java`), BR-07 (uma obra uma vez por lista), FR-11 ("Favoritos de tudo" é a lista com categoria `null`, aceita qualquer categoria e usa o mesmo limite).
+- Por que o erro de limite é `CONFLICT` (HTTP 409) e não `INVALID` (400)? O pedido é válido; ele conflita com o estado atual (a lista já tem 4 destaques). Depois de remover um destaque, o mesmo pedido funciona.
 - Esconder ou apagar um item da coleção tira o item dos destaques (`ProfileCollection.leaveHighlights`).
 - Reordenar: o cliente manda todos os ids da lista na nova ordem; se não for exatamente o conjunto atual, `INVALID_ORDER`.
 
@@ -458,7 +432,7 @@ Leitura pública (issues #16 e #26): `profile/application/PublicProfiles.java` m
 
 ## Perguntas gerais que o professor pode fazer
 
-- **Explique a hierarquia que você mais gosta.** Use a 4: interface genérica, classe abstrata `LengthRule`, folhas `final`, e a lista percorrida em `firstProblem`.
+- **Explique a hierarquia que você mais gosta.** Use a 3: interface genérica, classe abstrata `LengthRule`, folhas `final`, e a lista percorrida em `firstProblem`.
 - **O que é polimorfismo?** O mesmo código (`rule.check(value)`) executa comportamentos diferentes conforme a classe real do objeto, decidido em tempo de execução.
 - **Qual a diferença entre classe abstrata e interface?** Abstrata pode ter campos, construtor e métodos prontos, e a subclasse só herda de uma; interface é contrato (com `default` e `static` opcionais) e uma classe pode implementar várias.
 - **Por que o Spring não conta?** Porque quem escreveu a hierarquia foi o framework, não nós; o professor pediu código próprio.

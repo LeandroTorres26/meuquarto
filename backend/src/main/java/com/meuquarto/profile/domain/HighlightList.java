@@ -25,12 +25,14 @@ import org.hibernate.annotations.BatchSize;
 
 /**
  * An ordered list of highlights of one profile: one list per category, plus one with no category,
- * "Favoritos de tudo" (FR-11), which takes items of any category. The list owns the rules (BR-02, BR-07):
- * the size limit comes from the {@link Plan} it is given, never from a test on who owns what.
+ * "Favoritos de tudo" (FR-11), which takes items of any category. The list owns the rules (BR-02, BR-07).
  */
 @Entity
 @Table(name = "highlight_lists")
 public class HighlightList {
+
+    /** BR-02: how many highlights each list may hold, the same for every user. */
+    public static final int LIMIT = 4;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -67,9 +69,9 @@ public class HighlightList {
     /**
      * "Destacar": appends the item at the end. The item must be the owner's, visible and, in a category
      * list, of that category; it can be in the list once (BR-07); and the list cannot grow past the
-     * plan's limit (BR-02).
+     * {@link #LIMIT} (BR-02).
      */
-    public void highlight(CollectionItem item, Plan plan) {
+    public void highlight(CollectionItem item) {
         if (item.profileId() != profileId) {
             throw new HighlightException(Problem.NOT_IN_COLLECTION);
         }
@@ -82,7 +84,7 @@ public class HighlightList {
         if (highlights.stream().anyMatch(existing -> existing.collectionItemId() == item.id())) {
             throw new HighlightException(Problem.ALREADY_HIGHLIGHTED);
         }
-        if (!plan.hasRoomFor(highlights.size())) {
+        if (highlights.size() >= LIMIT) {
             throw new HighlightException(Problem.HIGHLIGHT_LIMIT_REACHED);
         }
         highlights.add(new Highlight(item.id(), highlights.size()));

@@ -532,8 +532,7 @@ export function DestaquesScreen({
           {full && (
             <p className="help">
               <Star className="icon icon--inline" aria-hidden="true" /> Destaques cheios: para
-              destacar outro, remova um da faixa acima
-              {limit < 12 ? " ou espere o pack" : ""}. Adicionar à coleção continua livre.
+              destacar outro, remova um da faixa acima. Adicionar à coleção continua livre.
             </p>
           )}
 

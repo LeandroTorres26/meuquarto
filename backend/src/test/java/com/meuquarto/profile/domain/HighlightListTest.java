@@ -3,7 +3,6 @@ package com.meuquarto.profile.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.meuquarto.profile.domain.HighlightException.Problem;
-import com.meuquarto.shared.domain.ErrorKind;
 import com.meuquarto.shared.domain.MediaCategory;
 import java.time.Instant;
 import java.util.List;
@@ -11,14 +10,12 @@ import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
-/** Highlight rules (BR-02, BR-07, FR-09a, FR-11) with no Spring context and no database. */
+/** Highlight rules (BR-07, FR-09a, FR-11) with no Spring context and no database; the limit is BR02HighlightLimitTest. */
 class HighlightListTest {
 
     private static final Instant NOW = Instant.parse("2026-10-01T10:00:00Z");
     private static final long PROFILE = 1;
 
-    private final Plan free = new FreePlan();
-    private final Plan pack = new PackPlan();
 
     private static CollectionItem item(long id, MediaCategory category) {
         CollectionItem item = CollectionItem.addedManually(PROFILE, 100 + id, category, NOW);
@@ -60,48 +57,15 @@ class HighlightListTest {
         return list.highlights().stream().map(Highlight::id).toList();
     }
 
-    private void fill(HighlightList list, Plan plan, int count) {
-        IntStream.rangeClosed(1, count).forEach(i -> list.highlight(movie(i), plan));
-    }
-
-    @Test
-    void fourthHighlightIsAcceptedOnTheFreePlan_BR02() {
-        HighlightList list = movies();
-
-        fill(list, free, 4);
-
-        assertThat(list.highlights()).hasSize(4);
-    }
-
-    @Test
-    void fifthHighlightIsRefusedOnTheFreePlan_BR02() {
-        HighlightList list = movies();
-        fill(list, free, 4);
-
-        assertThat(problemOf(() -> list.highlight(movie(5), free))).isEqualTo(Problem.HIGHLIGHT_LIMIT_REACHED);
-        assertThat(list.highlights()).hasSize(4);
-    }
-
-    @Test
-    void twelveHighlightsAreAcceptedAndThirteenthRefusedOnThePackPlan_BR02() {
-        HighlightList list = movies();
-
-        fill(list, pack, 12);
-
-        assertThat(list.highlights()).hasSize(12);
-        assertThat(problemOf(() -> list.highlight(movie(13), pack))).isEqualTo(Problem.HIGHLIGHT_LIMIT_REACHED);
-    }
-
-    @Test
-    void limitReachedIsAStateConflict_BR02() {
-        assertThat(new HighlightException(Problem.HIGHLIGHT_LIMIT_REACHED).kind()).isEqualTo(ErrorKind.CONFLICT);
+    private void fill(HighlightList list, int count) {
+        IntStream.rangeClosed(1, count).forEach(i -> list.highlight(movie(i)));
     }
 
     @Test
     void highlightsAreAppendedAtTheEnd() {
         HighlightList list = movies();
 
-        fill(list, free, 3);
+        fill(list, 3);
 
         assertThat(itemIds(list)).containsExactly(1L, 2L, 3L);
         assertThat(list.highlights()).extracting(Highlight::position).containsExactly(0, 1, 2);
@@ -110,9 +74,9 @@ class HighlightListTest {
     @Test
     void theSameItemCannotBeHighlightedTwiceInOneList_BR07() {
         HighlightList list = movies();
-        list.highlight(movie(1), free);
+        list.highlight(movie(1));
 
-        assertThat(problemOf(() -> list.highlight(movie(1), free))).isEqualTo(Problem.ALREADY_HIGHLIGHTED);
+        assertThat(problemOf(() -> list.highlight(movie(1)))).isEqualTo(Problem.ALREADY_HIGHLIGHTED);
     }
 
     @Test
@@ -120,7 +84,7 @@ class HighlightListTest {
         CollectionItem hidden = movie(1);
         hidden.hide();
 
-        assertThat(problemOf(() -> movies().highlight(hidden, free))).isEqualTo(Problem.ITEM_HIDDEN);
+        assertThat(problemOf(() -> movies().highlight(hidden))).isEqualTo(Problem.ITEM_HIDDEN);
     }
 
     @Test
@@ -128,39 +92,39 @@ class HighlightListTest {
         CollectionItem foreign = CollectionItem.addedManually(2, 100, MediaCategory.MOVIE, NOW);
         ReflectionTestUtils.setField(foreign, "id", 9L);
 
-        assertThat(problemOf(() -> movies().highlight(foreign, free))).isEqualTo(Problem.NOT_IN_COLLECTION);
+        assertThat(problemOf(() -> movies().highlight(foreign))).isEqualTo(Problem.NOT_IN_COLLECTION);
     }
 
     @Test
     void aCategoryListRefusesAnItemOfAnotherCategory() {
-        assertThat(problemOf(() -> movies().highlight(item(1, MediaCategory.BOOK), free)))
+        assertThat(problemOf(() -> movies().highlight(item(1, MediaCategory.BOOK))))
                 .isEqualTo(Problem.CATEGORY_MISMATCH);
     }
 
     @Test
     void favoritesTakeItemsOfAnyCategoryAndShareTheSameLimit_FR11_BR02() {
         HighlightList favorites = HighlightList.forProfile(PROFILE, null);
-        favorites.highlight(item(1, MediaCategory.MOVIE), free);
-        favorites.highlight(item(2, MediaCategory.BOOK), free);
-        favorites.highlight(item(3, MediaCategory.GAME), free);
-        favorites.highlight(item(4, MediaCategory.MUSIC), free);
+        favorites.highlight(item(1, MediaCategory.MOVIE));
+        favorites.highlight(item(2, MediaCategory.BOOK));
+        favorites.highlight(item(3, MediaCategory.GAME));
+        favorites.highlight(item(4, MediaCategory.MUSIC));
 
         assertThat(favorites.highlights()).hasSize(4);
-        assertThat(problemOf(() -> favorites.highlight(item(5, MediaCategory.ANIME), free)))
+        assertThat(problemOf(() -> favorites.highlight(item(5, MediaCategory.ANIME))))
                 .isEqualTo(Problem.HIGHLIGHT_LIMIT_REACHED);
     }
 
     @Test
     void unhighlightingClosesTheGapAndFreesASlot_BR02() {
         HighlightList list = movies();
-        fill(list, free, 4);
+        fill(list, 4);
         assignIds(list);
 
         list.unhighlight(502L);
 
         assertThat(itemIds(list)).containsExactly(1L, 3L, 4L);
         assertThat(list.highlights()).extracting(Highlight::position).containsExactly(0, 1, 2);
-        list.highlight(movie(5), free);
+        list.highlight(movie(5));
         assertThat(list.highlights()).hasSize(4);
     }
 
@@ -174,7 +138,7 @@ class HighlightListTest {
     @Test
     void droppingAnItemRemovesItAndRenumbers() {
         HighlightList list = movies();
-        fill(list, free, 3);
+        fill(list, 3);
 
         list.dropItem(1);
         list.dropItem(999);
@@ -186,7 +150,7 @@ class HighlightListTest {
     @Test
     void reorderRewritesPositionsFromZero() {
         HighlightList list = movies();
-        fill(list, free, 3);
+        fill(list, 3);
         assignIds(list);
 
         list.reorder(List.of(503L, 501L, 502L));
@@ -198,7 +162,7 @@ class HighlightListTest {
     @Test
     void reorderRefusesAnythingButExactlyTheCurrentSet() {
         HighlightList list = movies();
-        fill(list, free, 3);
+        fill(list, 3);
         assignIds(list);
 
         assertThat(problemOf(() -> list.reorder(List.of(501L, 502L)))).isEqualTo(Problem.INVALID_ORDER);

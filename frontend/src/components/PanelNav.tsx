@@ -2,10 +2,8 @@ import Link from "next/link";
 import { Fragment } from "react";
 import { ThemeSync } from "@/components/ThemeSync";
 
-type Item = { label: string; href?: string };
+type Item = { label: string; href: string };
 
-// Only routes that exist are links; the rest of the design's nav stays visible but disabled until
-// its screen is built, so nothing links to a 404.
 const GROUPS: Item[][] = [
   [
     { label: "Perfil", href: "/painel" },
@@ -13,7 +11,7 @@ const GROUPS: Item[][] = [
     { label: "Agora", href: "/painel/agora" },
     { label: "Contas vinculadas", href: "/painel/contas" },
   ],
-  [{ label: "Loja" }, { label: "Compras" }, { label: "Conta", href: "/painel/conta" }],
+  [{ label: "Conta", href: "/painel/conta" }],
 ];
 
 /**
@@ -28,19 +26,13 @@ export function PanelNav({ current }: { current: string }) {
         <div className="pnav__group" key={i}>
           {group.map((item) => (
             <Fragment key={item.label}>
-              {item.href ? (
-                <Link
-                  className="tab"
-                  href={item.href}
-                  aria-current={item.label === current ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <span className="tab tab--soon" aria-disabled="true">
-                  {item.label}
-                </span>
-              )}
+              <Link
+                className="tab"
+                href={item.href}
+                aria-current={item.label === current ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
             </Fragment>
           ))}
         </div>

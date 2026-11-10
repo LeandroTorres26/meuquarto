@@ -17,8 +17,6 @@ public final class ProfileException extends DomainException {
         BIO_INVALID(ErrorKind.INVALID),
         /** There is no theme with that id. */
         THEME_UNKNOWN(ErrorKind.INVALID),
-        /** The theme exists but the user's plan does not include it (BR-05). */
-        THEME_LOCKED(ErrorKind.INVALID),
         /** The user has no profile (should not happen for a signed-in user). */
         PROFILE_NOT_FOUND(ErrorKind.NOT_FOUND);
 

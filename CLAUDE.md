@@ -24,7 +24,7 @@ The GitHub issue being worked on is the spec for the task. If an issue conflicts
 - `backend/`: Java 21, Spring Boot 4, Maven, Spring Security (session cookie, CSRF), Spring Data JPA, PostgreSQL, Flyway, springdoc-openapi, Caffeine, Testcontainers.
 - `frontend/`: Next.js 16 + TypeScript (Cache Components). Public profile pages are server-rendered (SEO and Open Graph). Calls the backend REST API; never holds secrets.
 - `infra/`: Docker Compose (caddy, web, api, postgres, minio), deploy scripts.
-- Payments: Stripe Checkout (Pix + card), one-time purchases, entitlement granted only by a verified webhook.
+- Payments: none in the P2 (no store, no Stripe, no paid plans; ADR 0024). The store is roadmap for the TCC.
 - Object storage: S3-compatible (R2 or MinIO).
 
 ## Security (every issue)
@@ -40,7 +40,7 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 
 ## Backend conventions
 
-- Modular monolith, package by module: `com.meuquarto.<module>` with modules `identity`, `profile`, `media`, `billing`, `room` (ADR 0001).
+- Modular monolith, package by module: `com.meuquarto.<module>` with modules `identity`, `profile`, `media`, `room` (ADR 0001).
 - Inside each module, four light layers (ADR 0014): `api/` (controllers, request/response DTOs), `application/` (use cases, transactions, authorization), `domain/` (entities, value objects, business rules), `infra/` (repositories, external clients). Dependencies point inward: `api` → `application` → `domain`; `domain` imports nothing from the other three.
 - Controllers are thin: validate, call one application service, map the result. No business rules in controllers or repositories.
 - Between modules, call only the other module's `application` services and DTOs; never its `domain` entities, repositories, tables or `infra`.
@@ -69,7 +69,7 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 
 This is the P2 project of the POO course: the professor requires inheritance, abstract classes, interfaces and subtype polymorphism in **our own code**, and Spring features (`UserDetails`, `JpaRepository`, annotations) do not count. The owner must be able to explain every hierarchy line by line.
 
-- Every feature that matches one of the hierarchies in ADR 0018 (`ActivityProvider`, `CatalogProvider`, `Plan`, `ValidationRule`, `DomainException`, optionally `RoomObject`) implements it exactly as designed there. Don't replace it with `if`/`switch` on a type or with a framework class.
+- Every feature that matches one of the hierarchies in ADR 0018 (`ActivityProvider`, `CatalogProvider`, `ValidationRule`, `DomainException`, `RoomObject`) implements it exactly as designed there. Don't replace it with `if`/`switch` on a type or with a framework class.
 - Hierarchies are plain Java: no Spring or JPA annotations or base classes inside them, readable, small methods, no framework magic. Callers use the base type and never `instanceof`.
 - Update `docs/poo-no-projeto.md` (the owner's study guide, pt-BR) in the same PR whenever a hierarchy is added or changed.
 

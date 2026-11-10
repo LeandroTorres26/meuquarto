@@ -13,10 +13,6 @@ import com.jayway.jsonpath.JsonPath;
 import com.meuquarto.media.domain.CatalogEntry;
 import com.meuquarto.media.domain.CatalogProvider;
 import com.meuquarto.media.domain.CatalogRegistry;
-import com.meuquarto.profile.application.PlanResolver;
-import com.meuquarto.profile.domain.FreePlan;
-import com.meuquarto.profile.domain.PackPlan;
-import com.meuquarto.profile.domain.Plan;
 import com.meuquarto.shared.domain.MediaCategory;
 import com.meuquarto.support.RealCsrf;
 import com.meuquarto.support.TestcontainersConfiguration;
@@ -39,7 +35,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-/** The highlights API against a real PostgreSQL, with a fake catalog and a plan the test can switch. */
+/** The highlights API against a real PostgreSQL, with a fake catalog. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import({TestcontainersConfiguration.class, HighlightApiTests.Fakes.class})
@@ -77,17 +73,6 @@ class HighlightApiTests {
         }
     }
 
-    /** The plan every user has in these tests; a test swaps it to see the same API behave with the pack. */
-    static class SwitchablePlans implements PlanResolver {
-
-        private volatile Plan current = new FreePlan();
-
-        @Override
-        public Plan planOf(long userId) {
-            return current;
-        }
-    }
-
     @TestConfiguration
     static class Fakes {
 
@@ -95,12 +80,6 @@ class HighlightApiTests {
         @Primary
         CatalogRegistry fakeRegistry() {
             return new CatalogRegistry(List.of(new FakeCatalog()));
-        }
-
-        @Bean
-        @Primary
-        SwitchablePlans switchablePlans() {
-            return new SwitchablePlans();
         }
     }
 
@@ -110,12 +89,8 @@ class HighlightApiTests {
     @Autowired
     JdbcTemplate jdbc;
 
-    @Autowired
-    SwitchablePlans plans;
-
     @AfterEach
     void cleanUp() {
-        plans.current = new FreePlan();
         jdbc.update("delete from users");
         jdbc.update("delete from spring_session");
     }
@@ -181,7 +156,7 @@ class HighlightApiTests {
     // --- mark, list, unmark ---
 
     @Test
-    void markingAddsAtTheEndAndTheOverviewShowsTheOrderWithPlanAndLimit() throws Exception {
+    void markingAddsAtTheEndAndTheOverviewShowsTheOrderAndLimit() throws Exception {
         Cookie session = signUp("a@example.com", "leandro");
         long one = addToCollection(session, "MOVIE", "m1");
         long two = addToCollection(session, "MOVIE", "m2");
@@ -192,7 +167,7 @@ class HighlightApiTests {
         highlight(session, "MOVIE", two).andExpect(status().isCreated()).andExpect(jsonPath("$.position").value(1));
 
         mvc.perform(get("/api/highlights").cookie(session)).andExpect(status().isOk())
-                .andExpect(jsonPath("$.plan").value("FREE")).andExpect(jsonPath("$.limit").value(4))
+                .andExpect(jsonPath("$.plan").doesNotExist()).andExpect(jsonPath("$.limit").value(4))
                 // favorites first, then the seven categories, empty lists included
                 .andExpect(jsonPath("$.lists.length()").value(8))
                 .andExpect(jsonPath("$.lists[0].category").doesNotExist())
@@ -224,7 +199,7 @@ class HighlightApiTests {
     // --- BR-02 limit ---
 
     @Test
-    void fifthHighlightIsRefusedOnTheFreePlan_BR02() throws Exception {
+    void fifthHighlightIsRefused_BR02() throws Exception {
         Cookie session = signUp("a@example.com", "leandro");
         for (int i = 1; i <= 4; i++) {
             highlightId(session, "MOVIE", addToCollection(session, "MOVIE", "m" + i));
@@ -233,21 +208,6 @@ class HighlightApiTests {
         highlight(session, "MOVIE", addToCollection(session, "MOVIE", "m5")).andExpect(status().isConflict())
                 .andExpect(jsonPath("$.error").value("HIGHLIGHT_LIMIT_REACHED"));
         assertThat(countRows("highlights")).isEqualTo(4);
-    }
-
-    @Test
-    void theSameApiAllowsTwelveWhenThePlanIsThePack_BR02() throws Exception {
-        plans.current = new PackPlan();
-        Cookie session = signUp("a@example.com", "leandro");
-        for (int i = 1; i <= 12; i++) {
-            highlightId(session, "MOVIE", addToCollection(session, "MOVIE", "m" + i));
-        }
-
-        highlight(session, "MOVIE", addToCollection(session, "MOVIE", "m13")).andExpect(status().isConflict())
-                .andExpect(jsonPath("$.error").value("HIGHLIGHT_LIMIT_REACHED"));
-        mvc.perform(get("/api/highlights").cookie(session)).andExpect(jsonPath("$.plan").value("PACK"))
-                .andExpect(jsonPath("$.limit").value(12));
-        assertThat(countRows("highlights")).isEqualTo(12);
     }
 
     @Test

@@ -1,29 +1,27 @@
 "use client";
 
-import { Lock, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLayoutEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { AlertBox } from "@/components/AlertBox";
 import { FieldError } from "@/components/FieldError";
 import { ApiError, removeAvatar, saveProfile, uploadAvatar } from "@/lib/api-client";
 import { ThemePreview } from "@/components/profile/ThemePreview";
 import { normalizeSlug } from "@/lib/slug";
-import { applyTheme, showTheme } from "@/lib/theme";
+import { applyTheme } from "@/lib/theme";
 import {
   AVATAR_TYPES,
   BIO_MAX,
   NAME_MAX,
   NETWORK_DOWN,
   THEME_LABELS,
-  themeCaption,
   avatarFileProblem,
   charCount,
   profileMessage,
   type EditorError,
   type EditorField,
   type OwnProfile,
-  type ThemeOption,
 } from "@/lib/profile-editor";
 
 type Toast = { kind: "ok" | "bad"; text: string };
@@ -39,7 +37,7 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
   const [bio, setBio] = useState(initial.bio);
   const [slug, setSlug] = useState(initial.slug);
   // `saved.theme` colours the whole site and is saved the moment it is picked; `viewed` is the one
-  // shown now, which may also be a locked premium theme the user is only looking at.
+  // picked now, which is shown right away while the save is still on its way.
   const [viewed, setViewed] = useState(initial.theme);
   const [themeNote, setThemeNote] = useState<string | null>(null);
   // The saved theme for callbacks that outlive a render (a slow save, leaving the page).
@@ -58,17 +56,6 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const shown = preview ?? avatarUrl;
-  const viewedOption = saved.themes.find((option) => option.id === viewed);
-
-  // A locked theme is only looked at while this screen is open. Next.js keeps a left page hidden
-  // in the document (Activity), so leaving it puts the saved theme back on the site at once.
-  useLayoutEffect(
-    () => () => {
-      showTheme(savedTheme.current);
-      setViewed(savedTheme.current);
-    },
-    [],
-  );
 
   function fail(error: EditorError, fromSave = false) {
     setErrors({ [error.field]: error.message });
@@ -126,16 +113,11 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
     }
   }
 
-  function pickTheme(option: ThemeOption) {
-    setViewed(option.id);
+  function pickTheme(id: string) {
+    setViewed(id);
     setErrors((current) => ({ ...current, theme: undefined }));
-    if (option.locked) {
-      showTheme(option.id); // looked at, never saved
-      setThemeNote(null);
-      return;
-    }
-    applyTheme(option.id);
-    void saveTheme(option.id);
+    applyTheme(id);
+    void saveTheme(id);
   }
 
   // The theme is saved on its own: the other fields keep their saved values, so unsaved edits to the
@@ -152,11 +134,7 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
       });
       if (request !== themeRequest.current) return;
       savedTheme.current = result.theme;
-      setSaved((current) => ({
-        ...current,
-        theme: result.theme,
-        themes: result.themes ?? current.themes,
-      }));
+      setSaved((current) => ({ ...current, theme: result.theme }));
       setThemeNote(`Tema ${THEME_LABELS[result.theme] ?? result.theme} salvo.`);
       router.refresh();
     } catch (e) {
@@ -373,9 +351,7 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
           <h2 id="tema-h" className="t-h3">
             Tema
           </h2>
-          <p className="help">
-            Muda as cores do site todo e já fica salvo. Os marcados com “na loja” são pagos.
-          </p>
+          <p className="help">Muda as cores do site todo e já fica salvo.</p>
         </div>
         <div
           className="grid"
@@ -383,25 +359,22 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
           aria-labelledby="tema-h"
           style={{ gridTemplateColumns: "repeat(2, minmax(0, 1fr))", gap: "var(--space-3)" }}
         >
-          {saved.themes.map((option) => (
-            <label className="theme-opt" key={option.id}>
+          {saved.themes.map((id) => (
+            <label className="theme-opt" key={id}>
               <input
                 type="radio"
                 name="tema"
-                value={option.id}
-                checked={viewed === option.id}
-                onChange={() => pickTheme(option)}
+                value={id}
+                checked={viewed === id}
+                onChange={() => pickTheme(id)}
               />
-              <div className="swatch" data-theme={option.id} aria-hidden="true">
+              <div className="swatch" data-theme={id} aria-hidden="true">
                 <span className="swatch__poster" />
                 <span className="swatch__aa">AA</span>
                 <span className="swatch__bar" />
                 <span className="swatch__lamp" />
               </div>
-              <span className="row row--between">
-                <span className="t-label">{THEME_LABELS[option.id] ?? option.id}</span>
-                <span className="t-cap">{themeCaption(option)}</span>
-              </span>
+              <span className="t-label">{THEME_LABELS[id] ?? id}</span>
             </label>
           ))}
         </div>
@@ -413,20 +386,10 @@ export function ProfileEditorScreen({ initial }: { initial: OwnProfile }) {
           bio={bio}
           label={`Prévia do tema ${THEME_LABELS[viewed] ?? viewed}`}
         />
-        {viewedOption?.locked ? (
-          <p className="help" role="status">
-            <Lock className="icon" aria-hidden="true" /> O tema {THEME_LABELS[viewed] ?? viewed} é
-            pago. Você pode ver como fica, mas só aplica depois de comprar.{" "}
-            <Link href="/painel/loja" prefetch={false}>
-              Ver na loja
-            </Link>
-          </p>
-        ) : (
-          <p className="help" role="status">
-            {themeNote ? `${themeNote} ` : null}
-            <Link href={`/${saved.slug}`}>Ver meu perfil</Link>
-          </p>
-        )}
+        <p className="help" role="status">
+          {themeNote ? `${themeNote} ` : null}
+          <Link href={`/${saved.slug}`}>Ver meu perfil</Link>
+        </p>
       </section>
     </div>
   );

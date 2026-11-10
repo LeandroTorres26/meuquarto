@@ -56,16 +56,14 @@ export default function PrivacyPage() {
         <p className="t-body">
           Para montar a coleção consultamos bases públicas de catálogo: TMDB, AniList, Letterboxd,
           Open Library, IGDB e Deezer. Elas recebem apenas o que buscamos (um título ou o nome de
-          usuário público que você conecta), nunca seu e-mail. Quando a loja abrir, os pagamentos
-          passarão pelo Stripe, que tratará os dados do cartão ou do Pix; nós não os guardamos.
+          usuário público que você conecta), nunca seu e-mail.
         </p>
       </LegalSection>
       <LegalSection title="Por quanto tempo">
         <p className="t-body">
           Enquanto a conta existir. Ao excluí-la, apagamos tudo o que está ligado a ela, de uma vez:
           conta, perfil, destaques, notas, contas vinculadas e dados sincronizados. As sessões
-          abertas expiram sozinhas. Se algum dia houver pagamentos, os registros deles serão
-          mantidos sem dados pessoais, como exige a lei.
+          abertas expiram sozinhas.
         </p>
       </LegalSection>
       <LegalSection title="Seus direitos">

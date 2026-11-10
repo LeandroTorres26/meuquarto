@@ -2,7 +2,7 @@
 
 ## Scope: MVP (P2) vs roadmap
 **In P2:** everything in `requirements.md` FR-01..FR-20 (room as minimal prototype).
-**Roadmap (TCC):** full room (inventory, layout editor, premium objects), taste compatibility, embeddable widgets, story cards, yearly recap, "recommend me something", mixed collections, spoiler/private profile, visit stats, subscriptions, dedicated item page `/{slug}/item/{id}` and global work page `/obra/{id}` ("who else has it"), more integrations (see table below), CSV import (Skoob etc.), OAuth account linking, account export, admin panel, Google login, queue-based sync.
+**Roadmap (TCC):** full room (inventory, layout editor, paid objects), taste compatibility, embeddable widgets, story cards, yearly recap, "recommend me something", mixed collections, spoiler/private profile, visit stats, subscriptions, dedicated item page `/{slug}/item/{id}` and global work page `/obra/{id}` ("who else has it"), more integrations (see table below), CSV import (Skoob etc.), OAuth account linking, account export, admin panel, Google login, queue-based sync.
 
 ### Roadmap: future integrations (each = one new `ActivityProvider`)
 Feasibility is a first guess and must be checked per platform (API availability and terms) before committing.
@@ -27,7 +27,7 @@ Feasibility is a first guess and must be checked per platform (API availability 
 | 1 (Oct 12-18) | M0 Foundation | Repo, monorepo skeleton, CI, VPS + deploy "hello world"; start Claude Design in parallel |
 | 2-3 (Oct 19-Nov 1) | M1 Profile | Auth, profile, highlights CRUD, catalog search, public page, Open Graph |
 | 3-5 (Oct 26-Nov 15) | M2 Integrations | Provider interface, Letterboxd, AniList, Last.fm, Steam, Goodreads, sync job, "Agora" |
-| 5-6 (Nov 9-22) | M3 Monetization | Stripe checkout, webhook, themes, limits |
+| 5-6 (Nov 9-22) | M3 Monetization (dropped, ADR 0024) | Time goes to polish, the room and the docs |
 | 6-7 (Nov 16-30) | M4 Room + polish | Room prototype, LGPD, docs, validation survey, presentation. Buffer. |
 
 Cut order if late: Goodreads > Steam > room prototype > Last.fm. Never cut: CRUD, business rules, deploy.
@@ -66,7 +66,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Highlights: mark "Destacar" inside the collection + reorder (BR-02)
 - Public category listing `/{slug}/{categoria}` (S18): search, sort, pagination
 - "Favoritos de tudo" list
-- Plan limit rule 4/12 (BR-02) with upsell state
+- Highlight limit rule, 4 per list for everyone (BR-02), with a "list is full" note in S7
 
 ### E4 Integrations (M2)
 - `ActivityProvider` interface, `ProviderRegistry`, linked accounts CRUD and validation
@@ -80,11 +80,10 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - "Agora" block auto + override (BR-06) + adult filter (BR-08)
 - Provider response cache and rate limiting (NFR-03)
 
-### E5 Monetization (M3)
-- Products/themes seed; theme application on profile (BR-05)
-- Stripe Checkout (Pix + card), webhook with signature check and idempotency (BR-09)
-- Entitlements and plan limits, purchases page
-- Stripe test→live checklist (MEI, account activation)
+### E5 Monetization (M3): out of the P2 (ADR 0024)
+The owner chose not to take the monetization challenge in the P2. The epic is roadmap for the TCC and nothing in it is built:
+- Products and paid themes, Stripe Checkout (Pix + card), webhook with signature check and idempotency (BR-09), entitlements, purchases page, Stripe test to live checklist.
+- What stayed from it: the four themes, free for everyone, applied on the profile and the whole site (ADR 0022).
 
 ### E6 Room prototype (M4)
 - Design spike and ADR 0013 (technology): accepted in [ADR 0013](adr/0013-room-rendering-technology.md)
@@ -101,7 +100,6 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 ## Pending outside the code (owner)
 - Confirm with professor all P2 requirements are met (hosting, individual work)
 - Check domain `meuquarto.com.br`, social handles, INPI
-- Create Stripe account (MEI) and confirm Pix is enabled
 - Create Twitch app for IGDB, TMDB and Last.fm API keys
 - Create transactional e-mail account (Resend or Brevo) and add SPF, DKIM, DMARC records
 - Choose VPS provider

@@ -17,7 +17,6 @@ import {
   noteChanged,
   noteLength,
   searchTerm,
-  showUpsell,
   sourceLabels,
   tabFromParam,
   tabParam,
@@ -46,12 +45,6 @@ describe("limit and counters", () => {
   it("is full at the limit, not before", () => {
     expect(isFull(3, 4)).toBe(false);
     expect(isFull(4, 4)).toBe(true);
-    expect(isFull(12, 12)).toBe(true);
-  });
-  it("shows the upsell only on a full free list", () => {
-    expect(showUpsell(4, 4)).toBe(true);
-    expect(showUpsell(3, 4)).toBe(false);
-    expect(showUpsell(12, 12)).toBe(false);
   });
   it("formats the chip counter", () => {
     expect(counterLabel(2, 4)).toBe("2/4");
@@ -96,7 +89,6 @@ function media(title: string) {
 
 describe("overview updates", () => {
   const overview: HighlightOverview = {
-    plan: "FREE",
     limit: 4,
     lists: [
       { category: null, items: [] },

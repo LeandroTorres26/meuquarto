@@ -7,7 +7,7 @@ import com.meuquarto.shared.domain.ErrorKind;
 public final class HighlightException extends DomainException {
 
     public enum Problem {
-        /** BR-02: the list already holds as many highlights as the plan allows. A state conflict, not a bad input. */
+        /** BR-02: the list already holds {@link HighlightList#LIMIT} highlights. A state conflict, not a bad input. */
         HIGHLIGHT_LIMIT_REACHED(ErrorKind.CONFLICT),
         /** The item is not in the owner's collection (missing or someone else's: same answer on purpose). */
         NOT_IN_COLLECTION(ErrorKind.NOT_FOUND),

@@ -20,3 +20,6 @@ The first model had only highlights, limited to 4 (free) or 12 (pack) per catego
 ## Alternatives considered
 - Highlights only, with "Ver todos" showing the full highlight list: keeps the model small but contradicts how the owner wants the product to work.
 - Sync items as pending suggestions to accept: more curation, but an extra state and screen in the MVP.
+
+## As built: no pack (#133, ADR 0024)
+The paid pack is out of the P2: every highlight list holds 4 highlights for everyone (BR-02), and the collection stays unlimited.

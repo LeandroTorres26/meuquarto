@@ -39,22 +39,7 @@ TmdbCatalog AniListCatalog OpenLibraryCatalog IgdbCatalog DeezerCatalog
 ```
 `HttpCatalogProvider.search(...)` is the template: it applies the cache, the timeout and the "one provider down never breaks the others" handling, and calls abstract steps (`buildRequest`, `parseResults`) that each leaf implements.
 
-### 3. Plan (implemented in #24; the pack is wired in #39)
-```
-        interface Plan
-        (code(), highlightLimit(), ownedThemes(),
-         default canApply(ProfileTheme),
-         default hasRoomFor(count))
-             ^
-      +------+------+
-      |             |
-  FreePlan      PackPlan
- (4 highlights, (12 highlights,
-  free themes)   owned themes)
-```
-Replaces `if (hasPack) ... else ...` for BR-02 (highlight limits) and BR-05 (premium themes need ownership). The profile asks its `Plan`; it does not test for the pack itself. As built in #24: `hasRoomFor(count)` is a `default` method on the interface. As built in #37: themes are sold one by one (the pack only raises the highlight limit), so each plan carries the set of premium themes its user bought (`ownedThemes()`), and `canApply(ProfileTheme)` is a `default` method: free themes for everyone, premium ones only when owned. The set comes from billing's `Entitlements` through the `PlanResolver`, so the plan classes stay plain Java. The classes live in `profile/domain`; an application-level `PlanResolver` (`EntitlementPlans`) decides which object to hand out (a `FreePlan` carrying the owned themes until the pack is wired in #39), which is the only place that decides who has what.
-
-### 4. ValidationRule (implemented in this PR)
+### 3. ValidationRule (implemented in this PR)
 ```
       interface ValidationRule<T, P>
       (check, default accepts, static firstProblem)
@@ -67,7 +52,7 @@ final SlugLengthRule  final PasswordLengthRule
 ```
 `ValidationRule<T, P>` has two type parameters, like `Dupla<S, W>` from Aula 7: the value checked (`String`, `PasswordCandidate`) and the problem reported (`Slug.Problem`, `AccountRuleException.Rule`). `LengthRule` is abstract because it knows the algorithm (below min, above max) but not how to measure the value nor which problem to report; each subclass supplies those through `protected` methods. `Slug.check` and `PasswordPolicy.check` keep a `List<ValidationRule<...>>` and ask each rule in order through `ValidationRule.firstProblem`, which is the PetShop loop. Problem codes (`Slug.Problem`, `AccountRuleException.Rule`) are unchanged.
 
-### 5. DomainException (implemented in this PR)
+### 4. DomainException (implemented in this PR)
 ```
         abstract DomainException extends RuntimeException
         (code(), kind(), retryAfter() default empty)
@@ -80,7 +65,7 @@ The code and the kind (our own enum `ErrorKind { INVALID, CONFLICT, TOO_MANY }`)
 
 **Why a constructor and not an abstract `code()`:** with `super(code, kind)` each subclass states its values once, in the constructor, and the compiler forces it to (the constructor is `protected` and has no default). An abstract method would force every subclass to also implement `code()` and `kind()` just to return a constant. Abstract methods are still shown, where they carry real work, in `LengthRule` (`lengthOf`, `tooShort`, `tooLong`). `DomainException` is abstract anyway because a generic "domain error" has no meaning: you always throw a specific one.
 
-### Optional later: RoomObject (issue #43)
+### 5. RoomObject (planned, issue #43)
 ```
           abstract RoomObject
                   ^
@@ -103,9 +88,12 @@ Each object in the room knows how to place itself and what happens on click; the
 - A deeper hierarchy (for example `AccountException` between `DomainException` and its subclasses): more levels without new behavior; harder to explain.
 
 ## As built: hierarchy 1 base (#28)
-`ActivityProvider` (interface, `media/domain`), `RssActivityProvider` (abstract, `media/infra`) and `ActivityRegistry` exist; the five concrete providers come in #30 to #34. Differences from the sketch above: the interface exposes `id()` (a `ProviderId` enum), `categories()`, `usernameRules()` (a list of `ValidationRule<String, UsernameProblem>`, hierarchy 4 reused), the `default` methods `normalizeUsername` and `validateUsernameFormat`, `checkAccountExists` (returns an `AccountCheck` value instead of throwing) and `fetchActivity`. `RssActivityProvider.fetchActivity` and `checkAccountExists` are the template methods (both `final`); the leaf supplies `baseUri()`, `feedPath(encodedUsername)` and `toEntry(Element)`. The registry finds a provider by asking each one for its `id()`; a `@Configuration` (`ActivityConfig`) collects every `ActivityProvider` bean, so `SyncService` and the linking use case never name a platform.
+`ActivityProvider` (interface, `media/domain`), `RssActivityProvider` (abstract, `media/infra`) and `ActivityRegistry` exist; the five concrete providers come in #30 to #34. Differences from the sketch above: the interface exposes `id()` (a `ProviderId` enum), `categories()`, `usernameRules()` (a list of `ValidationRule<String, UsernameProblem>`, hierarchy 3 reused), the `default` methods `normalizeUsername` and `validateUsernameFormat`, `checkAccountExists` (returns an `AccountCheck` value instead of throwing) and `fetchActivity`. `RssActivityProvider.fetchActivity` and `checkAccountExists` are the template methods (both `final`); the leaf supplies `baseUri()`, `feedPath(encodedUsername)` and `toEntry(Element)`. The registry finds a provider by asking each one for its `id()`; a `@Configuration` (`ActivityConfig`) collects every `ActivityProvider` bean, so `SyncService` and the linking use case never name a platform.
 
 ## As built: AniList, one class in two hierarchies (#31, part of #22)
 `AniListProvider` is `final class AniListProvider extends HttpCatalogProvider implements ActivityProvider` (`media/infra`). It replaces both the `AniListCatalog` of hierarchy 2 and the direct `ActivityProvider` implementation of hierarchy 1 in the sketches above: AniList is the canonical catalog of anime and manga (ADR 0005) and the source of BR-10 for the same platform, so one class carries both contracts, and it is the project's example of a class with several interfaces (`Cachorro extends Animal implements Brincavel, Nadavel`). From the abstract parent it inherits the final templates `search`/`fetch` (cache, timeouts, failure handling) and a protected `postJson`; it fills in the abstract steps and implements the second contract itself. A single `@Bean` of the concrete type (`AniListConfig`) is picked up by both `CatalogRegistry` and `ActivityRegistry`, so there is one instance (tested).
 
 Two consequences for the shared types. (1) `CatalogProvider.id()` was renamed `catalogName()`: both interfaces declared `id()` with different return types (`String` and `ProviderId`), which one class cannot implement. (2) `HttpCatalogProvider` gained two optional hooks, `searchBody` and `fetchBody` (default `null`, meaning GET), so a catalog can use POST with a JSON body (GraphQL); the cache key includes the body. TMDB did not change.
+
+## As built: the Plan hierarchy was removed (#133, ADR 0024)
+The store and the paid plans are out of the P2, so the `Plan` hierarchy (`Plan`, `FreePlan`, `PackPlan`), `PlanResolver` and `EntitlementPlans` were deleted. Five hierarchies remain: `ActivityProvider`, `CatalogProvider`, `ValidationRule`, `DomainException` and `RoomObject`. The numbering above was closed up (`Plan` was number 3). BR-02 is now a plain domain rule: `HighlightList.LIMIT` (4) and the check inside `HighlightList.highlight`, tested in `BR02HighlightLimitTest`. If a paid plan comes back in the TCC, it would be a new ADR and a new hierarchy designed then; the text of section 3 as it was lives in the git history.

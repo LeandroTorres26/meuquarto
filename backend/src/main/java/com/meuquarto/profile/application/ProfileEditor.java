@@ -2,7 +2,6 @@ package com.meuquarto.profile.application;
 
 import com.meuquarto.profile.domain.Bio;
 import com.meuquarto.profile.domain.DisplayName;
-import com.meuquarto.profile.domain.Plan;
 import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.domain.ProfileException;
 import com.meuquarto.profile.domain.ProfileException.Problem;
@@ -25,20 +24,17 @@ public class ProfileEditor {
 
     private final ProfileRepository profiles;
     private final SlugAvailability availability;
-    private final PlanResolver plans;
     private final PublicProfileCache cache;
 
-    public ProfileEditor(ProfileRepository profiles, SlugAvailability availability, PlanResolver plans,
-            PublicProfileCache cache) {
+    public ProfileEditor(ProfileRepository profiles, SlugAvailability availability, PublicProfileCache cache) {
         this.profiles = profiles;
         this.availability = availability;
-        this.plans = plans;
         this.cache = cache;
     }
 
     @Transactional(readOnly = true)
     public Editable view(long userId) {
-        return editable(profileOf(userId), plans.planOf(userId));
+        return editable(profileOf(userId));
     }
 
     /**
@@ -48,14 +44,10 @@ public class ProfileEditor {
     @Transactional
     public Editable update(long userId, String rawName, String rawBio, String rawSlug, String rawTheme) {
         Profile profile = profileOf(userId);
-        Plan plan = plans.planOf(userId);
 
         DisplayName name = DisplayName.of(rawName);
         Bio bio = Bio.of(rawBio);
         ProfileTheme theme = ProfileTheme.of(rawTheme);
-        if (!plan.canApply(theme)) {
-            throw new ProfileException(Problem.THEME_LOCKED); // BR-05
-        }
         String oldSlug = profile.slug();
         String newSlug = Slug.normalize(rawSlug);
         boolean slugChanges = !newSlug.equals(oldSlug);
@@ -78,34 +70,23 @@ public class ProfileEditor {
         if (slugChanges) {
             cache.evictAfterCommit(newSlug);
         }
-        return editable(profile, plan);
+        return editable(profile);
     }
 
     private Profile profileOf(long userId) {
         return profiles.findByUserId(userId).orElseThrow(() -> new ProfileException(Problem.PROFILE_NOT_FOUND));
     }
 
-    private static Editable editable(Profile profile, Plan plan) {
+    private static Editable editable(Profile profile) {
         return new Editable(profile.slug(), profile.displayName().orElse(profile.slug()), profile.bio().orElse(""),
                 profile.avatarKey().map(Avatars::urlPath).orElse(null), profile.theme().id(),
-                ProfileTheme.availableTo(plan).stream().map(ProfileTheme::id).toList(), pickerOf(plan));
-    }
-
-    /** Every theme in display order, each marked by what the plan says about it. */
-    private static List<ThemeOption> pickerOf(Plan plan) {
-        return Arrays.stream(ProfileTheme.values())
-                .map(theme -> new ThemeOption(theme.id(), theme.premium(), plan.ownedThemes().contains(theme),
-                        !plan.canApply(theme)))
-                .toList();
+                Arrays.stream(ProfileTheme.values()).map(ProfileTheme::id).toList());
     }
 
     /**
      * What S6 shows. {@code displayName} falls back to the slug until the owner picks one; {@code avatarUrl} is null
-     * without avatar. {@code availableThemes} are the ids the user may apply; {@code themes} is the whole picker.
+     * without avatar. {@code themes} are the ids of the picker, in display order.
      */
     public record Editable(String slug, String displayName, String bio, String avatarUrl, String theme,
-            List<String> availableThemes, List<ThemeOption> themes) {}
-
-    /** One picker entry: {@code owned} is a bought premium theme, {@code locked} is one the user cannot apply (BR-05). */
-    public record ThemeOption(String id, boolean premium, boolean owned, boolean locked) {}
+            List<String> themes) {}
 }

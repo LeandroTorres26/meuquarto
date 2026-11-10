@@ -65,7 +65,7 @@ export type CollectionPage = { items: CollectionItem[]; page: number; size: numb
 
 export type Highlight = { id: number; collectionItemId: number; position: number; media: Media };
 export type HighlightList = { category: Category | null; items: Highlight[] };
-export type HighlightOverview = { plan: string; limit: number; lists: HighlightList[] };
+export type HighlightOverview = { limit: number; lists: HighlightList[] };
 
 export type CatalogResult = {
   category: Category;
@@ -178,9 +178,6 @@ export const noteChanged = (raw: string, stored: string | null): boolean =>
 
 // ---------- highlight limit ----------
 
-/** The most any plan allows today (the pack); at this limit there is nothing to upsell. */
-export const PACK_LIMIT = 12;
-
 export const isFull = (count: number, limit: number): boolean => count >= limit;
 
 /** Chip counter: "3/4". */
@@ -188,10 +185,6 @@ export const counterLabel = (count: number, limit: number): string => `${count}/
 
 /** Meter text: "4 de 4". */
 export const meterLabel = (count: number, limit: number): string => `${count} de ${limit}`;
-
-/** Free plan and full list: the upsell box. With the pack a plain note is enough. */
-export const showUpsell = (count: number, limit: number): boolean =>
-  isFull(count, limit) && limit < PACK_LIMIT;
 
 /** The highlight list behind a tab, or an empty one when the API has not created it yet. */
 export function listOf(overview: HighlightOverview, category: Category | null): HighlightList {

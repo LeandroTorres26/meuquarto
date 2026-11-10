@@ -5,8 +5,8 @@ type Props = {
   href?: string;
   id?: string;
   /**
-   * "color" is the fixed four-color symbol. "mono" is the one-color symbol in `ink`: it is the
-   * switch point for profiles with a premium theme (#37). Nothing picks it yet.
+   * "color" is the fixed four-color symbol, used everywhere. "mono" is the one-color symbol in `ink`,
+   * for places where four colors do not fit. Nothing picks it yet.
    */
   variant?: "color" | "mono";
 };

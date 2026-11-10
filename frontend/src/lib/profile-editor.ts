@@ -3,19 +3,14 @@
 import { collectionMessage } from "./collection";
 import { slugReasonMessage } from "./auth-errors";
 
-/** One entry of the theme picker. `owned` is a bought premium theme, `locked` one the user cannot apply. */
-export type ThemeOption = { id: string; premium: boolean; owned: boolean; locked: boolean };
-
-/** GET /api/profile. `avatarUrl` is null without avatar; `availableThemes` are the ids the user may apply. */
+/** GET /api/profile. `avatarUrl` is null without avatar; `themes` are the picker ids in display order. */
 export type OwnProfile = {
   slug: string;
   displayName: string;
   bio: string;
   avatarUrl: string | null;
   theme: string;
-  availableThemes: string[];
-  /** Every theme in display order; `locked` ones cannot be applied yet (BR-05). */
-  themes: ThemeOption[];
+  themes: string[];
 };
 
 export type ProfileChange = { displayName: string; bio: string; slug: string; theme: string };
@@ -26,19 +21,13 @@ export const BIO_MAX = 160;
 export const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
 export const AVATAR_TYPES = ["image/jpeg", "image/png"];
 
-/** Names of the themes in the picker (the API sends ids and flags only). */
+/** Names of the themes in the picker (the API sends ids only). */
 export const THEME_LABELS: Record<string, string> = {
   noite: "Noite",
   dia: "Dia",
   locadora: "Locadora",
   estufa: "Estufa",
 };
-
-/** The small caption under a theme in the picker (design: "grátis", "comprado", "na loja"). */
-export function themeCaption(option: ThemeOption): string {
-  if (!option.premium) return "grátis";
-  return option.owned ? "comprado" : "na loja";
-}
 
 /** Characters of a text as the server counts them (code points, so an emoji is one). */
 export const charCount = (text: string): number => Array.from(text).length;
@@ -74,7 +63,6 @@ const BY_CODE: Record<string, EditorError> = {
   BIO_TOO_LONG: { field: "bio", message: `A bio pode ter no máximo ${BIO_MAX} caracteres.` },
   BIO_INVALID: { field: "bio", message: "A bio tem caracteres que não podemos guardar." },
   THEME_UNKNOWN: { field: "theme", message: "Esse tema não existe." },
-  THEME_LOCKED: { field: "theme", message: "Você ainda não tem esse tema. Ele está na loja." },
   SLUG_TOO_SHORT: { field: "slug", message: "O endereço precisa ter pelo menos 3 caracteres." },
   SLUG_TOO_LONG: { field: "slug", message: "O endereço pode ter no máximo 30 caracteres." },
   SLUG_INVALID_CHARACTERS: { field: "slug", message: "Use só letras minúsculas, números e hífen." },
