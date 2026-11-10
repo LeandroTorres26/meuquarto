@@ -62,7 +62,7 @@ class ProfileEditorApiTests {
     // --- reading ---
 
     @Test
-    void aNewProfileShowsTheSlugAsNameAndTheFreeThemes() throws Exception {
+    void aNewProfileShowsTheSlugAsNameAndTheFourThemes() throws Exception {
         Cookie session = signUp("a@example.com", "leandro");
 
         mvc.perform(get("/api/profile").cookie(session)).andExpect(status().isOk())
@@ -71,9 +71,9 @@ class ProfileEditorApiTests {
                 .andExpect(jsonPath("$.bio").value(""))
                 .andExpect(jsonPath("$.avatarUrl").doesNotExist())
                 .andExpect(jsonPath("$.theme").value("noite"))
-                .andExpect(jsonPath("$.availableThemes[0]").value("noite"))
-                .andExpect(jsonPath("$.availableThemes[1]").value("dia"))
-                .andExpect(jsonPath("$.availableThemes.length()").value(2));
+                .andExpect(jsonPath("$.themes[0]").value("noite"))
+                .andExpect(jsonPath("$.themes[1]").value("dia"))
+                .andExpect(jsonPath("$.themes.length()").value(4));
     }
 
     // --- changing ---

@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/highlights")
 public class HighlightController {
 
-    /** The most highlights any plan allows is far below this; it only bounds the body size. */
+    /** The highlight limit is far below this; it only bounds the body size. */
     private static final int MAX_IDS = 100;
 
     private final ProfileHighlights highlights;
@@ -40,7 +40,7 @@ public class HighlightController {
     @GetMapping
     public OverviewResponse overview(@CurrentUserId long userId) {
         ProfileHighlights.Overview overview = highlights.overview(userId);
-        return new OverviewResponse(overview.plan(), overview.limit(),
+        return new OverviewResponse(overview.limit(),
                 overview.lists().stream().map(ListResponse::of).toList());
     }
 
@@ -67,7 +67,7 @@ public class HighlightController {
     public record OrderRequest(MediaCategory category,
             @NotNull @Size(max = MAX_IDS) List<@NotNull @Positive Long> ids) {}
 
-    public record OverviewResponse(String plan, int limit, List<ListResponse> lists) {}
+    public record OverviewResponse(int limit, List<ListResponse> lists) {}
 
     public record ListResponse(MediaCategory category, List<HighlightResponse> items) {
 

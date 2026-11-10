@@ -14,7 +14,6 @@ import com.meuquarto.profile.domain.CollectionSort;
 import com.meuquarto.profile.domain.Highlight;
 import com.meuquarto.profile.domain.HighlightList;
 import com.meuquarto.profile.domain.ItemSource;
-import com.meuquarto.profile.domain.Plan;
 import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.domain.PublicProfileException;
 import com.meuquarto.profile.domain.PublicProfileException.Problem;
@@ -59,14 +58,13 @@ public class PublicProfiles {
     private final HighlightListRepository lists;
     private final MediaSummaries summaries;
     private final PlatformLinks platformLinks;
-    private final PlanResolver plans;
     private final NowBlocks nowBlocks;
     private final NowEntryRepository nowEntries;
     private final PublicProfileCache cache;
     private final TransactionTemplate readOnly;
 
     public PublicProfiles(ProfileRepository profiles, CollectionItemRepository items, HighlightListRepository lists,
-            MediaSummaries summaries, PlatformLinks platformLinks, PlanResolver plans, NowBlocks nowBlocks,
+            MediaSummaries summaries, PlatformLinks platformLinks, NowBlocks nowBlocks,
             NowEntryRepository nowEntries,
             PublicProfileCache cache, PlatformTransactionManager transactionManager) {
         this.profiles = profiles;
@@ -74,7 +72,6 @@ public class PublicProfiles {
         this.lists = lists;
         this.summaries = summaries;
         this.platformLinks = platformLinks;
-        this.plans = plans;
         this.nowBlocks = nowBlocks;
         this.nowEntries = nowEntries;
         this.cache = cache;
@@ -174,7 +171,6 @@ public class PublicProfiles {
     }
 
     private PublicProfile build(Profile profile) {
-        Plan plan = plans.planOf(profile.userId());
         List<VisibleRef> visible = items.findVisibleRefs(profile.id()); // most recent first
         Set<Long> allowedMedia = new HashSet<>(summaries.publicIds(
                 visible.stream().map(VisibleRef::mediaItemId).distinct().toList(), "", null));
@@ -201,7 +197,7 @@ public class PublicProfiles {
             }
             List<Long> chosen = highlightedIds(highlightLists.get(Optional.of(category)), shown, category);
             if (chosen.isEmpty()) {
-                chosen = all.stream().limit(plan.highlightLimit()).map(VisibleRef::itemId).toList();
+                chosen = all.stream().limit(HighlightList.LIMIT).map(VisibleRef::itemId).toList();
                 mostRecent.add(category);
             }
             sectionIds.put(category, chosen);
@@ -224,7 +220,7 @@ public class PublicProfiles {
                 nowBlocks.resolve(profile.id(), nowEntries.findByProfileId(profile.id())).values());
         return new PublicProfile(profile.slug(), profile.displayName().orElse(profile.slug()),
                 profile.bio().orElse(null), profile.avatarKey().map(Avatars::urlPath).orElse(null),
-                profile.theme().id(), profile.theme().premium(), now, favorites, List.copyOf(sections),
+                profile.theme().id(), now, favorites, List.copyOf(sections),
                 platformLinks.forProfile(profile.id()).stream()
                         .map(link -> new PublicProfile.PlatformLink(link.platform(), link.url())).toList());
     }

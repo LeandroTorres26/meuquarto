@@ -4,20 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.meuquarto.profile.domain.ProfileException.Problem;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 
-/** The themes a profile can wear (FR-17) and which ones a plan offers (BR-05). */
+/** The four themes a profile can wear, free for everyone (FR-17, ADR 0022). */
 class ProfileThemeTest {
 
     @Test
-    void thereAreTwoFreeAndTwoPremiumThemesInDisplayOrder() {
+    void thereAreFourThemesInDisplayOrderAndNoiteIsTheDefault() {
         assertThat(ProfileTheme.values()).containsExactly(ProfileTheme.NOITE, ProfileTheme.DIA,
                 ProfileTheme.LOCADORA, ProfileTheme.ESTUFA);
-        assertThat(ProfileTheme.NOITE.premium()).isFalse();
-        assertThat(ProfileTheme.DIA.premium()).isFalse();
-        assertThat(ProfileTheme.LOCADORA.premium()).isTrue();
-        assertThat(ProfileTheme.ESTUFA.premium()).isTrue();
         assertThat(ProfileTheme.of("locadora")).isEqualTo(ProfileTheme.LOCADORA);
         assertThat(ProfileTheme.DEFAULT).isEqualTo(ProfileTheme.NOITE);
     }
@@ -31,17 +26,10 @@ class ProfileThemeTest {
     }
 
     @Test
-    void thePlanListsTheThemesItCanApply_BR05() {
-        assertThat(ProfileTheme.availableTo(new FreePlan())).containsExactly(ProfileTheme.NOITE, ProfileTheme.DIA);
-        assertThat(ProfileTheme.availableTo(new FreePlan(Set.of(ProfileTheme.ESTUFA))))
-                .containsExactly(ProfileTheme.NOITE, ProfileTheme.DIA, ProfileTheme.ESTUFA);
-    }
-
-    @Test
-    void aProfileKeepsItsThemeAndFallsBackToTheDefaultForAStoredIdItDoesNotKnow() {
+    void aProfileKeepsItsTheme() {
         Profile profile = new Profile(1L, Slug.of("leandro"));
         assertThat(profile.theme()).isEqualTo(ProfileTheme.NOITE);
-        profile.changeTheme(ProfileTheme.DIA);
-        assertThat(profile.theme()).isEqualTo(ProfileTheme.DIA);
+        profile.changeTheme(ProfileTheme.ESTUFA);
+        assertThat(profile.theme()).isEqualTo(ProfileTheme.ESTUFA);
     }
 }

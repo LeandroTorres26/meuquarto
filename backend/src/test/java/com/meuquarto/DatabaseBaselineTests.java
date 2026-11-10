@@ -28,6 +28,16 @@ class DatabaseBaselineTests {
     }
 
     @Test
+    void theStoreTablesAreGoneAfterV18() {
+        Integer left = jdbc.queryForObject("""
+                select count(*) from information_schema.tables
+                where table_schema = 'public' and table_name in ('products', 'themes', 'entitlements')
+                """, Integer.class);
+
+        assertThat(left).isZero();
+    }
+
+    @Test
     void runsOnTheSamePostgresMajorVersionAsCompose() {
         String version = jdbc.queryForObject("show server_version", String.class);
 

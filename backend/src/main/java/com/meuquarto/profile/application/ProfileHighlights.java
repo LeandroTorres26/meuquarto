@@ -6,7 +6,6 @@ import com.meuquarto.profile.domain.Highlight;
 import com.meuquarto.profile.domain.HighlightException;
 import com.meuquarto.profile.domain.HighlightException.Problem;
 import com.meuquarto.profile.domain.HighlightList;
-import com.meuquarto.profile.domain.Plan;
 import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.infra.CollectionItemRepository;
 import com.meuquarto.profile.infra.HighlightListRepository;
@@ -23,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * The owner's highlight lists (FR-09a, FR-11, BR-02, BR-07). The owner always comes from the session;
  * a highlight or item that is not the owner's behaves like one that does not exist. A list with
- * category {@code null} is "Favoritos de tudo". The plan comes from {@link PlanResolver} and is only
- * ever used through the {@link Plan} interface.
+ * category {@code null} is "Favoritos de tudo". Every list holds at most
+ * {@link HighlightList#LIMIT} highlights.
  */
 @Service
 public class ProfileHighlights {
@@ -33,24 +32,21 @@ public class ProfileHighlights {
     private final CollectionItemRepository items;
     private final HighlightListRepository lists;
     private final MediaSummaries summaries;
-    private final PlanResolver plans;
     private final PublicProfileCache publicProfiles;
 
     public ProfileHighlights(ProfileRepository profiles, CollectionItemRepository items, HighlightListRepository lists,
-            MediaSummaries summaries, PlanResolver plans, PublicProfileCache publicProfiles) {
+            MediaSummaries summaries, PublicProfileCache publicProfiles) {
         this.profiles = profiles;
         this.items = items;
         this.lists = lists;
         this.summaries = summaries;
-        this.plans = plans;
         this.publicProfiles = publicProfiles;
     }
 
-    /** Every list (favorites first, then one per category, empty ones included) and the plan's limit. */
+    /** Every list (favorites first, then one per category, empty ones included) and the limit. */
     @Transactional(readOnly = true)
     public Overview overview(long userId) {
         long profileId = profileIdOf(userId);
-        Plan plan = plans.planOf(userId);
         List<HighlightList> stored = lists.findByProfileId(profileId);
         Map<Optional<MediaCategory>, HighlightList> byCategory = new HashMap<>();
         stored.forEach(list -> byCategory.put(Optional.ofNullable(list.category()), list));
@@ -61,7 +57,7 @@ public class ProfileHighlights {
         for (MediaCategory category : MediaCategory.values()) {
             result.add(views.listView(category, byCategory.get(Optional.of(category))));
         }
-        return new Overview(plan.code(), plan.highlightLimit(), result);
+        return new Overview(HighlightList.LIMIT, result);
     }
 
     /** "Destacar": appends the collection item to the list of {@code category} ({@code null}: favorites). */
@@ -72,7 +68,7 @@ public class ProfileHighlights {
                 .orElseThrow(() -> new HighlightException(Problem.NOT_IN_COLLECTION));
         HighlightList list = findList(profileId, category)
                 .orElseGet(() -> HighlightList.forProfile(profileId, category));
-        list.highlight(item, plans.planOf(userId));
+        list.highlight(item);
         HighlightList saved = lists.saveAndFlush(list);
         Highlight added = saved.highlights().stream()
                 .filter(h -> h.collectionItemId() == collectionItemId).findFirst().orElseThrow();
@@ -151,7 +147,7 @@ public class ProfileHighlights {
         }
     }
 
-    public record Overview(String plan, int limit, List<ListView> lists) {}
+    public record Overview(int limit, List<ListView> lists) {}
 
     /** {@code category} {@code null} is "Favoritos de tudo"; {@code items} are in order. */
     public record ListView(MediaCategory category, List<HighlightView> items) {}
