@@ -13,7 +13,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 ### Profile
 - FR-04 Public profile at `/{slug}`; slug unique (BR-01).
 - FR-05 Edit display name, bio, avatar (upload to object storage), chosen theme: four themes (noite, dia, locadora, estufa), all free for everyone, applied and saved on click (ADR 0022, 0024).
-- FR-06 Open Graph preview (title, description, image) when the link is shared.
+- FR-06 Open Graph preview (title, description, image) when the link is shared. The image is generated per profile (display name, address and brand, no covers or avatar) and a default one covers pages without an owner; `twitter:card` is `summary_large_image`.
 - FR-07 Adult-content filter: items flagged adult by providers are hidden (BR-08).
 
 ### Collection and highlights (CRUD core)

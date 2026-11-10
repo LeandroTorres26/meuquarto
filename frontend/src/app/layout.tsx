@@ -5,6 +5,7 @@ import "@/styles/components.css";
 import "@/styles/site.css";
 import "./globals.css";
 import { InlineScript } from "@/components/InlineScript";
+import { siteUrl } from "@/lib/public-profile";
 import { DEFAULT_THEME, THEME_BOOT_SCRIPT } from "@/lib/theme";
 
 // Self-hosted by next/font (CSP font-src 'self'). The families are exposed as CSS
@@ -31,6 +32,9 @@ const hand = localFont({
 });
 
 export const metadata: Metadata = {
+  // Makes the share image URLs absolute; the card type is shared by every page.
+  metadataBase: new URL(siteUrl()),
+  twitter: { card: "summary_large_image" },
   title: "meuquarto",
   description: "Seus filmes, séries, animes, mangás, livros, games e música num endereço só.",
 };

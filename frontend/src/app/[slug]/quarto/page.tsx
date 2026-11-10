@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { RoomInvite } from "@/components/SessionSlots";
@@ -13,7 +13,10 @@ import { getPublicProfile, siteUrl } from "@/lib/public-profile";
 
 type Props = PageProps<"/[slug]/quarto">;
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const { slug } = await params;
   const result = await getPublicProfile(slug);
   if (result.kind !== "ok") return { title: "Perfil não encontrado · meuquarto" };
@@ -31,6 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `/${encodeURIComponent(profile.slug)}/quarto`,
+      // A page that sets its own openGraph drops the share image of the segment above; take it back.
+      images: (await parent).openGraph?.images,
     },
   };
 }
