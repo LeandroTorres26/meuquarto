@@ -2,6 +2,8 @@
 
 Guia para a entrega do P2 de Programação Orientada a Objetos. O professor pergunta, e você precisa explicar cada hierarquia linha por linha. Para cada tópico da disciplina abaixo você encontra onde ele está neste projeto, uma explicação com o vocabulário das aulas e perguntas prováveis com respostas curtas.
 
+As outras tecnologias do projeto (Spring, JPA, PostgreSQL, Flyway, Docker, Next.js, segurança) estão no `docs/defesa-tecnica.md`, organizadas pelos fluxos do código.
+
 Este arquivo é mantido junto com o código: quem criar ou mudar uma hierarquia atualiza o guia no mesmo PR (regra no `CLAUDE.md`). A decisão de projeto está em `docs/adr/0018-own-object-oriented-hierarchies.md`.
 
 Todos os caminhos são relativos a `backend/src/main/java/com/meuquarto/`. Testes ficam em `backend/src/test/java/com/meuquarto/`.
