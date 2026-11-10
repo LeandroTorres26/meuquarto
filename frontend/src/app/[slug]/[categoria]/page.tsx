@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -27,7 +27,10 @@ import { getPublicListing, getPublicProfile, siteUrl } from "@/lib/public-profil
 
 type Props = PageProps<"/[slug]/[categoria]">;
 
-export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+export async function generateMetadata(
+  { params, searchParams }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const { slug, categoria } = await params;
   const category = categoryFromRoute(categoria);
   const result = await getPublicProfile(slug);
@@ -50,6 +53,8 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
       title,
       description,
       url: listingHref(profile.slug, category, {}),
+      // A page that sets its own openGraph drops the share image of the segment above; take it back.
+      images: (await parent).openGraph?.images,
     },
   };
 }
