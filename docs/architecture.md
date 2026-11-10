@@ -6,17 +6,17 @@ Browser ── Next.js (TypeScript, SSR for /{slug} + Open Graph)
               │  REST/JSON (OpenAPI), session cookie
               ▼
         Spring Boot 4 (Java 21) — modular monolith
-   ┌───────────┬────────────┬─────────────┬────────────┬──────────┐
-   │ identity  │ profile    │ media       │ billing    │ room     │
-   │ (auth)    │ (highlights│ (catalog,   │ (Stripe,   │ (proto)  │
-   │           │  now, theme│ providers,  │ orders,    │          │
-   │           │  slug)     │ sync jobs)  │ entitle.)  │          │
-   └───────────┴────────────┴─────────────┴────────────┴──────────┘
+   ┌───────────┬────────────┬─────────────┬──────────┐
+   │ identity  │ profile    │ media       │ room     │
+   │ (auth)    │ (highlights│ (catalog,   │ (proto)  │
+   │           │  now, theme│ providers,  │          │
+   │           │  slug)     │ sync jobs)  │          │
+   └───────────┴────────────┴─────────────┴──────────┘
         │ PostgreSQL (Flyway)      │ S3-compatible storage (R2/MinIO)
         │ cache (Caffeine)         │ external APIs: TMDB, AniList, Letterboxd RSS,
-                                   │ Last.fm, Steam, Goodreads RSS, Open Library, IGDB, Deezer, Stripe
+                                   │ Last.fm, Steam, Goodreads RSS, Open Library, IGDB, Deezer
 ```
-Deploy: one VPS, Docker Compose (caddy, web, api, postgres, minio optional), GitHub Actions builds images and deploys on merge to `main`. Production only; Stripe in test mode until the switch.
+Deploy: one VPS, Docker Compose (caddy, web, api, postgres, minio optional), GitHub Actions builds images and deploys on merge to `main`. Production only.
 
 ## Stack
 Java 21, Spring Boot 4.x (3.x left open-source support), Maven, Spring Security, Spring Data JPA, Flyway, springdoc-openapi, Caffeine cache, Testcontainers. Front: Next.js 16 + TypeScript. Monorepo: `backend/`, `frontend/`, `docs/`, `infra/`.
@@ -45,8 +45,8 @@ interface ActivityProvider { Category category(); ProviderId id();
 ## Read model
 Public profile is served from a pre-assembled view (profile + highlights + now) cached with Caffeine and evicted on any change; external APIs are never called while rendering.
 
-## Billing flow
-Checkout Session (Pix + card) → user pays → `checkout.session.completed` / `payment_intent.succeeded` webhook (signature verified, idempotent by event id) → `orders` paid → `entitlements` granted.
+## Billing (roadmap, out of the P2)
+The P2 has no billing module (ADR 0024). The flow below is only the starting point if the store comes back in the TCC: Checkout Session (Pix + card) → user pays → `checkout.session.completed` / `payment_intent.succeeded` webhook (signature verified, idempotent by event id) → `orders` paid → `entitlements` granted.
 
 ## Decisions
 Recorded in [`docs/adr/`](adr/README.md) (0001 and following). [0013](adr/0013-room-rendering-technology.md) chose CSS 3D in React for the room.

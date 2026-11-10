@@ -34,3 +34,6 @@ Rules:
 ## Alternatives considered
 - One folder per use case: strong isolation, but shared entities need their own package and the tree grows quickly.
 - Hexagonal (ports and adapters): purest, but more interfaces and ceremony than the P2 deadline allows.
+
+## As built: no billing module (#133, ADR 0024)
+The `billing` module named above no longer exists; the modules are `identity`, `profile`, `media` and `room`.

@@ -1,6 +1,6 @@
 # 0008. Stripe, one-time purchases with Pix and card
 
-- Status: Accepted
+- Status: Superseded by 0024 (for the P2; the design is kept as the roadmap for the store)
 - Date: 2026-10-12
 
 ## Context

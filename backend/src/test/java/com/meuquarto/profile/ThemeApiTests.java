@@ -22,7 +22,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
-/** Themes in the editor (FR-17, ADR 0022): the four are free, anyone applies any, an unknown id is refused. */
+/** Themes in the editor (FR-05, ADR 0022): the four are free, anyone applies any, an unknown id is refused. */
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import({TestcontainersConfiguration.class, StorageTestcontainersConfiguration.class})

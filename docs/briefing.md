@@ -29,7 +29,7 @@ Documento de contexto gerado a partir de uma sessão de brainstorm. Serve de pon
 - **Front-end:** a definir. A exigência de Java vale para o back-end; o front roda no navegador e pode usar JavaScript/TypeScript normalmente (ex.: React + Three.js). **Confirmar com o professor** se o front também precisa ser em Java (ex.: Thymeleaf); mesmo nesse caso, é possível carregar Three.js na página.
 
 ### Desafio extra (opcional, vale nota extra na P1)
-Transformar o projeto em SaaS, monetizar e provar ao professor que gerou algum dinheiro. Implica custo de VPS e domínio. Decisão atual: fazer a P2 e tentar o desafio.
+Transformar o projeto em SaaS, monetizar e provar ao professor que gerou algum dinheiro. Implica custo de VPS e domínio. Decisão atual (ADR 0024, 2026-11-10): fazer só a P2; o desafio de monetização ficou fora e a loja é roadmap do TCC.
 
 ---
 

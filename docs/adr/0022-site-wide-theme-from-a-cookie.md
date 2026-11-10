@@ -22,3 +22,6 @@ Until now the profile theme (#37) only coloured the public profile: `ProfileShel
 - `cookies()` in the root layout: every route dynamic, against the Cache Components setup.
 - Theme in `localStorage`: same script, but the server could never read it if a future server render needs it.
 - Theme in the session answer (`/api/auth/me`): the identity module would have to know about profiles, and the public pages still could not use it before paint.
+
+## As built: no locked theme (#133, ADR 0024)
+With the store out of the P2 all four themes are free for everyone, so the "locked premium theme can be looked at but is never kept" case of decision 4 no longer exists: every pick in S6 is applied, kept in the cookie and saved at once, and leaving S6 has nothing to restore. `showTheme` stays only as the half of `applyTheme` that sets `data-theme`. The backend only checks that the theme id exists (`THEME_UNKNOWN`).

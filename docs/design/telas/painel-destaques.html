@@ -10,8 +10,8 @@
 <link rel="stylesheet" href="site.css">
 </head>
 <body>
-<!-- S7 Destaques. Per category: the highlights strip (ordered, limit 4 free / 12 with the pack) above the whole collection
-     (no limit; sync + manual). Prototype params: ?aba=favoritos|filmes|series|animes|mangas|livros|musica|games, ?pack=1 (limit 12).
+<!-- S7 Destaques. Per category: the highlights strip (ordered, limit 4 for everyone) above the whole collection
+     (no limit; sync + manual). Prototype params: ?aba=favoritos|filmes|series|animes|mangas|livros|musica|games.
      Everything on the page works: highlight, remove, reorder, note, hide/remove, search, sort. -->
 <div class="page">
   <header class="topbar">
@@ -23,7 +23,7 @@
   <div class="wrap pshell">
     <nav class="pnav" aria-label="Painel">
       <div class="pnav__group"><a class="tab" href="painel-perfil.html">Perfil</a><a class="tab" href="painel-destaques.html" aria-current="page">Destaques</a><a class="tab" href="painel-agora.html">Agora</a><a class="tab" href="painel-contas.html">Contas vinculadas</a></div>
-      <div class="pnav__group"><a class="tab" href="loja.html">Loja</a><a class="tab" href="compras.html">Compras</a><a class="tab" href="conta.html">Conta</a></div>
+      <div class="pnav__group"><a class="tab" href="conta.html">Conta</a></div>
     </nav>
 
     <main class="pmain">
@@ -43,7 +43,7 @@
 <script>
 (function () {
   var q = new URLSearchParams(location.search);
-  var LIMIT = q.get('pack') === '1' ? 12 : 4;
+  var LIMIT = 4;
   var $ = function (id) { return document.getElementById(id); };
   var icon = function (n) { return '<svg class="icon" aria-hidden="true"><use href="icons.svg#' + n + '"/></svg>'; };
   var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); };
@@ -85,9 +85,8 @@
     var free = full ? '' : '<li class="hl-slot"><a class="mq-slot hl-empty" href="#coll-h">' + icon('plus') + '<span>Destaque um item da coleção</span></a></li>';
     $('hl').innerHTML =
       '<div class="hl-head"><div class="pair-2"><h2 id="hl-h" class="t-h2">Destaques' + (t.all ? '' : ' de ' + t.label) + '</h2><p class="help">Na ordem da parede. Use as setas para mudar a ordem.</p></div>' + meter(n) + '</div>' +
-      (full && LIMIT < 12 ? '<div class="mq-upsell"><p class="mq-upsell__text" id="hl-full"><strong>' + t.label + ' está cheio</strong>No plano grátis cabem 4 destaques. Com o pack de destaques, cabem 12. A coleção continua sem limite.</p><div class="mq-upsell__side"><a class="mq-btn mq-btn--primary" href="loja.html">Ver o pack</a></div></div>' : '') +
-      (full && LIMIT >= 12 ? '<p class="help" id="hl-full">Os 12 destaques estão ocupados. Remova um para destacar outro.</p>' : '') +
-      (n ? '<ol class="hl-strip' + (LIMIT > 4 ? ' hl-strip--pack' : '') + '" aria-label="Destaques, na ordem da parede">' + slots + free + '</ol>' : '<div class="cat-empty"><p class="t-sm">Nenhum destaque ainda. O perfil mostra os destaques; escolha na coleção abaixo.</p></div>');
+      (full ? '<p class="help" id="hl-full"><strong>' + t.label + ' está cheio.</strong> Cabem 4 destaques; remova um para liberar uma vaga. A coleção continua sem limite.</p>' : '') +
+      (n ? '<ol class="hl-strip' + '" aria-label="Destaques, na ordem da parede">' + slots + free + '</ol>' : '<div class="cat-empty"><p class="t-sm">Nenhum destaque ainda. O perfil mostra os destaques; escolha na coleção abaixo.</p></div>');
   }
   function list() {
     var t = tab();
@@ -118,7 +117,7 @@
       '<a class="mq-btn mq-btn--secondary mq-btn--sm" href="busca.html">' + icon('plus') + 'Adicionar obra</a></div>' +
       '<div class="cat-tools"><div class="search"><label for="cq" class="sr">Buscar na coleção</label>' + icon('search') + '<input id="cq" class="input" type="search" placeholder="Buscar na coleção" value="' + esc(st.q) + '" autocomplete="off"></div>' +
       '<fieldset class="seg" id="ordem"><legend class="sr">Ordenar por</legend>' + [['recentes', 'Recentes'], ['titulo', 'Título'], ['ano', 'Ano']].map(function (o) { return '<label><input type="radio" name="ordem" value="' + o[0] + '"' + (st.ordem === o[0] ? ' checked' : '') + '>' + o[1] + '</label>'; }).join('') + '</fieldset></div>' +
-      (full ? '<p class="help">' + icon('star') + ' Destaques cheios: para destacar outro, remova um da faixa acima' + (LIMIT < 12 ? ' ou veja o pack' : '') + '. Adicionar à coleção continua livre.</p>' : '') +
+      (full ? '<p class="help">' + icon('star') + ' Destaques cheios: para destacar outro, remova um da faixa acima' + '. Adicionar à coleção continua livre.</p>' : '') +
       (l.length ? '<ul class="coll-list" aria-label="Coleção">' + rows + '</ul>' : '<div class="cat-empty"><p class="t-sm">' + (st.q ? 'Nada com “' + esc(st.q) + '” na coleção.' : 'A coleção está vazia. Adicione uma obra ou vincule uma conta.') + '</p></div>');
     if (keepFocus) { var i = $('cq'); i.focus(); i.setSelectionRange(i.value.length, i.value.length); }
   }
@@ -136,7 +135,7 @@
   document.addEventListener('click', function (e) {
     var b = e.target.closest('button, a'); if (!b) { if (st.menu) { st.menu = null; renderColl(); } return; }
     var t = tab(), d = b.dataset;
-    if (d.tab) { st.tab = d.tab; st.q = ''; st.menu = null; history.replaceState(null, '', '?aba=' + d.tab + (LIMIT > 4 ? '&pack=1' : '')); renderAll(); return; }
+    if (d.tab) { st.tab = d.tab; st.q = ''; st.menu = null; history.replaceState(null, '', '?aba=' + d.tab); renderAll(); return; }
     if (d.hl) { if (t.hl.length < LIMIT) { t.hl.push(d.hl); renderAll(); toast('<strong>' + esc(MQItem.get(d.hl).title) + '</strong> está nos destaques.'); refocus('[data-unhl="' + d.hl + '"].mq-btn'); } return; }
     if (d.unhl) { var i = t.hl.indexOf(d.unhl), id = d.unhl; t.hl.splice(i, 1); renderAll(); toast('<strong>' + esc(MQItem.get(id).title) + '</strong> saiu dos destaques. Continua na coleção.', function () { t.hl.splice(i, 0, id); renderAll(); }); refocus('[data-hl="' + id + '"]'); return; }
     if (d.move) { var j = t.hl.indexOf(d.move), k = j + Number(d.dir); t.hl.splice(j, 1); t.hl.splice(k, 0, d.move); renderAll(); refocus('[data-move="' + d.move + '"][data-dir="' + d.dir + '"]'); return; }

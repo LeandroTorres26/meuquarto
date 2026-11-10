@@ -1,4 +1,4 @@
-meuquarto is a profile that works like the owner's room: posters on the wall, volumes on the shelf, a record leaning out of its sleeve. The artwork of the works is the star; the interface stays out of its way. Default theme is dark (`noite`), light (`dia`) is an option, and profile themes are sold as premium items.
+meuquarto is a profile that works like the owner's room: posters on the wall, volumes on the shelf, a record leaning out of its sleeve. The artwork of the works is the star; the interface stays out of its way. Default theme is dark (`noite`), light (`dia`) is an option, and the four profile themes are free for everyone.
 
 ## Content fundamentals
 
@@ -70,12 +70,12 @@ Every color is written as `hsl(H S% L%)` (alpha: `hsl(H S% L% / a)`), so a hue f
 | --- | --- | --- | --- |
 | Noite | `noite` | free, default | dark; fallback for any token a theme leaves out |
 | Dia | `dia` | free | light, same structure |
-| Locadora | `locadora` | premium (purchase) | dark |
-| Estufa | `estufa` | premium (purchase) | dark |
+| Locadora | `locadora` | free | dark |
+| Estufa | `estufa` | free | dark |
 
-BR-05: a premium theme can only be applied by an account that bought it; purchases are permanent. Free themes are always selectable.
+All four themes are free for everyone and selectable by any account (ADR 0024; the paid-theme rule BR-05 is roadmap, out of the P2).
 
-- `locadora` and `estufa` are the premium examples. A premium theme may change every color token, including the seven `sticker-*` colors, but must keep the contrast pairs named in each token's usage note (text 4.5:1, borders and focus 3:1). It never uses franchise art, logos or characters; backgrounds and frames are original.
+- `locadora` and `estufa` are the examples of a themed palette. A theme may change every color token, including the seven `sticker-*` colors, but must keep the contrast pairs named in each token's usage note (text 4.5:1, borders and focus 3:1). It never uses franchise art, logos or characters; backgrounds and frames are original.
 
 ## Iconography
 
@@ -87,7 +87,7 @@ Platform marks (the profile's platform links and the S9 cards) come from Simple 
 
 The symbol is the corner of a room seen from inside: two walls and the floor, top open, lines rising 1 for every 2 like the isometric room. The light wall has a four-pane window and only the top-left pane is lit. It reads as a room with the light on and as "um quarto" (a quarter). Files, in `assets/Logo/`: `meuquarto-symbol.svg` (color) and `meuquarto-symbol-mono.svg` (one color, `currentColor`: planes split by thin gaps, the three dark panes cut out, the lit pane filled).
 
-- Colors are fixed and do not follow the theme: light wall `hsl(14 100% 62%)`, dark wall `hsl(14 100% 44%)`, floor and lit pane `hsl(36 87% 62%)`, unlit panes `hsl(225 41% 18%)`. On a profile with a premium theme, use the one-color version in `ink`.
+- Colors are fixed and do not follow the theme: light wall `hsl(14 100% 62%)`, dark wall `hsl(14 100% 44%)`, floor and lit pane `hsl(36 87% 62%)`, unlit panes `hsl(225 41% 18%)`. The one-color version (`currentColor`, in `ink`) is for places where four colors do not fit.
 - Lockup: the symbol at about 1.4 times the wordmark's font size, then the wordmark `meuquarto` in Big Shoulders Display 900, uppercase, `ink`. The header keeps the current 24px wordmark with a 32px symbol, `space-2` (8px) apart.
 - Clear space: a quarter of the symbol's height on every side. Minimum size: symbol 16px, lockup 120px wide.
 - Favicon set (Next app router files in `frontend/src/app`): `favicon.ico` (16, 32 and 48px), `icon.svg`, `apple-icon.png` (180px, the symbol on noite `surface-100`).

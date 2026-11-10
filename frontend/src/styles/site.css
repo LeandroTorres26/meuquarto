@@ -363,10 +363,9 @@ html:has(dialog.dialog[open]){overflow:hidden}
 
 /* ---------- S7 highlights strip + collection ---------- */
 .hl-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--space-2) var(--space-4)}
-/* the strip has the wall's 4 columns (6 with the pack). Each slot is a subgrid of three rows shared by its strip row:
+/* the strip has the wall's 4 columns. Each slot is a subgrid of three rows shared by its strip row:
    covers on one baseline, titles from one line, controls on one line, whatever the titles and media */
 .hl-strip{list-style:none;margin:0;padding:var(--space-3) 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-8) var(--col-gap)}
-@media (min-width:1024px){.hl-strip--pack{grid-template-columns:repeat(6,minmax(0,1fr))}}
 @media (max-width:599.98px){.hl-strip{grid-auto-flow:column;grid-template-columns:none;grid-template-rows:repeat(3,auto);grid-auto-columns:136px;overflow-x:auto;margin-inline:calc(-1 * var(--gutter));padding-inline:var(--gutter);scrollbar-width:none}}
 
 .hl-slot{display:grid;grid-row:span 3;grid-template-rows:subgrid;row-gap:var(--space-2);min-width:0}

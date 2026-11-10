@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.meuquarto.profile.domain.ProfileException.Problem;
 import org.junit.jupiter.api.Test;
 
-/** The four themes a profile can wear, free for everyone (FR-17, ADR 0022). */
+/** The four themes a profile can wear, free for everyone (FR-05, ADR 0022). */
 class ProfileThemeTest {
 
     @Test

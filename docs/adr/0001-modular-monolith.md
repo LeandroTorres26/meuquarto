@@ -17,3 +17,6 @@ One Spring Boot application split into modules by package (`identity`, `profile`
 ## Alternatives considered
 - Microservices: network, deploy and observability cost far above what the scope needs.
 - Layered monolith without modules: fastest start, but couples features and makes the TCC growth path harder.
+
+## As built: no billing module (#133, ADR 0024)
+The `billing` module was removed with the store. The modules are `identity`, `profile`, `media` and `room`.
