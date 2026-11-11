@@ -30,7 +30,7 @@
 		<java.version>21</java.version>
 		<archunit.version>1.5.1</archunit.version>
 		<bouncycastle.version>1.86</bouncycastle.version>
-		<awssdk.version>2.57.8</awssdk.version>
+		<awssdk.version>2.57.11</awssdk.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
