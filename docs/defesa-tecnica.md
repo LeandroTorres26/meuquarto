@@ -19,7 +19,7 @@ Um formato que funciona para qualquer tecnologia: **o que é, por que está aqui
 |---|---|---|
 | 1. Saber bem | Vai ser perguntado. Explicar, mostrar no código, responder o "por quê". | Java e POO (ver `poo-no-projeto.md`), Spring Boot, JPA/Hibernate, PostgreSQL, Flyway, Docker e Docker Compose, API REST + frontend separado (Next.js) |
 | 2. Duas ou três frases | O que é, por que está, onde fica. | Spring Security (login, sessão, CSRF, Argon2), Spring Session JDBC, Bean Validation, testes (JUnit e Testcontainers), cache (Caffeine), tarefa agendada (`@Scheduled`), e-mail (Mailpit), armazenamento S3 (RustFS), chamadas HTTP às plataformas, GitHub Actions |
-| 3. Uma frase pronta | Infraestrutura que quase ninguém pergunta. | ArchUnit, gitleaks, CodeQL, Dependabot, limite de requisições, cabeçalhos de segurança, IP real atrás do proxy, virtual threads, Actuator, Cache Components do Next.js |
+| 3. Uma frase pronta | Infraestrutura que quase ninguém pergunta. | ArchUnit, gitleaks, CodeQL, limite de requisições, cabeçalhos de segurança, IP real atrás do proxy, virtual threads, Actuator, Cache Components do Next.js |
 
 ---
 
@@ -227,7 +227,7 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
 - **ArchUnit** (`backend/src/test/java/com/meuquarto/architecture/`): testes que conferem a organização do código; por exemplo, que o `domain` não depende do Spring e que um módulo não usa o repositório de outro.
 - **gitleaks**: procura senhas e chaves esquecidas no histórico do git a cada PR.
 - **CodeQL**: análise do GitHub que procura padrões de falha de segurança no código Java e TypeScript.
-- **Dependabot** (`.github/dependabot.yml`): abre PRs sozinho quando sai versão nova de uma dependência.
+- **Versões fixas das dependências**: cada biblioteca tem a versão travada no `pom.xml` e no `package-lock.json`, e o projeto fica nelas até a entrega; só atualizamos à mão se aparecer um alerta de segurança.
 - **Limite de requisições** (`shared/ratelimit/`): limita quantas vezes alguém tenta, por exemplo, logar num intervalo de tempo, para dificultar adivinhar senhas.
 - **Cabeçalhos de segurança** (no `SecurityConfig` e no `frontend/next.config.ts`): instruções ao navegador, como não deixar a página ser aberta dentro de outra (proteção contra *clickjacking*) e de onde scripts podem ser carregados (CSP).
 - **IP real atrás do proxy** (`server.tomcat.remoteip` no `application.yml`, ADR 0017): em produção a API fica atrás de outros servidores, e isso faz o limite de requisições contar o IP de quem acessa, não o do servidor intermediário.
