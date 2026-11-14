@@ -13,7 +13,7 @@ One file per decision, numbered, never rewritten: a changed decision gets a new 
 | [0007](0007-scheduled-sync-with-cooldown.md) | Scheduled sync with manual cooldown, no queue | Accepted |
 | [0008](0008-stripe-one-time-purchases.md) | Stripe, one-time purchases with Pix and card | Superseded by 0024 for the P2 |
 | [0009](0009-s3-compatible-object-storage.md) | S3-compatible object storage | Accepted |
-| [0010](0010-external-api-terms.md) | External API terms and licensing | Accepted, review pending |
+| [0010](0010-external-api-terms.md) | External API terms and licensing | Accepted, reviewed 2026-11-14 |
 | [0011](0011-collection-and-highlights.md) | Unlimited collection, limited highlights | Accepted |
 | [0012](0012-authentication-and-cryptography.md) | Authentication and cryptography stack | Accepted |
 | [0013](0013-room-rendering-technology.md) | Room rendering technology: CSS 3D in React | Accepted |
