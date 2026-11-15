@@ -93,7 +93,7 @@ The symbol is the corner of a room seen from inside: two walls and the floor, to
 - Favicon set (Next app router files in `frontend/src/app`): `favicon.ico` (16, 32 and 48px), `icon.svg`, `apple-icon.png` (180px, the symbol on noite `surface-100`).
 - Do not light more than one pane, close the cube or add a roof, stretch it, recolor it with theme colors, or add shadows or gradients.
 
-Provider attribution (TMDB and others) goes in the profile footer in `caption` and `ink-muted`.
+Provider attribution (TMDB and others) goes in the profile footer in `caption` and `ink-muted`. TMDB's terms (§3) also ask for its logo: a 28px mark in TMDB's own color (`hsl(193 99% 45%)`, literal like the platform marks), above the notice and smaller than our own symbol.
 
 ## Components
 

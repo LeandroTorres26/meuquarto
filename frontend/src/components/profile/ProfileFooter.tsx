@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { OwnerSlug } from "@/components/SessionActions";
 import { FooterInvite } from "@/components/SessionSlots";
+import { TmdbLogo } from "./TmdbLogo";
 
 /** Attribution required by the data providers (ADR 0010) and the invitation to make one's own. */
 export function ProfileFooter({ ownerSlug }: { ownerSlug?: OwnerSlug }) {
@@ -25,6 +26,7 @@ export function ProfileFooter({ ownerSlug }: { ownerSlug?: OwnerSlug }) {
           </p>
         </div>
         <div className="pair-2">
+          <TmdbLogo />
           <p className="t-cap">
             Filmes e séries: TMDB. Este produto usa a API do TMDB, mas não é endossado nem
             certificado pelo TMDB. Anime e mangá: AniList e MyAnimeList. Livros: Open Library e
