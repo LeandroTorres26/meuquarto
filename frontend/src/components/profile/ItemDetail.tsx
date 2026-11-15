@@ -1,6 +1,7 @@
 import { ExternalLink, ImageOff } from "lucide-react";
 import type { CSSProperties, ReactNode } from "react";
 import {
+  byline,
   CATEGORY_META,
   linkLabel,
   originCaption,
@@ -33,6 +34,7 @@ export function ItemDetailBody({
   ownerName: string;
 }) {
   const { item } = detail;
+  const line = byline(item.artist, item.year);
   const links = detail.links.flatMap((link) => {
     const href = safeLinkUrl(link.url);
     return href ? [{ provider: link.provider, href }] : [];
@@ -49,7 +51,7 @@ export function ItemDetailBody({
           <h2 id={HEADING_ID} className="detail__title">
             {item.title}
           </h2>
-          {item.year ? <p className="detail__meta">{item.year}</p> : null}
+          {line ? <p className="detail__meta">{line}</p> : null}
         </div>
         <div className="detail__owner">
           {item.note ? (

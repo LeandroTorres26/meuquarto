@@ -11,7 +11,7 @@ import {
   sourceLabels,
   type CollectionItem,
 } from "@/lib/collection";
-import { CATEGORY_META, safeImageUrl } from "@/lib/profile-view";
+import { byline, CATEGORY_META, safeImageUrl } from "@/lib/profile-view";
 
 type Props = {
   item: CollectionItem;
@@ -49,6 +49,7 @@ export function CollectionRow({
   const meta = CATEGORY_META[item.category];
   const cover = safeImageUrl(item.media.imageUrl);
   const name = item.media.title;
+  const line = byline(item.media.artist, item.media.year);
   const synced = isSynced(item);
   const labels = sourceLabels(item.sources);
 
@@ -144,8 +145,8 @@ export function CollectionRow({
         <p className="t-poster">{name}</p>
         <p className="line">
           <span className="t-cap">
-            {showCategory ? `${meta.sticker}${item.media.year ? ", " : ""}` : ""}
-            {item.media.year ?? ""}
+            {showCategory ? `${meta.sticker}${line ? ", " : ""}` : ""}
+            {line ?? ""}
           </span>
           {labels.map((label) => (
             <span

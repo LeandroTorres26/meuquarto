@@ -1,5 +1,5 @@
 import { Star } from "lucide-react";
-import { itemClasses, itemLabel, itemStyle, type PublicItem } from "@/lib/profile-view";
+import { byline, itemClasses, itemLabel, itemStyle, type PublicItem } from "@/lib/profile-view";
 import { ItemCover } from "./ItemCover";
 
 /**
@@ -25,12 +25,13 @@ export function HighlightCard({
   /** Where the link goes without JavaScript; defaults to `?item={ref}` on the current page. */
   href?: string;
 }) {
+  const line = byline(item.artist, item.year);
   const body = (
     <>
       <ItemCover item={item} showTag={showTag} showSlip eager={eager} />
       <div className="mq-item__meta">
         <h3 className="mq-item__title">{item.title}</h3>
-        {item.year ? <p className="mq-item__sub">{item.year}</p> : null}
+        {line ? <p className="mq-item__sub">{line}</p> : null}
         {highlighted ? (
           <span className="hl-seal">
             <Star className="icon" aria-hidden="true" />

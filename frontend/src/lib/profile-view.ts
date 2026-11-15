@@ -10,6 +10,8 @@ export type PublicItem = {
   ref: number;
   category: Category;
   title: string;
+  /** The artist of an album, null for any other work. */
+  artist: string | null;
   year: number | null;
   imageUrl: string | null;
   note: string | null;
@@ -28,6 +30,7 @@ export type PublicNowItem = {
   ref: number;
   category: Category;
   title: string;
+  artist: string | null;
   year: number | null;
   imageUrl: string | null;
   source: string;
@@ -247,9 +250,24 @@ export function countLabel(category: Category, total: number): string {
   return `${total} ${total === 1 ? one : many}`;
 }
 
-/** "Perfect Days, filme de 2023": the card link's accessible name (the cover image is decorative). */
-export function itemLabel(item: Pick<PublicItem, "title" | "category" | "year">): string {
+/** "Milton Nascimento, 1972": the line under a title. Only the artist, or only the year, when the other is missing; null when both are. */
+export function byline(
+  artist: string | null | undefined,
+  year: number | null | undefined,
+): string | null {
+  const parts = [artist, year].filter((part) => part !== null && part !== undefined && part !== "");
+  return parts.length ? parts.join(", ") : null;
+}
+
+/**
+ * "Perfect Days, filme de 2023" or "Clube da Esquina, álbum de Milton Nascimento, 1972": the card link's
+ * accessible name (the cover image is decorative).
+ */
+export function itemLabel(
+  item: Pick<PublicItem, "title" | "category" | "year"> & { artist?: string | null },
+): string {
   const noun = CATEGORY_META[item.category].noun;
+  if (item.artist) return `${item.title}, ${noun} de ${byline(item.artist, item.year)}`;
   return item.year ? `${item.title}, ${noun} de ${item.year}` : `${item.title}, ${noun}`;
 }
 

@@ -1,4 +1,4 @@
-import { CATEGORY_META, type Category } from "./profile-view";
+import { byline, CATEGORY_META, type Category } from "./profile-view";
 
 // S7 and S8 (painel-destaques.html, busca.html): pure helpers for the collection and highlights
 // screens. No React, no fetch; everything here is unit tested.
@@ -44,6 +44,8 @@ export type Media = {
   provider: string;
   externalId: string;
   title: string;
+  /** The artist of an album, null for any other work. */
+  artist: string | null;
   year: number | null;
   imageUrl: string | null;
 };
@@ -72,6 +74,7 @@ export type CatalogResult = {
   provider: string;
   externalId: string;
   title: string;
+  artist: string | null;
   year: number | null;
   imageUrl: string | null;
 };
@@ -244,10 +247,16 @@ export const catalogSearchPath = (category: Category, term: string): string =>
 export const workKey = (category: Category, provider: string, externalId: string): string =>
   `${category}:${provider}:${externalId}`;
 
-/** "Série de 1998": the caption under a result title. */
-export function resultCaption(category: Category, year: number | null): string {
+/** "Série de 1998", or "Álbum de Milton Nascimento, 1972": the caption under a result title. */
+export function resultCaption(
+  category: Category,
+  year: number | null,
+  artist: string | null = null,
+): string {
   const sticker = CATEGORY_META[category].sticker;
-  return year ? `${sticker} de ${year}` : sticker;
+  const by = byline(artist, year);
+  if (!by) return sticker;
+  return `${sticker} de ${by}`;
 }
 
 /** Message for a category with no catalog (or a catalog without a key). */

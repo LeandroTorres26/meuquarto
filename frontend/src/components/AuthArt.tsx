@@ -59,7 +59,13 @@ export function SignUpArt() {
         slip="chorei no final"
       />
       <ArtCard kind="poster" tilt={0.516} src="/covers/c12.svg" title="Frieren" year="2023" />
-      <ArtCard kind="vinyl" tilt={0.619} src="/covers/c06.svg" title="Elis &amp; Tom" year="1974" />
+      <ArtCard
+        kind="vinyl"
+        tilt={0.619}
+        src="/covers/c06.svg"
+        title="Elis &amp; Tom"
+        year="Elis Regina, 1974"
+      />
     </>
   );
 }

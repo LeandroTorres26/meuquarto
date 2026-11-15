@@ -7,6 +7,7 @@ import {
   itemStyle,
   formatDate,
   isProfileEmpty,
+  byline,
   itemLabel,
   linkLabel,
   originCaption,
@@ -24,6 +25,7 @@ const item = (ref: number): PublicItem => ({
   ref,
   category: "MOVIE",
   title: `Item ${ref}`,
+  artist: null,
   year: 2000,
   imageUrl: null,
   note: null,
@@ -139,6 +141,19 @@ describe("finish", () => {
   });
 });
 
+describe("byline", () => {
+  it("puts the artist and the year on one line, separated by a comma", () => {
+    expect(byline("Milton Nascimento", 1972)).toBe("Milton Nascimento, 1972");
+  });
+
+  it("keeps only what exists", () => {
+    expect(byline("Milton Nascimento", null)).toBe("Milton Nascimento");
+    expect(byline(null, 1972)).toBe("1972");
+    expect(byline("", 1972)).toBe("1972");
+    expect(byline(null, null)).toBeNull();
+  });
+});
+
 describe("categories", () => {
   it("maps every medium to its card shape and listing route", () => {
     expect(CATEGORY_META.MOVIE.shape).toBe("poster");
@@ -172,6 +187,14 @@ describe("categories", () => {
       "Perfect Days, filme de 2023",
     );
     expect(itemLabel({ title: "Hades", category: "GAME", year: null })).toBe("Hades, game");
+    expect(
+      itemLabel({
+        title: "Clube da Esquina",
+        category: "MUSIC",
+        artist: "Milton Nascimento",
+        year: 1972,
+      }),
+    ).toBe("Clube da Esquina, álbum de Milton Nascimento, 1972");
   });
 });
 

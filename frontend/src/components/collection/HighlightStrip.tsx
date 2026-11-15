@@ -159,6 +159,7 @@ export function HighlightStrip({
                     ref: item.collectionItemId,
                     category: categoryOf(item),
                     title: name,
+                    artist: item.media.artist,
                     year: item.media.year,
                     imageUrl: item.media.imageUrl,
                     note: null,

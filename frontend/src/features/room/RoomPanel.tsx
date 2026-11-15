@@ -10,6 +10,7 @@ import {
 } from "@/components/profile/ItemDetail";
 import { ApiError, getJson } from "@/lib/api-client";
 import {
+  byline,
   CATEGORY_META,
   parseItemRef,
   safeImageUrl,
@@ -233,6 +234,7 @@ export function RoomPanel({
               <ul className="list">
                 {active.items.map((item) => {
                   const cover = safeImageUrl(item.imageUrl);
+                  const line = byline(item.artist, item.year);
                   return (
                     <li key={item.ref}>
                       <button
@@ -260,7 +262,7 @@ export function RoomPanel({
                         )}
                         <span className="grow pair">
                           <span className="t-poster">{item.title}</span>
-                          {item.year ? <span className="t-cap">{item.year}</span> : null}
+                          {line ? <span className="t-cap">{line}</span> : null}
                         </span>
                       </button>
                     </li>

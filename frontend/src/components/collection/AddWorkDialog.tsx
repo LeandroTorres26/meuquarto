@@ -287,7 +287,9 @@ function AddWorkPanel({
                   )}
                   <div className="grow pair">
                     <p className="t-poster">{result.title}</p>
-                    <p className="t-cap">{resultCaption(result.category, result.year)}</p>
+                    <p className="t-cap">
+                      {resultCaption(result.category, result.year, result.artist)}
+                    </p>
                     {row?.state === "error" && (
                       <p className="t-cap note-bad" role="alert">
                         {row.message}

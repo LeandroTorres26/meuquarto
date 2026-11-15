@@ -378,8 +378,8 @@ class PublicProfileApiTests {
     @Test
     void anAlbumShowsItsArtistAsItsOwnFieldAndOtherWorksHaveNone() throws Exception {
         signUp("artistfield");
-        long album = insertItem("artistfield", "MUSIC", "DEEZER", "302127", null, "Daft Punk", "Discovery", "MANUAL");
-        long film = insertItem("artistfield", "MOVIE", "TMDB", "603", null, null, null, "MANUAL");
+        long album = insertItem("artistfield", "MUSIC", "DEEZER", "910001", null, "Daft Punk", "Discovery", "MANUAL");
+        long film = insertItem("artistfield", "MOVIE", "TMDB", "910002", null, null, null, "MANUAL");
 
         mvc.perform(get("/api/public/profiles/artistfield/items/" + album)).andExpect(status().isOk())
                 .andExpect(jsonPath("$.item.artist").value("Daft Punk"));

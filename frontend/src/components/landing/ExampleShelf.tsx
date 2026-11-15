@@ -1,23 +1,50 @@
 import { ItemCover } from "@/components/profile/ItemCover";
-import { itemClasses, itemStyle, type PublicItem } from "@/lib/profile-view";
+import { byline, itemClasses, itemStyle, type PublicItem } from "@/lib/profile-view";
 
 // Example highlights for the hero (docs/design/telas/landing.html). Same markup as a profile
 // HighlightCard but not a link: there is no profile behind it. Covers are the abstract placeholders
 // in /public/covers, never real posters.
-type Example = Pick<PublicItem, "ref" | "category" | "title" | "year" | "note"> & { cover: string };
+type Example = Pick<PublicItem, "ref" | "category" | "title" | "artist" | "year" | "note"> & {
+  cover: string;
+};
 
 const EXAMPLES: Example[] = [
   {
     ref: 1,
     category: "MOVIE",
     title: "Perfect Days",
+    artist: null,
     year: 2023,
     note: "assisti 3 vezes",
     cover: "c01",
   },
-  { ref: 2, category: "ANIME", title: "Cowboy Bebop", year: 1998, note: null, cover: "c07" },
-  { ref: 3, category: "BOOK", title: "Torto Arado", year: 2019, note: null, cover: "c10" },
-  { ref: 4, category: "MUSIC", title: "Clube da Esquina", year: 1972, note: null, cover: "c11" },
+  {
+    ref: 2,
+    category: "ANIME",
+    title: "Cowboy Bebop",
+    artist: null,
+    year: 1998,
+    note: null,
+    cover: "c07",
+  },
+  {
+    ref: 3,
+    category: "BOOK",
+    title: "Torto Arado",
+    artist: null,
+    year: 2019,
+    note: null,
+    cover: "c10",
+  },
+  {
+    ref: 4,
+    category: "MUSIC",
+    title: "Clube da Esquina",
+    artist: "Milton Nascimento",
+    year: 1972,
+    note: null,
+    cover: "c11",
+  },
 ];
 
 export function ExampleShelf() {
@@ -40,7 +67,7 @@ export function ExampleShelf() {
               />
               <div className="mq-item__meta">
                 <h3 className="mq-item__title">{item.title}</h3>
-                <p className="mq-item__sub">{item.year}</p>
+                <p className="mq-item__sub">{byline(item.artist, item.year)}</p>
               </div>
             </div>
           </article>
