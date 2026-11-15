@@ -158,7 +158,7 @@ class LinkedAccountsApiTests {
     }
 
     @Test
-    void aPlatformWithoutAProviderIsUnavailable() throws Exception {
+    void aPlatformWhoseProviderHasNoKeyIsUnavailable() throws Exception {
         Cookie session = signUp("a@example.com", "leandro");
 
         link(session, "STEAM", "leandro").andExpect(status().isServiceUnavailable())

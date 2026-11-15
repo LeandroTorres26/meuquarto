@@ -123,14 +123,18 @@ describe("providers", () => {
 
   it("describes what Last.fm brings: albums played a lot and what is playing, never each play", () => {
     const lastfm = providerInfo("LASTFM");
-    expect(lastfm.available).toBe(true);
     expect(lastfm.categories).toEqual(["MUSIC"]);
     expect(syncNote(lastfm).text).toMatch(/^Os álbuns que você mais ouve/);
     expect(lastfm.hint).toMatch(/atividade recente precisa estar pública/);
   });
 
-  it("keeps Steam as coming soon: it has no provider yet", () => {
-    expect(PROVIDERS.filter((p) => !p.available).map((p) => p.id)).toEqual(["STEAM"]);
+  it("describes Steam: games with playtime, a vanity name or a profile number, public game list", () => {
+    const steam = providerInfo("STEAM");
+    expect(steam.categories).toEqual(["GAME"]);
+    expect(steam.syncs).toBe(true);
+    expect(steam.label).toBe("Perfil do Steam");
+    expect(steam.hint).toMatch(/lista de jogos também precisa estar pública/);
+    expect(syncNote(steam).text).toBe("Jogos com tempo de jogo.");
   });
 
   it("describes MyAnimeList: anime and manga, updates by itself, nothing twice with AniList", () => {
@@ -162,8 +166,9 @@ describe("providers", () => {
     expect(isLinkable(mal, [{ provider: "MYANIMELIST", available: false }])).toBe(false); // no client id
     expect(isLinkable(mal, [{ provider: "ANILIST", available: true }])).toBe(true); // not listed: screen decides
     expect(isLinkable(mal, null)).toBe(true); // the server could not be asked
-    expect(isLinkable(steam, [{ provider: "STEAM", available: true }])).toBe(false); // no provider yet
-    expect(isLinkable(steam, null)).toBe(false);
+    expect(isLinkable(steam, [{ provider: "STEAM", available: true }])).toBe(true);
+    expect(isLinkable(steam, [{ provider: "STEAM", available: false }])).toBe(false); // no key
+    expect(isLinkable(steam, null)).toBe(true);
   });
 
   it("shows the profile link without the scheme and the trailing slash", () => {

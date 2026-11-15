@@ -22,6 +22,8 @@ public final class ProfileUrls {
     private static final String LINK_ONLY_CHARACTERS = "(?!\\.+\\z)[A-Za-z0-9_.-]+";
     private static final Pattern SAFE_NAME = Pattern.compile(LINK_ONLY_CHARACTERS);
     private static final int MAX_NAME = 64;
+    /** A SteamID64 of an individual account: 17 digits, always starting with 7656. */
+    private static final Pattern STEAM_ID64 = Pattern.compile("7656[0-9]{13}");
 
     private ProfileUrls() {}
 
@@ -37,12 +39,22 @@ public final class ProfileUrls {
             case ANILIST -> "https://anilist.co/user/" + name + "/";
             case MYANIMELIST -> "https://myanimelist.net/profile/" + name;
             case LASTFM -> "https://www.last.fm/user/" + name;
-            case STEAM -> "https://steamcommunity.com/id/" + name;
+            case STEAM -> isSteamId64(username)
+                    ? "https://steamcommunity.com/profiles/" + name
+                    : "https://steamcommunity.com/id/" + name;
             case GOODREADS -> "https://www.goodreads.com/user/show/" + name;
             case BACKLOGGD -> "https://backloggd.com/u/" + name + "/";
             case TRAKT -> "https://trakt.tv/users/" + name;
             case STORYGRAPH -> "https://app.thestorygraph.com/profile/" + name;
         });
+    }
+
+    /**
+     * True for a SteamID64 (what the Steam Web API calls the account), false for a vanity name. The Steam
+     * provider and the profile link both use it, so they always agree on which one the user typed.
+     */
+    public static boolean isSteamId64(String text) {
+        return text != null && STEAM_ID64.matcher(text).matches();
     }
 
     /** Format rules for the username of a link-only platform: 1 to 40 conservative characters. */

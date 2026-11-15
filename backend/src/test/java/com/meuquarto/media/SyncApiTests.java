@@ -294,21 +294,6 @@ class SyncApiTests {
         assertThat(row.get("next_attempt_at")).isNull();
     }
 
-    @Test
-    void anAccountWhosePlatformHasNoProviderIsSkipped() throws Exception {
-        Cookie session = signUp("a@example.com", "ana");
-        long profileId = profileOf("a@example.com");
-        jdbc.update("insert into linked_accounts (profile_id, provider, username) values (?, 'STEAM', 'ana_s')", profileId);
-        long account = jdbc.queryForObject("select id from linked_accounts", Long.class);
-
-        sync(session, account).andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value("SKIPPED"))
-                .andExpect(jsonPath("$.error").value("PROVIDER_UNAVAILABLE"));
-
-        assertThat(jdbc.queryForObject("select status from sync_runs", String.class)).isEqualTo("SKIPPED");
-        assertThat(jdbc.queryForObject("select status from linked_accounts", String.class)).isEqualTo("ACTIVE");
-    }
-
     // --- BR-03 cooldown on the manual sync ---
 
     @Test
