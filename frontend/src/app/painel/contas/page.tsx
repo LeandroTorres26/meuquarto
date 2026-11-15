@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { AlertBox } from "@/components/AlertBox";
 import { ConnectedCard } from "@/components/linked/ConnectedCard";
@@ -22,6 +23,9 @@ async function LinkedAccounts() {
     fetchLinkedAccounts(),
     fetchProviderAvailability(),
   ]);
+  // The clock is request-time data: wait for the request before reading it, so the prerendered
+  // shell never freezes a time (Cache Components). This component already sits inside Suspense.
+  await connection();
   const serverNow = nowMs();
   const unlinked = accounts ? unlinkedProviders(accounts) : [];
 
