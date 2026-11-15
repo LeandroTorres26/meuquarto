@@ -1,6 +1,9 @@
 // Colors of the room illustration, ported from docs/design/telas/quarto.html. They paint the objects
-// of the scene (like a drawing), not the interface: the interface colors all come from the design
-// tokens. Kept in one place so a theme for the room can replace them later.
+// of the scene (wall, wood, posters, TV, records, books), like a drawing, not the interface. They are
+// illustration colors and do not follow the owner's theme (the same way the design system README
+// treats the paper and the logo). Anything in the room that is really interface (surfaces, ink,
+// brand, accent, borders) reads the token with var(--...) in the object that needs it, such as the
+// vinyl label with var(--brand). Written as hsl() and kept in one place.
 
 export const PALETTE = {
   wall: "hsl(28 77% 78%)",
