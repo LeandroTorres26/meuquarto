@@ -48,7 +48,7 @@ Read on 2026-11-14 for the P2 as it is now: free, no ads, no store (ADR 0024), s
 ### What is still to do
 1. TMDB logo in the profile footer next to the notice (required by §3).
 2. A contact e-mail in the Open Library `User-Agent` (their request for regular use).
-3. The privacy page names every platform we read and what is kept from each (required by Steam; good practice for all).
+3. Done: the privacy page names every platform we read and what is kept from each. When the project is deployed, add the country where the data is stored (Steam §2).
 4. A refresh of `media_items` rows older than 6 months, or their removal when no collection uses them (TMDB §1.C). Not urgent before the delivery: no row is that old.
 5. Owner: e-mails to Letterboxd and Last.fm; the decision about the Goodreads card.
 
