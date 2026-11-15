@@ -70,8 +70,24 @@ class MediaLinksTest {
     }
 
     @Test
-    void aGameHasNoLinkYet() {
+    void aGameFromSteamLinksItsStorePageByAppId() {
+        assertThat(links(key(MediaCategory.GAME, "STEAM", "1245620"), LinkHints.NONE, "STEAM"))
+                .containsExactly(link(LinkPlatform.STEAM, "https://store.steampowered.com/app/1245620/"));
+        assertThat(links(key(MediaCategory.GAME, "STEAM", "730"), LinkHints.NONE))
+                .containsExactly(link(LinkPlatform.STEAM, "https://store.steampowered.com/app/730/"));
+    }
+
+    @Test
+    void aGameFromIgdbHasNoLinkBecauseIgdbCannotBeLinkedById() {
         assertThat(links(key(MediaCategory.GAME, "IGDB", "1942"), LinkHints.NONE, "STEAM")).isEmpty();
+    }
+
+    @org.junit.jupiter.params.ParameterizedTest
+    @org.junit.jupiter.params.provider.ValueSource(strings = {"../admin", "12/../34", "12?x=1", "12#f", "12@evil.example",
+            "abc", "12 34", "12\r\n", "\uff11\uff12\uff13", "-1", "12345678901", "12.5", "%2e%2e"})
+    void aSteamKeyThatIsNotPlainDigitsNeverBecomesALink(String id) {
+        assertThat(MediaLinks.forWork(new MediaKey(MediaCategory.GAME, "STEAM", id), LinkHints.NONE, List.of("STEAM")))
+                .isEmpty();
     }
 
     @Test
