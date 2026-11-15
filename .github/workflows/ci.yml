@@ -13,7 +13,7 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-# Third-party actions are pinned to full commit SHAs (tag in the comment); Dependabot bumps them.
+# Third-party actions are pinned to full commit SHAs (tag in the comment) and bumped by hand when needed.
 jobs:
   backend:
     name: Backend (build and test)
