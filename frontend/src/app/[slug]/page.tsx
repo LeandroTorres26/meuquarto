@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { Suspense } from "react";
 import { CategoryShelf } from "@/components/profile/CategoryShelf";
 import { Favorites } from "@/components/profile/Favorites";
@@ -67,6 +68,9 @@ async function Profile({ params }: { params: Props["params"] }) {
 
   const { profile } = result;
   const sections = visibleSections(profile.categories);
+  // The clock is request-time data: wait for the request before reading it, so the prerendered
+  // shell never freezes a time (Cache Components). This component already sits inside Suspense.
+  await connection();
   const serverNow = nowMs();
   return (
     // The owner's theme applies to the whole page, top bar and footer included, through data-theme
