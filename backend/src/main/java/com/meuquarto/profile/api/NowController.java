@@ -56,11 +56,12 @@ public class NowController {
     }
 
     /** {@code source} is {@code MANUAL} for a pin, else the platform name; {@code at} is null for a pin. */
-    public record ShownResponse(long collectionItemId, String title, Integer year, String imageUrl, String source,
-            Instant at) {
+    public record ShownResponse(long collectionItemId, String title, String artist, Integer year,
+            String imageUrl, String source, Instant at) {
 
         static ShownResponse of(PublicProfile.NowItem item) {
-            return new ShownResponse(item.ref(), item.title(), item.year(), item.imageUrl(), item.source(), item.at());
+            return new ShownResponse(item.ref(), item.title(), item.artist(), item.year(), item.imageUrl(),
+                    item.source(), item.at());
         }
     }
 }

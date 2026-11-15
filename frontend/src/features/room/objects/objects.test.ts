@@ -9,7 +9,7 @@ function item(
   category: RoomItem["category"],
   imageUrl: string | null = null,
 ): RoomItem {
-  return { ref, category, title: `Obra ${ref}`, year: 2020, imageUrl };
+  return { ref, category, title: `Obra ${ref}`, artist: null, year: 2020, imageUrl };
 }
 function section(category: RoomItem["category"], count: number, firstRef = 1): RoomSection {
   return {

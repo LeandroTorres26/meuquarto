@@ -93,10 +93,10 @@ class NowBlocks {
 
     private static NowItem nowItem(CollectionItem item, NowSource source, MediaSummaries.Summary media) {
         if (source == NowSource.MANUAL) {
-            return new NowItem(item.id(), item.category(), media.title(), media.year(), media.imageUrl(),
+            return new NowItem(item.id(), item.category(), media.title(), media.artist(), media.year(), media.imageUrl(),
                     NowSource.MANUAL.name(), null);
         }
-        return new NowItem(item.id(), item.category(), media.title(), media.year(), media.imageUrl(),
+        return new NowItem(item.id(), item.category(), media.title(), media.artist(), media.year(), media.imageUrl(),
                 item.syncedProvider().orElse(NowSource.AUTO.name()), item.lastActivityAt());
     }
 }

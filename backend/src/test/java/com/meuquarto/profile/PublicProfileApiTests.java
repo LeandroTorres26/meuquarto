@@ -376,6 +376,21 @@ class PublicProfileApiTests {
     }
 
     @Test
+    void anAlbumShowsItsArtistAsItsOwnFieldAndOtherWorksHaveNone() throws Exception {
+        signUp("artistfield");
+        long album = insertItem("artistfield", "MUSIC", "DEEZER", "910001", null, "Daft Punk", "Discovery", "MANUAL");
+        long film = insertItem("artistfield", "MOVIE", "TMDB", "910002", null, null, null, "MANUAL");
+
+        mvc.perform(get("/api/public/profiles/artistfield/items/" + album)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.item.artist").value("Daft Punk"));
+        mvc.perform(get("/api/public/profiles/artistfield/items/" + film)).andExpect(status().isOk())
+                .andExpect(jsonPath("$.item.artist").doesNotExist());
+        mvc.perform(get("/api/public/profiles/artistfield")).andExpect(status().isOk())
+                .andExpect(jsonPath("$.categories[?(@.category == 'MUSIC')].items[0].artist").value("Daft Punk"));
+        listing("artistfield", "category=MUSIC").andExpect(jsonPath("$.items[0].artist").value("Daft Punk"));
+    }
+
+    @Test
     void anAnimeFromMyAnimeListLeadsWithMyAnimeListThenAniListUsingTheStoredIdMal() throws Exception {
         signUp("linksanime");
         long id = insertItem("linksanime", "ANIME", "ANILIST", "154587", 52991, null, null, "MYANIMELIST");

@@ -62,6 +62,7 @@ async function Room({ params }: { params: Props["params"] }) {
       ref: item.ref,
       category: item.category,
       title: item.title,
+      artist: item.artist,
       year: item.year,
       imageUrl: item.imageUrl,
     })),

@@ -9,6 +9,7 @@ const SAMPLES: { item: PublicItem; cover: string }[] = [
       ref: 1,
       category: "MOVIE",
       title: "Perfect Days",
+      artist: null,
       year: 2023,
       imageUrl: null,
       note: null,
@@ -20,6 +21,7 @@ const SAMPLES: { item: PublicItem; cover: string }[] = [
       ref: 2,
       category: "BOOK",
       title: "Torto Arado",
+      artist: null,
       year: 2019,
       imageUrl: null,
       note: null,
@@ -27,7 +29,15 @@ const SAMPLES: { item: PublicItem; cover: string }[] = [
     cover: "/covers/c10.svg",
   },
   {
-    item: { ref: 3, category: "MANGA", title: "Vagabond", year: 1998, imageUrl: null, note: null },
+    item: {
+      ref: 3,
+      category: "MANGA",
+      title: "Vagabond",
+      artist: null,
+      year: 1998,
+      imageUrl: null,
+      note: null,
+    },
     cover: "/covers/c06.svg",
   },
 ];

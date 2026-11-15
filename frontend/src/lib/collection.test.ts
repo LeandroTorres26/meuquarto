@@ -14,6 +14,7 @@ import {
   moveId,
   moveTo,
   needsRefresh,
+  resultCaption,
   noteChanged,
   noteLength,
   searchTerm,
@@ -84,7 +85,7 @@ describe("reorder", () => {
 });
 
 function media(title: string) {
-  return { provider: "ANILIST", externalId: "1", title, year: null, imageUrl: null };
+  return { provider: "ANILIST", externalId: "1", title, artist: null, year: null, imageUrl: null };
 }
 
 describe("overview updates", () => {
@@ -167,6 +168,20 @@ describe("collection listing", () => {
     expect(sourceLabels(["MYANIMELIST"])).toEqual(["MyAnimeList"]);
     expect(sourceLabels(["LETTERBOXD", "MANUAL"])).toEqual(["Letterboxd"]);
     expect(sourceLabels(["OUTRO"])).toEqual(["Outro"]);
+  });
+});
+
+describe("result caption", () => {
+  it("keeps the sticker and year for works without an artist", () => {
+    expect(resultCaption("SERIES", 1998)).toBe("Série de 1998");
+    expect(resultCaption("SERIES", null)).toBe("Série");
+  });
+
+  it("puts the artist of an album before the year", () => {
+    expect(resultCaption("MUSIC", 1972, "Milton Nascimento")).toBe(
+      "Música de Milton Nascimento, 1972",
+    );
+    expect(resultCaption("MUSIC", null, "Milton Nascimento")).toBe("Música de Milton Nascimento");
   });
 });
 

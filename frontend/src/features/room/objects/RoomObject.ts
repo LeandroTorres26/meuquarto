@@ -10,6 +10,7 @@ export type RoomItem = {
   ref: number;
   category: Category;
   title: string;
+  artist: string | null;
   year: number | null;
   imageUrl: string | null;
 };

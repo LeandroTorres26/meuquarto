@@ -70,12 +70,12 @@ public class PublicProfileController {
      * One "Agora" entry (FR-15): {@code source} is {@code MANUAL} for a pin, else the platform name;
      * {@code at} is when it happened there (null for a pin).
      */
-    public record NowResponse(long ref, MediaCategory category, String title, Integer year, String imageUrl,
-            String source, Instant at) {
+    public record NowResponse(long ref, MediaCategory category, String title, String artist, Integer year,
+            String imageUrl, String source, Instant at) {
 
         static NowResponse of(PublicProfile.NowItem item) {
-            return new NowResponse(item.ref(), item.category(), item.title(), item.year(), item.imageUrl(),
-                    item.source(), item.at());
+            return new NowResponse(item.ref(), item.category(), item.title(), item.artist(), item.year(),
+                    item.imageUrl(), item.source(), item.at());
         }
     }
 
@@ -88,12 +88,12 @@ public class PublicProfileController {
         }
     }
 
-    public record ItemResponse(long ref, MediaCategory category, String title, Integer year, String imageUrl,
-            String note) {
+    public record ItemResponse(long ref, MediaCategory category, String title, String artist, Integer year,
+            String imageUrl, String note) {
 
         static ItemResponse of(PublicProfile.PublicItem item) {
-            return new ItemResponse(item.ref(), item.category(), item.title(), item.year(), item.imageUrl(),
-                    item.note());
+            return new ItemResponse(item.ref(), item.category(), item.title(), item.artist(), item.year(),
+                    item.imageUrl(), item.note());
         }
     }
 
@@ -118,13 +118,13 @@ public class PublicProfileController {
         }
     }
 
-    public record ListingItemResponse(long ref, MediaCategory category, String title, Integer year, String imageUrl,
-            String note, boolean highlighted) {
+    public record ListingItemResponse(long ref, MediaCategory category, String title, String artist, Integer year,
+            String imageUrl, String note, boolean highlighted) {
 
         static ListingItemResponse of(PublicProfile.Entry entry) {
             PublicProfile.PublicItem item = entry.item();
-            return new ListingItemResponse(item.ref(), item.category(), item.title(), item.year(), item.imageUrl(),
-                    item.note(), entry.highlighted());
+            return new ListingItemResponse(item.ref(), item.category(), item.title(), item.artist(), item.year(),
+                    item.imageUrl(), item.note(), entry.highlighted());
         }
     }
 }

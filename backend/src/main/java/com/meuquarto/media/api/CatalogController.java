@@ -28,12 +28,12 @@ public class CatalogController {
 
     public record SearchResponse(boolean available, List<ResultItem> results) {}
 
-    public record ResultItem(MediaCategory category, String provider, String externalId, String title, Integer year,
-            String imageUrl) {
+    public record ResultItem(MediaCategory category, String provider, String externalId, String title, String artist,
+            Integer year, String imageUrl) {
 
         static ResultItem of(CatalogEntry entry) {
-            return new ResultItem(entry.category(), entry.provider(), entry.externalId(), entry.title(), entry.year(),
-                    entry.imageUrl());
+            return new ResultItem(entry.category(), entry.provider(), entry.externalId(), entry.title(), entry.hints().artist(),
+                    entry.year(), entry.imageUrl());
         }
     }
 }

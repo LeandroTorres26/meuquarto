@@ -110,7 +110,7 @@ class LastFmSyncTests {
 
         assertThat(jdbc.queryForList(
                 "select title from media_items where category = 'MUSIC' and canonical_provider = 'LASTFM' order by title",
-                String.class)).containsExactly("Discovery - Daft Punk", "Homogenic - Björk", "In Rainbows - Radiohead");
+                String.class)).containsExactly("Discovery", "Homogenic", "In Rainbows");
         assertThat(jdbc.queryForObject("select count(*) from collection_items", Integer.class)).isEqualTo(3); // not 40 plays
         assertThat(jdbc.queryForList("select source from collection_item_sources", String.class)).hasSize(3).containsOnly("LASTFM");
         assertThat(jdbc.queryForObject("select count(*) from synced_entries where activity_type = 'LOVED'", Integer.class)).isEqualTo(2);
@@ -127,7 +127,7 @@ class LastFmSyncTests {
         sync(session, link(session, "ana_l")).andExpect(status().isOk());
 
         mvc.perform(get("/api/public/profiles/ana")).andExpect(status().isOk())
-                .andExpect(jsonPath("$.now[?(@.category == 'MUSIC')].title").value("In Rainbows - Radiohead"))
+                .andExpect(jsonPath("$.now[?(@.category == 'MUSIC')].title").value("In Rainbows"))
                 .andExpect(jsonPath("$.now[?(@.category == 'MUSIC')].source").value("LASTFM"));
     }
 

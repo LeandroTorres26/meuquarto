@@ -1,6 +1,7 @@
 package com.meuquarto.media.infra;
 
 import com.meuquarto.media.domain.CatalogEntry;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.shared.domain.MediaCategory;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,10 +23,10 @@ import tools.jackson.databind.json.JsonMapper;
  * Deezer, the canonical catalog of music (ADR 0005). The public API needs no key and no login, so it is
  * always available. The work is the <em>album</em>; the external id is the Deezer album id.
  * <p>
- * Choices: the title is {@code "Album - Artist"}, because an album name alone ("Greatest Hits") says
- * nothing in a result list; the album search does not carry a release date and we do not make one extra
- * call per result, so the year is null in a search and comes from {@code release_date} in a detail
- * ({@link #fetch}); the cover is {@code cover_medium}, accepted only as an https image on a Deezer CDN
+ * Choices: the title is the album name; the artist travels apart as a link hint and is shown as its own
+ * line, because an album name alone ("Greatest Hits") says nothing in a result list; the album search
+ * does not carry a release date and we do not make one extra call per result, so the year is null in a
+ * search and comes from {@code release_date} in a detail ({@link #fetch}); the cover is {@code cover_medium}, accepted only as an https image on a Deezer CDN
  * host; {@code explicit_lyrics} only says the lyrics have strong language, which is not adult content
  * (BR-08 is about adult-only titles), so {@code adult} is always false. Deezer reports errors with
  * status 200 and an {@code error} object; that is treated as a failure like any other.
@@ -126,12 +127,11 @@ public final class DeezerCatalog extends HttpCatalogProvider {
             return Optional.empty();
         }
         String artist = album.path("artist").path("name").asString("").strip();
-        String title = artist.isEmpty() ? name : name + " - " + artist;
-        if (title.length() > MAX_TITLE) {
-            title = title.substring(0, MAX_TITLE);
-        }
+        String title = name.length() > MAX_TITLE ? name.substring(0, MAX_TITLE) : name;
+        // The artist and the album name are stored apart (FR-10a link hints), so the title stays the album name.
         return Optional.of(new CatalogEntry(category, ID, Long.toString(id), title,
-                year(album.path("release_date").asString("")), cover(album.path("cover_medium").asString("")), false));
+                year(album.path("release_date").asString("")), cover(album.path("cover_medium").asString("")), false,
+                LinkHints.ofAlbum(artist, name)));
     }
 
     /** "2001-03-07" gives 2001; a missing or odd date gives null. */

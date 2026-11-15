@@ -3,6 +3,7 @@ package com.meuquarto.media.infra;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.meuquarto.media.domain.CatalogEntry;
+import com.meuquarto.media.domain.LinkHints;
 import com.meuquarto.media.domain.CatalogProvider;
 import com.meuquarto.shared.domain.MediaCategory;
 import java.time.Clock;
@@ -44,8 +45,9 @@ class DeezerCatalogTest {
 
         assertThat(results).extracting(CatalogEntry::externalId).containsExactly("302127", "5", "6", "7");
         assertThat(results.get(0)).isEqualTo(new CatalogEntry(MediaCategory.MUSIC, "DEEZER", "302127",
-                "Discovery - Daft Punk", null, CDN_COVER, false));
+                "Discovery", null, CDN_COVER, false, LinkHints.ofAlbum("Daft Punk", "Discovery")));
         assertThat(results.get(3).title()).isEqualTo("Sem artista nem capa");
+        assertThat(results.get(3).hints().artist()).isNull();
         assertThat(stub.requests).hasSize(1);
         assertThat(stub.requests.get(0).path()).startsWith("/search/album?").contains("limit=20", "q=discovery");
     }
@@ -93,7 +95,7 @@ class DeezerCatalogTest {
         stub.body = CatalogStub.fixture("deezer/album-302127.json");
 
         assertThat(catalog().fetch(MediaCategory.MUSIC, "302127")).contains(new CatalogEntry(MediaCategory.MUSIC,
-                "DEEZER", "302127", "Discovery - Daft Punk", 2001, CDN_COVER, false));
+                "DEEZER", "302127", "Discovery", 2001, CDN_COVER, false, LinkHints.ofAlbum("Daft Punk", "Discovery")));
         assertThat(stub.requests).extracting(CatalogStub.Request::path).containsExactly("/album/302127");
     }
 

@@ -111,7 +111,7 @@ class LastFmProviderTest {
         assertThat(entry.occurredAt()).isEqualTo(Instant.ofEpochSecond(NEWEST));
         assertThat(entry.work().category()).isEqualTo(MediaCategory.MUSIC);
         assertThat(entry.work().provider()).isEqualTo("LASTFM");
-        assertThat(entry.work().title()).isEqualTo("OK Computer - Radiohead");
+        assertThat(entry.work().title()).isEqualTo("OK Computer");
         assertThat(entry.work().adult()).isFalse();
         assertThat(entry.work().imageUrl()).isEqualTo(LastFmStub.COVER);
     }
@@ -132,7 +132,7 @@ class LastFmProviderTest {
                 LastFmStub.plays("Radiohead", "OK Computer", 9, NEWEST, LastFmStub.COVER),
                 LastFmStub.plays("Björk", "Homogenic", 10, NEWEST - DAY, LastFmStub.COVER)));
 
-        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("Homogenic - Björk");
+        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("Homogenic");
     }
 
     @Test
@@ -163,7 +163,7 @@ class LastFmProviderTest {
                 LastFmStub.plays("Radiohead", "Kid A", 10, NEWEST - DAY, LastFmStub.COVER));
         stub.answer = LastFmStub.pageOf(tracks);
 
-        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("Kid A - Radiohead");
+        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("Kid A");
     }
 
     @Test
@@ -172,7 +172,7 @@ class LastFmProviderTest {
                 LastFmStub.plays("A", "Old", 10, NEWEST - 5 * DAY, null),
                 LastFmStub.plays("B", "New", 10, NEWEST, null)));
 
-        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("New - B", "Old - A");
+        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("New", "Old");
     }
 
     // ---- Agora: what is playing now ----
@@ -187,7 +187,7 @@ class LastFmProviderTest {
 
         assertThat(entries).extracting(ActivityEntry::type).containsExactly(ActivityType.IN_PROGRESS, ActivityType.LOVED);
         assertThat(entries.getFirst().occurredAt()).isEqualTo(NOW);
-        assertThat(entries.getFirst().work().title()).isEqualTo("In Rainbows - Radiohead");
+        assertThat(entries.getFirst().work().title()).isEqualTo("In Rainbows");
     }
 
     @Test
@@ -339,7 +339,7 @@ class LastFmProviderTest {
         tracks.add(broken);
         stub.answer = LastFmStub.pageOf(tracks);
 
-        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("Good - A");
+        assertThat(entries(provider())).extracting(e -> e.work().title()).containsExactly("Good");
     }
 
     @Test

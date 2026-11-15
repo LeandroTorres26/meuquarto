@@ -15,6 +15,7 @@ const NOW = Date.parse("2026-10-10T12:00:00Z");
 const shown = (source: string) => ({
   collectionItemId: 1,
   title: "Perfect Days",
+  artist: null,
   year: 2023,
   imageUrl: null,
   source,

@@ -281,6 +281,38 @@ class MediaSnapshotsTests {
     }
 
     @Test
+    void aDeezerAlbumReadAgainReplacesTheOldGluedTitleAndStoresTheArtist() {
+        jdbc.update("""
+                insert into media_items (category, canonical_provider, external_id, title, metadata_source)
+                values ('MUSIC', 'DEEZER', '302127', 'Discovery - Daft Punk', 'DEEZER')""");
+
+        snapshots.snapshot(new CatalogEntry(MediaCategory.MUSIC, "DEEZER", "302127", "Discovery", 2001, null, false,
+                LinkHints.ofAlbum("Daft Punk", "Discovery")));
+        snapshots.snapshot(new CatalogEntry(MediaCategory.MUSIC, "DEEZER", "302127", "Discovery", 2001, null, false));
+
+        assertThat(jdbc.queryForObject("select title || '/' || music_artist from media_items", String.class))
+                .isEqualTo("Discovery/Daft Punk"); // the later read without hints did not erase the artist
+    }
+
+    @Test
+    void migrationV19RestoresTheTitleOfLastFmAlbumsAndLeavesTheOthersAlone() throws Exception {
+        jdbc.update("""
+                insert into media_items (category, canonical_provider, external_id, title, metadata_source,
+                                         music_artist, music_album)
+                values ('MUSIC', 'LASTFM', 'abc', 'Kid A - Radiohead', 'LASTFM', 'Radiohead', 'Kid A'),
+                       ('MUSIC', 'DEEZER', '5', 'Discovery - Daft Punk', 'DEEZER', null, null),
+                       ('MOVIE', 'TMDB', '603', 'Matrix', 'TMDB', null, null)""");
+        String migration = new String(new org.springframework.core.io.ClassPathResource(
+                "db/migration/V19__album_title_without_artist.sql").getInputStream().readAllBytes(),
+                java.nio.charset.StandardCharsets.UTF_8);
+
+        jdbc.execute(migration);
+
+        assertThat(jdbc.queryForList("select title from media_items order by external_id", String.class))
+                .containsExactly("Discovery - Daft Punk", "Matrix", "Kid A");
+    }
+
+    @Test
     void snapshotFromCatalogTakesTheMetadataFromTheProviderNotTheCaller() {
         Optional<Snapshot> saved = snapshots.snapshotFromCatalog(MediaCategory.MOVIE, "603");
 
