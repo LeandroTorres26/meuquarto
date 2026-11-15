@@ -21,8 +21,8 @@ export default function PrivacyPage() {
           <li>seu e-mail e uma versão embaralhada da senha (Argon2id); nunca a senha em si;</li>
           <li>o endereço do seu perfil, os destaques que você fixa e as notas que escreve;</li>
           <li>
-            os nomes de usuário públicos que você conecta (por exemplo, Letterboxd ou AniList) e o
-            que lemos deles: filmes, animes e mangás registrados, com título, capa e data;
+            os nomes de usuário públicos das contas que você vincula e, das plataformas que deixam
+            ler a lista, o que entra na sua coleção, com título, capa e data (veja a lista abaixo);
           </li>
           <li>dados técnicos temporários para segurança, como o endereço IP em limites de uso.</li>
         </ul>
@@ -52,11 +52,33 @@ export default function PrivacyPage() {
           navegador, em armazenamento local, apenas a lembrança de que você viu o aviso de cookies.
         </p>
       </LegalSection>
+      <LegalSection title="O que lemos de cada plataforma">
+        <p className="t-body">
+          Só lemos o que é público, e só das contas que você mesmo vincula. De cada uma guardamos o
+          nome de usuário e:
+        </p>
+        <ul className="t-body">
+          <li>Letterboxd: os filmes do seu diário recente;</li>
+          <li>
+            AniList e MyAnimeList: animes e mangás completos, em andamento, pausados e revistos;
+          </li>
+          <li>
+            Last.fm: os álbuns que você mais ouviu entre as músicas recentes e o que toca agora;
+          </li>
+          <li>Steam: os jogos com tempo de jogo e o último jogado;</li>
+          <li>Goodreads: os livros das estantes lidos e lendo;</li>
+          <li>Backloggd, Trakt e StoryGraph: só o nome de usuário, para o link no seu perfil.</li>
+        </ul>
+        <p className="t-body">
+          Ao desvincular uma conta, o que veio só dela sai da sua coleção, exceto as obras que você
+          destacou ou anotou, que ficam como adicionadas à mão.
+        </p>
+      </LegalSection>
       <LegalSection title="Com quem os dados passam">
         <p className="t-body">
-          Para montar a coleção consultamos bases públicas de catálogo: TMDB, AniList, Letterboxd,
-          Open Library, IGDB e Deezer. Elas recebem apenas o que buscamos (um título ou o nome de
-          usuário público que você conecta), nunca seu e-mail.
+          Para montar a coleção consultamos as plataformas acima e bases públicas de catálogo: TMDB,
+          AniList, Open Library, IGDB e Deezer. Elas recebem apenas o que buscamos (um título ou o
+          nome de usuário público que você vincula), nunca seu e-mail.
         </p>
       </LegalSection>
       <LegalSection title="Por quanto tempo">
