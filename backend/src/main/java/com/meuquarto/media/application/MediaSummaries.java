@@ -90,6 +90,11 @@ public class MediaSummaries {
     public record Summary(long id, MediaCategory category, String provider, String externalId, String title,
             Integer year, String imageUrl, LinkHints hints) {
 
+        /** The artist of an album, null for any other work. */
+        public String artist() {
+            return hints.artist();
+        }
+
         /**
          * Links to the work's own page on each platform that has one (FR-10a), the platform the item came
          * from first. {@code sources} are the item's source names ({@code LETTERBOXD}, {@code MANUAL}...).

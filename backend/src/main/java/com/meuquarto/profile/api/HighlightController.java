@@ -83,10 +83,12 @@ public class HighlightController {
         }
     }
 
-    public record Media(String provider, String externalId, String title, Integer year, String imageUrl) {
+    public record Media(String provider, String externalId, String title, String artist, Integer year,
+            String imageUrl) {
 
         static Media of(MediaSummaries.Summary media) {
-            return new Media(media.provider(), media.externalId(), media.title(), media.year(), media.imageUrl());
+            return new Media(media.provider(), media.externalId(), media.title(), media.artist(), media.year(),
+                    media.imageUrl());
         }
     }
 }

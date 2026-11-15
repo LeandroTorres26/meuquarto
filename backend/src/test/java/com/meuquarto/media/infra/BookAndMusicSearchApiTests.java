@@ -126,7 +126,8 @@ class BookAndMusicSearchApiTests {
                 .andExpect(jsonPath("$.results[0].category").value("MUSIC"))
                 .andExpect(jsonPath("$.results[0].provider").value("DEEZER"))
                 .andExpect(jsonPath("$.results[0].externalId").value("302127"))
-                .andExpect(jsonPath("$.results[0].title").value("Discovery - Daft Punk"))
+                .andExpect(jsonPath("$.results[0].title").value("Discovery"))
+                .andExpect(jsonPath("$.results[0].artist").value("Daft Punk"))
                 .andExpect(jsonPath("$.results[0].imageUrl").exists());
     }
 

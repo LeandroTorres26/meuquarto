@@ -236,6 +236,7 @@ public class PublicProfiles {
     }
 
     private static PublicItem publicItem(CollectionItem item, MediaSummaries.Summary media) {
-        return new PublicItem(item.id(), item.category(), media.title(), media.year(), media.imageUrl(), item.note());
+        return new PublicItem(item.id(), item.category(), media.title(), media.artist(), media.year(), media.imageUrl(),
+                item.note());
     }
 }

@@ -310,7 +310,7 @@ public final class LastFmProvider implements ActivityProvider {
         if (artist.isEmpty() || name.isEmpty()) {
             return Optional.empty();
         }
-        String title = bounded(name + " - " + artist, MAX_TITLE);
+        String title = bounded(name, MAX_TITLE);
         return Optional.of(new Album(keyOf(artist, name), title, artist, name, cover(track.path("image"))));
     }
 

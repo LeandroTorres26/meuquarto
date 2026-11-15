@@ -29,17 +29,20 @@ public record PublicProfile(String slug, String displayName, String bio, String 
      */
     public record Section(MediaCategory category, long total, boolean mostRecent, List<PublicItem> items) {}
 
-    /** A work as the public sees it. {@code ref} is the collection item id: it only means something inside one profile. */
-    public record PublicItem(long ref, MediaCategory category, String title, Integer year, String imageUrl,
-            String note) {}
+    /**
+     * A work as the public sees it. {@code artist} is the artist of an album, null for any other work.
+     * {@code ref} is the collection item id: it only means something inside one profile.
+     */
+    public record PublicItem(long ref, MediaCategory category, String title, String artist, Integer year,
+            String imageUrl, String note) {}
 
     /**
      * One entry of the "Agora" block (FR-15, BR-06). {@code ref} is the collection item id, like in {@link PublicItem}.
      * {@code source} is {@code MANUAL} when the owner pinned it, else the platform name; {@code at} is when the
      * activity happened on the platform (null for a pin).
      */
-    public record NowItem(long ref, MediaCategory category, String title, Integer year, String imageUrl,
-            String source, Instant at) {}
+    public record NowItem(long ref, MediaCategory category, String title, String artist, Integer year,
+            String imageUrl, String source, Instant at) {}
 
     /** The details dialog (S17): the item, why it is in the collection and where to find it. */
     public record Detail(PublicItem item, List<Origin> origin, List<Link> links) {}
