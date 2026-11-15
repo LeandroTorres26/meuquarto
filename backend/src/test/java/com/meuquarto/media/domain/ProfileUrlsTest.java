@@ -24,6 +24,18 @@ class ProfileUrlsTest {
     }
 
     @Test
+    void aSteamId64HasItsProfileUnderProfilesAndAVanityNameUnderId() {
+        assertThat(ProfileUrls.urlFor(ProviderId.STEAM, "76561198000000001"))
+                .contains("https://steamcommunity.com/profiles/76561198000000001");
+        assertThat(ProfileUrls.urlFor(ProviderId.STEAM, "12345678901234567")).contains("https://steamcommunity.com/id/12345678901234567");
+        assertThat(ProfileUrls.urlFor(ProviderId.STEAM, "Ana_L-1")).contains("https://steamcommunity.com/id/Ana_L-1");
+        assertThat(ProfileUrls.isSteamId64("76561198000000001")).isTrue();
+        for (String notAnId : new String[] {"7656119800000000", "765611980000000011", "7656119800000000a", "ana", "", null}) {
+            assertThat(ProfileUrls.isSteamId64(notAnId)).isFalse();
+        }
+    }
+
+    @Test
     void dotsHyphensAndUnderscoresInsideANameAreKept() {
         assertThat(ProfileUrls.urlFor(ProviderId.TRAKT, "ana.maria-01_x")).contains("https://trakt.tv/users/ana.maria-01_x");
     }

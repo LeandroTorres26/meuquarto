@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 /**
  * POST /api/linked-accounts has its own per-address limit (ADR 0015) because every link sends a request
- * to a platform; here it is lowered to 2 per hour. STEAM has no provider yet (and Letterboxd would reach the
+ * to a platform; here it is lowered to 2 per hour. STEAM has no key here (and Letterboxd would reach the
  * real platform, which no test may do), so each attempt answers 503, which still counts as a hit.
  */
 @SpringBootTest
