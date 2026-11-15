@@ -48,8 +48,6 @@ export type ProviderInfo = {
   /** Provider-specific hint under the input. */
   hint: string;
   placeholder: string;
-  /** False while the backend has no provider for the platform: the card shows "Em breve". */
-  available: boolean;
 };
 
 export const PROVIDERS: ProviderInfo[] = [
@@ -62,7 +60,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do Letterboxd",
     hint: "Como aparece em letterboxd.com/nome.",
     placeholder: "seunome",
-    available: true,
   },
   {
     id: "ANILIST",
@@ -73,7 +70,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do AniList",
     hint: "Como aparece em anilist.co/user/nome.",
     placeholder: "seunome",
-    available: true,
   },
   {
     id: "MYANIMELIST",
@@ -84,7 +80,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do MyAnimeList",
     hint: "Como aparece em myanimelist.net/profile/nome.",
     placeholder: "seunome",
-    available: true,
   },
   {
     id: "LASTFM",
@@ -95,7 +90,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do Last.fm",
     hint: "Como aparece em last.fm/user/nome. Sua atividade recente precisa estar pública.",
     placeholder: "seunome",
-    available: true,
   },
   {
     id: "STEAM",
@@ -106,7 +100,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Perfil do Steam",
     hint: "Como aparece em steamcommunity.com/id/nome. A lista de jogos também precisa estar pública.",
     placeholder: "seunome",
-    available: false,
   },
   {
     id: "GOODREADS",
@@ -117,7 +110,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Número do seu perfil no Goodreads",
     hint: "O número que aparece no endereço do seu perfil, em goodreads.com/user/show/12345678-nome. Seu perfil e suas estantes precisam estar públicos.",
     placeholder: "12345678",
-    available: true,
   },
   {
     id: "BACKLOGGD",
@@ -128,7 +120,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do Backloggd",
     hint: "Como aparece em backloggd.com/u/nome.",
     placeholder: "seunome",
-    available: true,
   },
   {
     id: "TRAKT",
@@ -139,7 +130,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do Trakt",
     hint: "Como aparece em trakt.tv/users/nome.",
     placeholder: "seunome",
-    available: true,
   },
   {
     id: "STORYGRAPH",
@@ -150,7 +140,6 @@ export const PROVIDERS: ProviderInfo[] = [
     label: "Usuário do StoryGraph",
     hint: "Como aparece em app.thestorygraph.com/profile/nome.",
     placeholder: "seunome",
-    available: true,
   },
 ];
 
@@ -158,15 +147,14 @@ export const PROVIDERS: ProviderInfo[] = [
 export type ProviderAvailability = { provider: string; available: boolean };
 
 /**
- * Whether a card offers the link form (true) or "Em breve" (false). A platform with no provider yet is
- * "Em breve" on the screen's own list; one the server reports as not configured (no key for it) is too.
- * When the server could not be asked (null) or does not list the platform, the screen's list decides.
+ * Whether a card offers the link form (true) or "Em breve" (false): false only when the server reports the
+ * platform as not configured (no key for it). When the server could not be asked (null) or does not list
+ * the platform, the form is offered.
  */
 export function isLinkable(
   provider: ProviderInfo,
   availability: readonly ProviderAvailability[] | null | undefined,
 ): boolean {
-  if (!provider.available) return false;
   const reported = availability?.find((item) => item.provider === provider.id);
   return reported ? reported.available : true;
 }
