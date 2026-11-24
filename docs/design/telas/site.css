@@ -217,7 +217,7 @@ html,body{margin:0;background:var(--surface-100)}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:var(--col-gap);align-items:start}
 /* a card in .cards is a subgrid of four rows shared by its row of cards: head, body, note, action. Whatever the length
    of the help texts, notes and buttons stay on one line; a card without a body or a note leaves that row empty */
-.cards > .region{grid-row:span 4;display:grid;grid-template-rows:subgrid;align-content:start}
+.cards > .region{grid-row:span 4;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:subgrid;align-content:start;overflow-wrap:anywhere}   /* a long profile address breaks inside the card */
 .cards > .region > .region__note{grid-row:3}
 .cards > .region > .region__act{grid-row:4;justify-self:start}
 .cards > .region > .actions.region__act{justify-self:stretch}
