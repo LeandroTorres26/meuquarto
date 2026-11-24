@@ -134,7 +134,9 @@ describe("providers", () => {
     expect(steam.categories).toEqual(["GAME"]);
     expect(steam.syncs).toBe(false);
     expect(steam.label).toBe("Perfil da Steam");
-    expect(steam.hint).toMatch(/steamcommunity\.com\/profiles/);
+    expect(steam.hint).toBe(
+      "O nome de steamcommunity.com/id/nome ou o número de steamcommunity.com/profiles/número.",
+    );
     expect(syncNote(steam).lead).toBe("Só o link.");
   });
 
