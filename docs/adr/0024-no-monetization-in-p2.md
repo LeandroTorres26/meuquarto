@@ -28,3 +28,6 @@ The P2 has no store, no payments and no paid plans.
 - Keep the code and hide the screens: dead code that still has to be explained and kept secure.
 - Build the store in test mode only: the cost is the same as building it, and it still has to be explained.
 - Keep the `Plan` hierarchy with only a free plan: a hierarchy with one subclass shows nothing of polymorphism and would be harder to defend than a plain constant.
+
+## Amendment (#161)
+The store prototypes (`loja.html`, `loja-sucesso.html`, `compras.html`), the `LimitUpsell` component and the Stripe rows of `docs/security.md` were removed too. They live in the git history.

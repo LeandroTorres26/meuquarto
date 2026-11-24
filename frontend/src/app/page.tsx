@@ -34,12 +34,11 @@ export const metadata: Metadata = {
 
 // Integrations: only what exists is presented as working (docs/backlog.md, M2).
 const INTEGRATIONS = [
-  { name: "Letterboxd", categories: ["MOVIE"], ready: true },
-  { name: "MyAnimeList", categories: ["ANIME", "MANGA"], ready: true },
-  { name: "AniList", categories: ["ANIME", "MANGA"], ready: true },
-  { name: "Goodreads", categories: ["BOOK"], ready: true },
-  { name: "Steam", categories: ["GAME"], ready: false },
-  { name: "Last.fm", categories: ["MUSIC"], ready: true },
+  { name: "Letterboxd", categories: ["MOVIE"] },
+  { name: "MyAnimeList", categories: ["ANIME", "MANGA"] },
+  { name: "AniList", categories: ["ANIME", "MANGA"] },
+  { name: "Goodreads", categories: ["BOOK"] },
+  { name: "Last.fm", categories: ["MUSIC"] },
 ] as const;
 
 export default function Landing() {
@@ -99,7 +98,7 @@ export default function Landing() {
               <h3 className="t-h3">Conecte suas contas</h3>
               <p className="t-sm">
                 O que você registra no Letterboxd, no AniList, no MyAnimeList, no Goodreads e no
-                Last.fm entra na sua coleção. A Steam chega em breve.
+                Last.fm entra na sua coleção.
               </p>
             </li>
             <li className="span-all t-span-4 d-span-4 step">
@@ -118,8 +117,8 @@ export default function Landing() {
               Usa o que você já usa
             </h2>
             <p className="t-body muted measure-s">
-              Seu histórico continua onde está; o meuquarto só mostra. Séries e qualquer outra obra
-              você busca e fixa à mão.
+              Seu histórico continua onde está; o meuquarto só mostra. Séries, games e qualquer
+              outra obra você busca e fixa à mão.
             </p>
           </div>
           <ul className="list span-all d-span-6" style={{ gridColumnEnd: -1 }}>
@@ -127,7 +126,6 @@ export default function Landing() {
               <li key={integration.name}>
                 <span className="grow t-h3">{integration.name}</span>
                 <span className="row">
-                  {integration.ready ? null : <span className="t-cap">em breve</span>}
                   {integration.categories.map((category) => (
                     <CategoryTag key={category} category={category} />
                   ))}

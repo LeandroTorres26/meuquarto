@@ -22,22 +22,13 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * IGDB, the canonical catalog of games (ADR 0005). IGDB belongs to Twitch: a Twitch app (client id and
- * secret) buys an <em>app access token</em> (client credentials) that is sent, together with the
- * client id, on every query. The token is kept in memory until a minute before it expires and is
- * renewed once when IGDB answers 401. Without the id and the secret the catalog reports itself
- * unavailable. Neither the secret nor the token is ever put in a URL or a log.
+ * IGDB, the canonical catalog of games (ADR 0005). It belongs to Twitch: the client id and secret buy an
+ * <em>app access token</em>, kept in memory until a minute before it expires and renewed once on a 401.
+ * Without them the catalog is unavailable. The secret and the token never go in a URL or a log.
  * <p>
- * Queries are POSTs in Apicalypse (IGDB's query language). The user's text is the only variable part:
- * it is checked, stripped of control characters and written between quotes with {@code "} and
- * {@code \} escaped (see {@link #quote}), so it cannot close the string and add clauses. Everything
- * else is a constant of this class. IGDB allows 4 requests per second; {@link #throttle} spaces
- * calls 250 ms apart, and the template's ten-minute cache means repeated searches never get there.
- * <p>
- * Choices: the work is the main game ({@code version_parent} and {@code parent_game} empty, so
- * editions, DLC and expansions are not separate items); the cover is built by us from
- * {@code cover.image_id} on IGDB's image host, never taken from the response; theme 42 ("Erotic")
- * means adult (BR-08).
+ * Queries are text in Apicalypse. The only variable part is what the user typed, written between quotes
+ * with {@code "} and {@code \} escaped (see {@link #quote}), so it cannot add clauses. {@link #throttle}
+ * keeps us under 4 requests per second. Only main games (no editions or DLC); theme 42 means adult (BR-08).
  */
 public final class IgdbCatalog extends HttpCatalogProvider {
 

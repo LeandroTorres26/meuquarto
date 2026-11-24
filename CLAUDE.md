@@ -1,6 +1,6 @@
 # meuquarto
 
-Link-in-bio for media taste: a public profile at `/{slug}` showing highlights of films, series, anime, manga, books, games and music, synced from the platforms the user already uses (Letterboxd, AniList, Last.fm, Steam, Goodreads) or added by hand. Academic project (POO P2, Fatec Baixada Santista), possible TCC. Deadline for P2: end of Nov 2026.
+Link-in-bio for media taste: a public profile at `/{slug}` showing highlights of films, series, anime, manga, books, games and music, synced from the platforms the user already uses (Letterboxd, AniList, MyAnimeList, Last.fm, Goodreads) or added by hand. Academic project (POO P2, Fatec Baixada Santista), possible TCC. Deadline for P2: end of Nov 2026.
 
 ## Read before working
 
@@ -23,7 +23,7 @@ The GitHub issue being worked on is the spec for the task. If an issue conflicts
 
 - `backend/`: Java 21, Spring Boot 4, Maven, Spring Security (session cookie, CSRF), Spring Data JPA, PostgreSQL, Flyway, Caffeine, Testcontainers.
 - `frontend/`: Next.js 16 + TypeScript (Cache Components). Public profile pages are server-rendered (SEO and Open Graph). Calls the backend REST API; never holds secrets.
-- `infra/`: Docker Compose (caddy, web, api, postgres, minio), deploy scripts.
+- `infra/`: Docker Compose (web, api, postgres, storage, mailpit).
 - Payments: none in the P2 (no store, no Stripe, no paid plans; ADR 0024). The store is roadmap for the TCC.
 - Object storage: S3-compatible (R2 or MinIO).
 
@@ -40,7 +40,7 @@ Security is a requirement of every issue, not a later phase. Read `docs/security
 
 ## Backend conventions
 
-- Modular monolith, package by module: `com.meuquarto.<module>` with modules `identity`, `profile`, `media`, `room` (ADR 0001).
+- Modular monolith, package by module: `com.meuquarto.<module>` with modules `identity`, `profile`, `media` (ADR 0001); the room is frontend only.
 - Inside each module, four light layers (ADR 0014): `api/` (controllers, request/response DTOs), `application/` (use cases, transactions, authorization), `domain/` (entities, value objects, business rules), `infra/` (repositories, external clients). Dependencies point inward: `api` → `application` → `domain`; `domain` imports nothing from the other three.
 - Controllers are thin: validate, call one application service, map the result. No business rules in controllers or repositories.
 - Between modules, call only the other module's `application` services and DTOs; never its `domain` entities, repositories, tables or `infra`.

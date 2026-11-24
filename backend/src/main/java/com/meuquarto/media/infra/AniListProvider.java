@@ -42,44 +42,19 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * AniList, the one class of the project that is <b>two things at once</b> (ADR 0018): the canonical
- * catalog of anime and manga (ADR 0005) and the source of what a user watched and read (BR-10).
- * The shape is {@code extends} plus {@code implements}, like {@code Cachorro extends Animal implements
- * Brincavel, Nadavel} from the course:
- * <ul>
- *   <li>{@code extends HttpCatalogProvider}: inherits the whole catalog algorithm (the final template
- *       methods {@code search} and {@code fetch}: availability, request with timeouts, cache, failure
- *       handling) and the safe HTTP of {@code postJson}. This class only fills in the abstract steps;</li>
- *   <li>{@code HttpCatalogProvider implements CatalogProvider}: so an AniList object <i>is a</i>
- *       {@code CatalogProvider} through its parent;</li>
- *   <li>{@code implements ActivityProvider}: a second contract, written here (id, categories, username
- *       rules, {@code checkAccountExists}, {@code fetchActivity}).</li>
- * </ul>
- * There is one object and one bean: the catalog registry sees it as a {@code CatalogProvider}, the activity
- * registry as an {@code ActivityProvider}. The two interfaces both wanted a method {@code id()} with
- * different return types, which a class cannot implement, so the catalog one is called
- * {@link #catalogName()}.
+ * AniList, the one class that is <b>two things at once</b> (ADR 0018): the canonical catalog of anime and
+ * manga (ADR 0005) and the source of what a user watched and read (BR-10). Like {@code Cachorro extends
+ * Animal implements Brincavel, Nadavel} from the course, it {@code extends HttpCatalogProvider} (so it
+ * inherits the catalog algorithm and is a {@code CatalogProvider}) and {@code implements ActivityProvider}
+ * (a second contract, written here). There is one object; each registry sees it by its own interface.
  * <p>
- * All traffic goes to one fixed endpoint (GraphQL, {@code POST https://graphql.anilist.co}, no key for
- * public data). User input (search text, ids, usernames) travels only in the GraphQL {@code variables};
- * the query texts are constants, so nothing a user types is ever concatenated into a query.
- * AniList allows 90 requests per minute (30 while degraded); a search is one request, a sync is two, a link
- * check is one. Any failure, 429 included, becomes an empty answer (catalog) or a value/exception code
- * (activity) plus one warning that names the kind of failure and never a payload.
+ * One fixed GraphQL endpoint, no key. What a user types travels only in the {@code variables}; the query
+ * texts are constants.
  * <p>
- * Catalog choices: the title is {@code title.romaji}, falling back to {@code title.english} (romaji always
- * exists and is what AniList itself shows by default; english can be missing); the year is
- * {@code startDate.year}, falling back to {@code seasonYear}; adult works are asked out of the search
- * ({@code isAdult: false}) and flagged again here (BR-08); the cover must be an https image on
- * {@code s4.anilist.co}, anything else becomes "no cover". The external id is the AniList media id.
- * <p>
- * Activity choices (BR-04, BR-10): the work is the canonical AniList media (same key as the catalog
- * search, so adding by hand and syncing give one item); only entries with status COMPLETED, CURRENT, PAUSED
- * or REPEATING are asked for, PLANNING and DROPPED never; COMPLETED and REPEATING are
- * {@link ActivityType#FINISHED}, CURRENT and PAUSED are {@link ActivityType#IN_PROGRESS}. The time is the
- * day the user finished (or started) the work when AniList has the full date, otherwise the last update;
- * the date, unlike the update time, does not change on every progress tick, so syncing again adds nothing.
- * At most {@value #MAX_ENTRIES} entries (the most recent) are returned per sync. The class is {@code final}.
+ * Activity (BR-04, BR-10): the work is the AniList media, so adding by hand and syncing give one item.
+ * COMPLETED and REPEATING are {@link ActivityType#FINISHED}, CURRENT and PAUSED are
+ * {@link ActivityType#IN_PROGRESS}; PLANNING and DROPPED never enter. The time is the finish (or start) day
+ * when AniList has it, otherwise the last update. At most {@value #MAX_ENTRIES} entries per sync.
  */
 public final class AniListProvider extends HttpCatalogProvider implements ActivityProvider {
 

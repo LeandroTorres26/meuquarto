@@ -26,28 +26,14 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 /**
- * Goodreads, the second concrete leaf of {@link RssActivityProvider} (ADR 0018, hierarchy 1). Like
- * {@link LetterboxdProvider} it only says <b>where</b> the feeds are and <b>how</b> one {@code <item>}
- * becomes an {@link ActivityEntry}; the safe download, the XML without trust and the per-item error
- * isolation are inherited. The class is {@code final}.
+ * Goodreads, the second leaf of {@link RssActivityProvider} (ADR 0018, hierarchy 1): it only says
+ * <b>where</b> the feeds are and <b>how</b> one {@code <item>} becomes an {@link ActivityEntry}.
  * <p>
- * Goodreads has one public RSS feed per shelf: {@code /review/list_rss/{userId}?shelf=read} and
- * {@code ?shelf=currently-reading}. The user is identified by the <b>numeric</b> Goodreads id (the number
- * in {@code goodreads.com/user/show/12345678-name}), so that is the "username" we store; the optional
- * {@code -name} suffix a user may paste is dropped by {@link #normalizeUsername}. The shelves are the
- * two fixed queries of {@link #feedQueries}; {@link #toEntry} receives which one an item came from.
- * <p>
- * Mapping (BR-10): shelf {@code read} is {@link ActivityType#FINISHED} (at the date read, else the date
- * added), {@code currently-reading} is {@link ActivityType#IN_PROGRESS} (at the date added). Both dates are
- * chosen because they do not change between syncs, so the same shelf entry is the same activity.
- * <p>
- * Dedup (ADR 0005): Goodreads is not the canonical catalog of books (Open Library is) and the feed does
- * not carry an Open Library id, so the work is a <em>provisional</em> row keyed by the Goodreads book id
- * ({@code BOOK:GOODREADS:{book_id}}); no fuzzy title matching and no extra request per book. The same
- * book stays one item for every user who syncs it. {@code adult} is false: the feed does not say.
- * <p>
- * Everything read from the feed is untrusted: titles are plain text cut at 300 characters, the cover is
- * accepted only from Goodreads' image hosts, ids must be digits, and a broken item is skipped alone.
+ * There is one feed per shelf (see {@link #feedQueries}) and the user is the <b>numeric</b> Goodreads id;
+ * {@link #normalizeUsername} drops the {@code -name} a user may paste. Shelf {@code read} is
+ * {@link ActivityType#FINISHED}, {@code currently-reading} is {@link ActivityType#IN_PROGRESS} (BR-10); the
+ * dates used do not change between syncs. The feed has no Open Library id, so the work is a provisional
+ * row {@code BOOK:GOODREADS:{book_id}} (ADR 0005).
  */
 public final class GoodreadsProvider extends RssActivityProvider {
 

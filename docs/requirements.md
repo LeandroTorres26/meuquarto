@@ -26,11 +26,11 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 - FR-11 A mixed list "Favoritos de tudo" with items picked from any collection (highlight-only, no listing).
 
 ### Integrations
-- FR-12 Link an external account by public username (ADR 0023). Platforms that sync: Letterboxd (RSS), AniList (GraphQL, anime + manga), MyAnimeList (API v2 with the project's client ID, anime + manga, mapped to the AniList catalog), Last.fm (JSON API with the project's key; recent listening must be public), Steam, Goodreads (RSS); validate that the account exists and is public. Link-only platforms (lists not read): Backloggd, Trakt, StoryGraph; validate the username format only.
+- FR-12 Link an external account by public username (ADR 0023). Platforms that sync: Letterboxd (RSS), AniList (GraphQL, anime + manga), MyAnimeList (API v2 with the project's client ID, anime + manga, mapped to the AniList catalog), Last.fm (JSON API with the project's key; recent listening must be public), Goodreads (RSS); validate that the account exists and is public. Link-only platforms (lists not read): Steam, Backloggd, Trakt, StoryGraph; validate the username format only.
 - FR-12a The public profile (S4) links to every linked account, in a fixed platform order, built from the username and a fixed URL template per platform (never a URL typed by the user); the links open in a new tab.
 - FR-13 Scheduled sync (every ~6 h) plus manual "sync now" button (BR-03).
 - FR-14 Show sync status per account (last success, last error).
-- FR-15 "Agora" block: one item per category, automatic from sync, with manual override or hide (BR-06). Built (#35): `GET /api/now`, `PUT /api/now/{category}` (`mode` AUTOMATIC, PINNED with `collectionItemId`, or HIDDEN) and `now` in the public profile. Séries is manual only.
+- FR-15 "Agora" block: one item per category, automatic from sync, with manual override or hide (BR-06). Built (#35): `GET /api/now`, `PUT /api/now/{category}` (`mode` AUTOMATIC, PINNED with `collectionItemId`, or HIDDEN) and `now` in the public profile. Séries and games are manual only (no platform feeds them).
 - FR-16 Unlink an account: items that came only from it leave the collection, except those the owner highlighted or noted, which become manual.
 
 ### Roadmap, out of the P2 (ADR 0024)
@@ -54,7 +54,7 @@ The store and paid plans are not part of the P2. These requirements and rules ar
 | BR-07 | A work appears once per collection (synced and manual merge into one item) and once per highlight list. |
 | BR-08 | Adult-flagged items are never shown on the public profile in P2. |
 | BR-09 | (roadmap, out of the P2, ADR 0024) A purchase is granted only after a verified Stripe webhook, idempotent per event id. |
-| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList and MyAnimeList, entries with status completed, current (watching or reading), paused or repeating (never planning or dropped); a MyAnimeList entry is mapped to the AniList work with the same `idMal`, so an account linked on both platforms adds each work once. Goodreads, shelves read (finished) and currently-reading (in progress); the books are provisional Goodreads rows until mapped to Open Library (ADR 0005). Steam, owned games with playtime > 0. Last.fm, albums with at least N scrobbles among the user's 200 most recent (N = 10, a constant of `LastFmProvider`) as one entry each at their newest scrobble, plus the album playing now (FR-15, "Ouvindo"); never each play. Loved tracks are not read (they carry no album, and the unit of music is the album). The albums are provisional Last.fm rows until mapped to Deezer (ADR 0005). |
+| BR-10 | What sync adds to the collection, per platform: Letterboxd, every diary entry in the RSS (~50 most recent; the collection accumulates from the link date on, older history via CSV in the roadmap). AniList and MyAnimeList, entries with status completed, current (watching or reading), paused or repeating (never planning or dropped); a MyAnimeList entry is mapped to the AniList work with the same `idMal`, so an account linked on both platforms adds each work once. Goodreads, shelves read (finished) and currently-reading (in progress); the books are provisional Goodreads rows until mapped to Open Library (ADR 0005). Last.fm, albums with at least N scrobbles among the user's 200 most recent (N = 10, a constant of `LastFmProvider`) as one entry each at their newest scrobble, plus the album playing now (FR-15, "Ouvindo"); never each play. Loved tracks are not read (they carry no album, and the unit of music is the album). The albums are provisional Last.fm rows until mapped to Deezer (ADR 0005). |
 
 ## Non-functional requirements
 - NFR-01 Modular monolith; each external platform is one `MediaProvider` implementation (Strategy/Adapter).
@@ -63,7 +63,7 @@ The store and paid plans are not part of the P2. These requirements and rules ar
 - NFR-04 Versioned migrations (Flyway); OpenAPI documentation generated.
 - NFR-05 Unit tests for business rules; integration tests with Testcontainers (PostgreSQL); providers mocked. CI required on every PR.
 - NFR-06 Docker Compose deploy on a single VPS with HTTPS; auto-deploy on merge to `main`.
-- NFR-07 Security: only ready-made, maintained components (Spring Security, Argon2id passwords, Spring Session JDBC, TLS by Caddy); no hand-written cryptography or auth. CSRF protection, secrets only in environment and never exposed to the browser, Stripe webhook signature check. Details in `docs/security.md` and ADR 0012.
+- NFR-07 Security: only ready-made, maintained components (Spring Security, Argon2id passwords, Spring Session JDBC, TLS by the reverse proxy); no hand-written cryptography or auth. CSRF protection, secrets only in environment and never exposed to the browser. Details in `docs/security.md` and ADR 0012.
 - NFR-08 Images in S3-compatible storage (R2 or MinIO), never in the database.
 - NFR-09 LGPD basics: consent via terms, data deletion, minimal data collected.
 - NFR-10 UI language pt-BR; code, repo and technical docs in English.

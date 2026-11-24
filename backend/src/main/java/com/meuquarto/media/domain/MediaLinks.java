@@ -19,8 +19,8 @@ import java.util.regex.Pattern;
  * <p>
  * Order: the platform the item came from first (its sources, in the order given), then the others in the
  * order of the category: film Letterboxd then TMDB; series TMDB; anime and manga AniList then MyAnimeList;
- * book Open Library; music Last.fm then Deezer; game Steam. Only a game that came from Steam has a link: its
- * key is the Steam app id. A game from IGDB (a manual addition) has none, because IGDB cannot be linked by id.
+ * book Open Library; music Last.fm then Deezer. A game has no link, because IGDB
+ * cannot be linked by id.
  * <p>
  * Where each id comes from: TMDB, AniList, Open Library and Deezer are the work's canonical key (BR-04);
  * Letterboxd reuses the TMDB id ({@code letterboxd.com/tmdb/{id}} redirects to the film); MyAnimeList uses
@@ -30,8 +30,6 @@ import java.util.regex.Pattern;
 public final class MediaLinks {
 
     private static final Pattern SAFE_ID = Pattern.compile("[A-Za-z0-9_-]{1,64}");
-    /** A Steam app id is a plain number; anything else never reaches a link. */
-    private static final Pattern STEAM_APP_ID = Pattern.compile("[0-9]{1,10}");
 
     private MediaLinks() {}
 
@@ -70,7 +68,7 @@ public final class MediaLinks {
             case ANIME, MANGA -> List.of(LinkPlatform.ANILIST, LinkPlatform.MYANIMELIST);
             case BOOK -> List.of(LinkPlatform.OPENLIBRARY);
             case MUSIC -> List.of(LinkPlatform.LASTFM, LinkPlatform.DEEZER);
-            case GAME -> List.of(LinkPlatform.STEAM);
+            case GAME -> List.of();
         };
     }
 
@@ -87,7 +85,6 @@ public final class MediaLinks {
                     .map(id -> "https://myanimelist.net/" + (category == MediaCategory.MANGA ? "manga/" : "anime/") + id);
             case OPENLIBRARY -> canonical(key, "OPENLIBRARY").map(id -> "https://openlibrary.org/works/" + id);
             case DEEZER -> canonical(key, "DEEZER").map(id -> "https://www.deezer.com/album/" + id);
-            case STEAM -> steamApp(key);
             case LASTFM -> sources.contains(ProviderId.LASTFM.name()) ? lastFmAlbum(hints) : Optional.empty();
         };
     }
@@ -96,12 +93,6 @@ public final class MediaLinks {
     private static Optional<String> canonical(MediaKey key, String provider) {
         boolean usable = key.provider().equals(provider) && SAFE_ID.matcher(key.externalId()).matches();
         return usable ? Optional.of(key.externalId()) : Optional.empty();
-    }
-
-    /** {@code store.steampowered.com/app/{appId}/}: only for a game whose key is a Steam app id (digits only). */
-    private static Optional<String> steamApp(MediaKey key) {
-        boolean usable = key.provider().equals(ProviderId.STEAM.name()) && STEAM_APP_ID.matcher(key.externalId()).matches();
-        return usable ? Optional.of("https://store.steampowered.com/app/" + key.externalId() + "/") : Optional.empty();
     }
 
     /** {@code last.fm/music/{artist}/{album}}: names percent-encoded with spaces as "+", never "." or "..". */

@@ -53,7 +53,7 @@ describe("nowStatus", () => {
   });
 
   it("keeps just the platform when the time is missing or invalid", () => {
-    expect(nowStatus("STEAM", null, NOW)).toBe("Steam");
+    expect(nowStatus("GOODREADS", null, NOW)).toBe("Goodreads");
   });
 });
 
@@ -61,9 +61,6 @@ describe("entryCaption", () => {
   it("credits the platform when automatic has an item", () => {
     expect(entryCaption(entry({ shown: shown("LETTERBOXD") })).text).toBe(
       "Do Letterboxd, muda sozinho",
-    );
-    expect(entryCaption(entry({ category: "GAME", shown: shown("STEAM") })).text).toBe(
-      "Da Steam, muda sozinho",
     );
   });
 
@@ -74,7 +71,10 @@ describe("entryCaption", () => {
     });
   });
 
-  it("explains that Séries is manual only", () => {
+  it("explains that Séries and games are manual only", () => {
+    expect(entryCaption(entry({ category: "GAME", automaticAvailable: false })).text).toBe(
+      "Games não têm plataforma para sincronizar. Escolha à mão.",
+    );
     expect(entryCaption(entry({ category: "SERIES", automaticAvailable: false })).text).toBe(
       "Séries não têm plataforma para sincronizar. Escolha à mão.",
     );
@@ -95,8 +95,11 @@ describe("entryCaption", () => {
 });
 
 describe("AUTO_PLATFORM", () => {
-  it("has no platform for Séries only", () => {
-    expect(Object.entries(AUTO_PLATFORM).filter(([, p]) => p === null)).toEqual([["SERIES", null]]);
+  it("has no platform for Séries and games only", () => {
+    expect(Object.entries(AUTO_PLATFORM).filter(([, p]) => p === null)).toEqual([
+      ["SERIES", null],
+      ["GAME", null],
+    ]);
   });
 });
 

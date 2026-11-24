@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * percent-encoded, so a username can never turn into a link to somewhere else. A URL typed by the user
  * is never stored or shown. A name that would not be safe in a path simply has no link.
  * <p>
- * Also holds the format rules of the link-only platforms (Backloggd, Trakt, StoryGraph), which have no
+ * Also holds the format rules of the link-only platforms (Steam, Backloggd, Trakt, StoryGraph), which have no
  * provider class: the name is only checked for format, never looked up (ADR 0023, decision 5).
  */
 public final class ProfileUrls {
@@ -39,7 +39,7 @@ public final class ProfileUrls {
             case ANILIST -> "https://anilist.co/user/" + name + "/";
             case MYANIMELIST -> "https://myanimelist.net/profile/" + name;
             case LASTFM -> "https://www.last.fm/user/" + name;
-            case STEAM -> isSteamId64(username)
+            case STEAM -> STEAM_ID64.matcher(username).matches()
                     ? "https://steamcommunity.com/profiles/" + name
                     : "https://steamcommunity.com/id/" + name;
             case GOODREADS -> "https://www.goodreads.com/user/show/" + name;
@@ -47,14 +47,6 @@ public final class ProfileUrls {
             case TRAKT -> "https://trakt.tv/users/" + name;
             case STORYGRAPH -> "https://app.thestorygraph.com/profile/" + name;
         });
-    }
-
-    /**
-     * True for a SteamID64 (what the Steam Web API calls the account), false for a vanity name. The Steam
-     * provider and the profile link both use it, so they always agree on which one the user typed.
-     */
-    public static boolean isSteamId64(String text) {
-        return text != null && STEAM_ID64.matcher(text).matches();
     }
 
     /** Format rules for the username of a link-only platform: 1 to 40 conservative characters. */

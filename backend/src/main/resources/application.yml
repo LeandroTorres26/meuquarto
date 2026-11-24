@@ -48,8 +48,8 @@ server:
   port: 8080
   # Real client address (ADR 0017). Tomcat's RemoteIpValve rewrites remoteAddr from X-Forwarded-For
   # only when the direct peer is one of internal-proxies; from anyone else the header is ignored.
-  # The API port is never public (compose binds 127.0.0.1, production exposes only Caddy), so the
-  # only peers are the web container and Caddy, on private Docker ranges, plus loopback.
+  # The API port is never public (compose binds 127.0.0.1, production exposes only the reverse proxy), so the
+  # only peers are the web container and the proxy, on private Docker ranges, plus loopback.
   forward-headers-strategy: native
   tomcat:
     remoteip:
@@ -112,10 +112,6 @@ meuquarto:
       # MyAnimeList API client ID (sent in the X-MAL-CLIENT-ID header, never logged). Create it at
       # myanimelist.net/apiconfig. Empty = MyAnimeList reports itself unavailable and the panel says "Em breve".
       client-id: ${MAL_CLIENT_ID:}
-    steam:
-      # Steam Web API key (steamcommunity.com/dev/apikey). It travels in the query string by Steam's design, so it
-      # is never logged. Empty = Steam reports itself unavailable and the panel says "Em breve".
-      api-key: ${STEAM_API_KEY:}
 
   sync:
     # Scheduled sync (ADR 0007): a batch of due accounts every interval. Off in tests.

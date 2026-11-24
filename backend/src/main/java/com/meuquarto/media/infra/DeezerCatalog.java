@@ -20,16 +20,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Deezer, the canonical catalog of music (ADR 0005). The public API needs no key and no login, so it is
- * always available. The work is the <em>album</em>; the external id is the Deezer album id.
- * <p>
- * Choices: the title is the album name; the artist travels apart as a link hint and is shown as its own
- * line, because an album name alone ("Greatest Hits") says nothing in a result list; the album search
- * does not carry a release date and we do not make one extra call per result, so the year is null in a
- * search and comes from {@code release_date} in a detail ({@link #fetch}); the cover is {@code cover_medium}, accepted only as an https image on a Deezer CDN
- * host; {@code explicit_lyrics} only says the lyrics have strong language, which is not adult content
- * (BR-08 is about adult-only titles), so {@code adult} is always false. Deezer reports errors with
- * status 200 and an {@code error} object; that is treated as a failure like any other.
+ * Deezer, the canonical catalog of music (ADR 0005). No key. The work is the <em>album</em>; the artist
+ * travels apart as a link hint. The album search has no release date, so the year is null there and comes
+ * from {@link #fetch}. {@code explicit_lyrics} is not adult content (BR-08), so {@code adult} is false.
+ * Deezer reports errors with status 200 and an {@code error} object; that counts as a failure.
  */
 public final class DeezerCatalog extends HttpCatalogProvider {
 

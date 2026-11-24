@@ -7,6 +7,7 @@ import com.meuquarto.profile.domain.NowBlock.Shown;
 import com.meuquarto.profile.domain.NowException.Problem;
 import com.meuquarto.shared.domain.MediaCategory;
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -51,7 +52,7 @@ class BR06NowBlockTest {
 
     @Test
     void nothingIsShownWhenNothingWasSynced() {
-        assertThat(NowBlock.shown(MediaCategory.GAME, null, false, Optional.empty())).isEmpty();
+        assertThat(NowBlock.shown(MediaCategory.BOOK, null, false, Optional.empty())).isEmpty();
     }
 
     @Test
@@ -72,17 +73,20 @@ class BR06NowBlockTest {
     }
 
     @Test
-    void seriesIsManualOnlyAndNeverShowsAnAutomaticItem() {
-        assertThat(NowBlock.hasAutomaticSource(MediaCategory.SERIES)).isFalse();
-        assertThat(NowBlock.shown(MediaCategory.SERIES, null, false, Optional.of(9L))).isEmpty();
-        assertThat(NowBlock.shown(MediaCategory.SERIES, pinned(MediaCategory.SERIES), true, Optional.of(9L)))
-                .contains(new Shown(55, NowSource.MANUAL));
+    void seriesAndGamesAreManualOnlyAndNeverShowAnAutomaticItem() {
+        for (MediaCategory manualOnly : List.of(MediaCategory.SERIES, MediaCategory.GAME)) {
+            assertThat(NowBlock.hasAutomaticSource(manualOnly)).isFalse();
+            assertThat(NowBlock.shown(manualOnly, null, false, Optional.of(9L))).isEmpty();
+            assertThat(NowBlock.shown(manualOnly, pinned(manualOnly), true, Optional.of(9L)))
+                    .contains(new Shown(55, NowSource.MANUAL));
+        }
     }
 
     @Test
     void everyOtherCategoryHasAnAutomaticSource() {
         for (MediaCategory category : MediaCategory.values()) {
-            assertThat(NowBlock.hasAutomaticSource(category)).isEqualTo(category != MediaCategory.SERIES);
+            assertThat(NowBlock.hasAutomaticSource(category))
+                    .isEqualTo(category != MediaCategory.SERIES && category != MediaCategory.GAME);
         }
     }
 

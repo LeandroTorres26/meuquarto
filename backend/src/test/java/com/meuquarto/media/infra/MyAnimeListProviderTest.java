@@ -118,14 +118,14 @@ class MyAnimeListProviderTest {
     // ---- identity ----
 
     @Test
-    void itIsTheMyAnimeListProviderForAnimeAndMangaAndImplementsTheInterfaceDirectly() {
+    void itIsTheMyAnimeListProviderForAnimeAndMangaAndExtendsTheJsonBase() {
         MyAnimeListProvider real = provider();
         ActivityProvider asInterface = real; // callers only ever hold the base type
 
         assertThat(asInterface.id()).isEqualTo(ProviderId.MYANIMELIST);
         assertThat(asInterface.categories()).containsExactlyInAnyOrder(MediaCategory.ANIME, MediaCategory.MANGA);
         assertThat(MyAnimeListProvider.ENDPOINT).isEqualTo(URI.create("https://api.myanimelist.net/v2/"));
-        assertThat(real.getClass().getSuperclass()).isEqualTo(Object.class);
+        assertThat(real.getClass().getSuperclass()).isEqualTo(JsonActivityProvider.class);
         assertThat(java.lang.reflect.Modifier.isFinal(real.getClass().getModifiers())).isTrue();
     }
 

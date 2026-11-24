@@ -61,7 +61,7 @@ class SyncWithoutProviderApiTests {
                         .content("{\"email\":\"a@example.com\",\"password\":\"cavalo bateria grampo\",\"slug\":\"ana\"}"))
                 .andExpect(status().isCreated()).andReturn().getResponse().getCookie("SESSION");
         long profileId = jdbc.queryForObject("select id from profiles where slug = 'ana'", Long.class);
-        jdbc.update("insert into linked_accounts (profile_id, provider, username) values (?, 'STEAM', 'ana_s')", profileId);
+        jdbc.update("insert into linked_accounts (profile_id, provider, username) values (?, 'LASTFM', 'ana_s')", profileId);
         long account = jdbc.queryForObject("select id from linked_accounts", Long.class);
 
         mvc.perform(post("/api/linked-accounts/" + account + "/sync").cookie(session).with(RealCsrf.token(mvc)))

@@ -76,3 +76,6 @@ Host: requests go to `api.myanimelist.net/v2/` only, `GET users/{name}/animelist
 Only the statuses of BR-10 are kept in memory (anime `completed`, `watching`, `on_hold`; manga `completed`, `reading`, `on_hold`; an entry flagged `is_rewatching` / `is_rereading` counts as finished); `plan_to_*` and `dropped` are dropped before anything else happens. Each kept MyAnimeList id is resolved to the AniList work through `Page { media(idMal_in: [...], type: ANIME|MANGA) }`, 50 ids per request, and the AniList work is what is stored (same key as the AniList catalog, so a profile linked on both platforms gets each work once). Titles, pictures, scores and dates of MyAnimeList are read and dropped; an entry AniList has no match for is skipped and counted in one log line (the count only). Item links to the MyAnimeList page of a work (FR-10a) would use AniList's `idMal`, which is not stored yet; items link to AniList for now.
 
 Written authorization from MyAnimeList is still needed before any real charge (the "pending" cell above stays open until the owner asks for it).
+
+## Amendment (#161): Steam is not called
+Steam is link only now (ADR 0023). The Steam rows and the section above describe the provider built in #33 and removed in #161; no request goes to Steam.

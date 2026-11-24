@@ -48,15 +48,6 @@ class ActivityConfig {
         return new MyAnimeListProvider(clientId, anilist.orderedStream().findFirst().orElseThrow());
     }
 
-    /**
-     * Steam needs a Web API key, read only from the environment ({@code STEAM_API_KEY}). Without it the
-     * provider reports itself unavailable and nothing is sent.
-     */
-    @Bean
-    ActivityProvider steamProvider(@Value("${meuquarto.activity.steam.api-key:}") String apiKey) {
-        return new SteamProvider(apiKey, Clock.systemUTC());
-    }
-
     @Bean
     ActivityRegistry activityRegistry(ObjectProvider<ActivityProvider> providers) {
         return new ActivityRegistry(providers.orderedStream().toList());

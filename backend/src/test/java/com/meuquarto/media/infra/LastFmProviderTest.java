@@ -66,8 +66,7 @@ class LastFmProviderTest {
     }
 
     private LastFmProvider provider(String key, Duration timeout, Duration spacing) {
-        return new LastFmProvider(HttpCatalogProvider.newClient(), stub.uri(), key, CLOCK, timeout, spacing,
-                LastFmProvider.MIN_SCROBBLES);
+        return new LastFmProvider(HttpCatalogProvider.newClient(), stub.uri(), key, CLOCK, timeout, spacing);
     }
 
     @SafeVarargs
@@ -86,14 +85,14 @@ class LastFmProviderTest {
     // ---- identity ----
 
     @Test
-    void itIsTheLastFmMusicProviderAndImplementsTheInterfaceDirectly() {
+    void itIsTheLastFmMusicProviderAndExtendsTheJsonBase() {
         LastFmProvider real = new LastFmProvider(KEY, CLOCK);
         ActivityProvider asInterface = real; // callers only ever hold the base type
 
         assertThat(asInterface.id()).isEqualTo(ProviderId.LASTFM);
         assertThat(asInterface.categories()).containsExactly(MediaCategory.MUSIC);
         assertThat(LastFmProvider.ENDPOINT).isEqualTo(URI.create("https://ws.audioscrobbler.com/2.0/"));
-        assertThat(real.getClass().getSuperclass()).isEqualTo(Object.class); // nothing inherited: implements the interface only
+        assertThat(real.getClass().getSuperclass()).isEqualTo(JsonActivityProvider.class);
         assertThat(java.lang.reflect.Modifier.isFinal(real.getClass().getModifiers())).isTrue();
     }
 
@@ -472,7 +471,7 @@ class LastFmProviderTest {
         for (String missing : new String[] {null, "", "   "}) {
             LastFmProvider keyless = provider(missing, Duration.ofSeconds(2), Duration.ZERO);
 
-            assertThat(keyless.isConfigured()).isFalse();
+            assertThat(keyless.isAvailable()).isFalse();
             assertThat(keyless.checkAccountExists("ana_l")).isEqualTo(AccountCheck.UNAVAILABLE);
             assertThatThrownBy(() -> keyless.fetchActivity("ana_l")).isInstanceOf(LinkedAccountException.class);
         }
@@ -484,7 +483,7 @@ class LastFmProviderTest {
     void aKeyThatIsNotPlainAlphanumericIsNeverPutInAUrl(String badKey) {
         LastFmProvider odd = provider(badKey, Duration.ofSeconds(2), Duration.ZERO);
 
-        assertThat(odd.isConfigured()).isFalse();
+        assertThat(odd.isAvailable()).isFalse();
         assertThat(odd.checkAccountExists("ana_l")).isEqualTo(AccountCheck.UNAVAILABLE);
         assertThat(stub.requests).isEmpty();
     }
@@ -513,7 +512,7 @@ class LastFmProviderTest {
             URI closedUri = gone.uri();
             gone.close();
             assertThatThrownBy(() -> new LastFmProvider(HttpCatalogProvider.newClient(), closedUri, KEY, CLOCK,
-                    Duration.ofSeconds(1), Duration.ZERO, 10).fetchActivity("ana_l"))
+                    Duration.ofSeconds(1), Duration.ZERO).fetchActivity("ana_l"))
                     .isInstanceOf(LinkedAccountException.class)
                     .satisfies(e -> assertThat(String.valueOf(e.getMessage()) + e.getCause()).doesNotContain(KEY));
         } finally {

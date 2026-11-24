@@ -8,7 +8,7 @@ import java.util.Optional;
  * "the platform the item came from" is found among an item's sources.
  */
 public enum LinkPlatform {
-    LETTERBOXD, TMDB, ANILIST, MYANIMELIST, OPENLIBRARY, LASTFM, DEEZER, STEAM;
+    LETTERBOXD, TMDB, ANILIST, MYANIMELIST, OPENLIBRARY, LASTFM, DEEZER;
 
     /** The platform that an item source (a provider name such as {@code ANILIST}, or {@code MANUAL}) stands for. */
     public static Optional<LinkPlatform> ofSource(String source) {

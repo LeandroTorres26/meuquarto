@@ -1,6 +1,6 @@
 # meuquarto
 
-A link-in-bio for media taste: one public profile showing the films, series, anime, manga, books, games and music someone loves, synced from the platforms they already use (Letterboxd, AniList, Last.fm, Steam, Goodreads) or picked by hand. Academic project (Programação Orientada a Objetos, Fatec Baixada Santista).
+A link-in-bio for media taste: one public profile showing the films, series, anime, manga, books, games and music someone loves, synced from the platforms they already use (Letterboxd, AniList, MyAnimeList, Last.fm, Goodreads) or picked by hand. Academic project (Programação Orientada a Objetos, Fatec Baixada Santista).
 
 ## Stack
 

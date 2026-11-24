@@ -255,7 +255,6 @@ describe("links and images", () => {
   it("labels platform links", () => {
     expect(linkLabel("TMDB")).toBe("Ver no TMDB");
     expect(linkLabel("ANILIST")).toBe("Ver no AniList");
-    expect(linkLabel("STEAM")).toBe("Ver na Steam");
     expect(linkLabel("LETTERBOXD")).toBe("Ver no Letterboxd");
     expect(linkLabel("MYANIMELIST")).toBe("Ver no MyAnimeList");
     expect(linkLabel("OPENLIBRARY")).toBe("Ver na Open Library");
@@ -299,6 +298,6 @@ describe("origin caption", () => {
   });
 
   it("drops the date when it is invalid", () => {
-    expect(originCaption([{ source: "STEAM", firstSeenAt: "x" }])).toBe("Da Steam");
+    expect(originCaption([{ source: "GOODREADS", firstSeenAt: "x" }])).toBe("Do Goodreads");
   });
 });

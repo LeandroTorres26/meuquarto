@@ -59,7 +59,6 @@ services:
       TMDB_API_KEY: ${TMDB_API_KEY:-}
       LASTFM_API_KEY: ${LASTFM_API_KEY:-}
       MAL_CLIENT_ID: ${MAL_CLIENT_ID:-}
-      STEAM_API_KEY: ${STEAM_API_KEY:-}
       TWITCH_CLIENT_ID: ${TWITCH_CLIENT_ID:-}
       TWITCH_CLIENT_SECRET: ${TWITCH_CLIENT_SECRET:-}
       # Links in e-mails are built from this origin only (validated at startup). Local default below.
@@ -90,7 +89,7 @@ services:
     build: ../frontend
     environment:
       API_URL: http://api:8080
-      # false unless a reverse proxy that overwrites X-Forwarded-For (Caddy) is in front (ADR 0017).
+      # false unless a reverse proxy that overwrites X-Forwarded-For is in front (ADR 0017).
       TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-false}
       SITE_URL: ${SITE_URL:-}
     depends_on:

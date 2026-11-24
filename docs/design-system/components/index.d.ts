@@ -72,20 +72,10 @@ declare namespace Meuquarto {
     onClose?: () => void;
     children?: any;
   }
-  interface LimitUpsellProps {
-    used?: number;
-    limit?: number;
-    title?: string;
-    /** One sentence on what the pack gives. */
-    children?: any;
-    href?: string;
-    cta?: string;
-  }
 
   const Button: (props: ButtonProps) => JSX.Element;
   const NowCard: (props: NowCardProps) => JSX.Element;
   const Toast: (props: ToastProps) => JSX.Element;
-  const LimitUpsell: (props: LimitUpsellProps) => JSX.Element;
   const HighlightCard: (props: HighlightCardProps) => JSX.Element;
   const HighlightSlot: (props: HighlightSlotProps) => JSX.Element;
   const HighlightGrid: (props: { children?: any }) => JSX.Element;
