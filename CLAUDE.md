@@ -99,5 +99,6 @@ Frontend (from `frontend/`, needs Node 22):
 Whole stack (from the repo root, needs Docker; copy `.env.example` to `.env` first):
 - `docker compose -f infra/docker-compose.yml --env-file .env up --build`
 - `docker compose -f infra/docker-compose.yml --env-file .env down` (add `-v` to wipe the database volume). Every compose command needs `--env-file .env`.
+- `yarn stack`, `yarn stack:ps`, `yarn stack:logs`, `yarn stack:down`: shortcuts for the commands above (root `package.json`, scripts only; `stack` runs in the background and `stack:down` keeps the volume). The frontend still uses npm.
 
 Next.js 16 differs from older versions (Cache Components are on): read `frontend/AGENTS.md` and the docs in `frontend/node_modules/next/dist/docs/` before writing frontend code.
