@@ -18,6 +18,8 @@ cp .env.example .env   # then set POSTGRES_PASSWORD, STORAGE_ACCESS_KEY and STOR
 docker compose -f infra/docker-compose.yml --env-file .env up --build
 ```
 
+Or, with Node installed, `yarn stack` (same build, in the background), `yarn stack:ps`, `yarn stack:logs` and `yarn stack:down`; nothing to install first.
+
 Web: http://localhost:3000 · API health: http://localhost:8080/api/health · Mailpit (e-mails sent by the API, such as the password reset link): http://localhost:8025
 
 Catalog keys are optional: without `TMDB_API_KEY` film and series search is unavailable, and without `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` (a Twitch app, used for IGDB) game search is unavailable; the other categories keep working. See `.env.example`.
