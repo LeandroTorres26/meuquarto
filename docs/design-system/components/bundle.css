@@ -213,11 +213,6 @@
 .mq-toast__close:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
 .mq-toast__close .mq-icon{width:16px;height:16px}
 
-/* ---------- LimitUpsell: shown in the editor when a free list is full. Never on the public profile ---------- */
-.mq-upsell{display:flex;flex-wrap:wrap;gap:var(--space-4) var(--space-6);align-items:center;justify-content:space-between;background:var(--brand-tint);color:var(--ink);border-radius:var(--radius-lg);padding:var(--space-4) var(--space-6);font-family:var(--font-sans)}
-.mq-upsell__text{flex:1 1 260px;margin:0;font:400 14px/20px var(--font-sans)}
-.mq-upsell__text strong{display:block;font:600 18px/24px var(--font-sans);margin-bottom:var(--space-1)}
-.mq-upsell__side{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-4)}
 .mq-slots{display:flex;align-items:center;gap:var(--space-2);margin:0;font:600 12px/16px var(--font-sans);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
 .mq-slots__bar{display:flex;gap:3px}
 .mq-slots__bar span{width:8px;height:12px;border-radius:1px;background:var(--accent)}

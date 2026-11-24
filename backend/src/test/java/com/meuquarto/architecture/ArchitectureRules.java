@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 final class ArchitectureRules {
 
-    static final List<String> MODULES = List.of("identity", "profile", "media", "room");
+    static final List<String> MODULES = List.of("identity", "profile", "media");
 
     private ArchitectureRules() {}
 

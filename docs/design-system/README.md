@@ -4,9 +4,9 @@ meuquarto is a profile that works like the owner's room: posters on the wall, vo
 
 - UI copy in pt-BR, informal "você", short sentences, sentence case. Code, repo and technical docs stay in English.
 - Write the name as `meuquarto`: one word, lowercase in running text. As a wordmark it is set in `display-xl`, uppercase.
-- Feature names as the product uses them: "Agora", "Favoritos de tudo", "Ver quarto", "Sincronizar agora". CTAs are imperative: "Crie o seu", "Copiar link", "Ver loja".
+- Feature names as the product uses them: "Agora", "Favoritos de tudo", "Ver quarto", "Sincronizar agora". CTAs are imperative: "Crie o seu", "Copiar link".
 - Personal notes sound like a person scribbling on a slip: lowercase, a few words ("melhor final", "repeat o mês todo"). Never longer than one line.
-- No emoji, no exclamation marks, no urgency tricks in the store.
+- No emoji, no exclamation marks, no urgency tricks.
 
 ## Visual foundations
 
@@ -14,14 +14,14 @@ meuquarto is a profile that works like the owner's room: posters on the wall, vo
 - Two voices, never mixed in one role. **Identity** is Big Shoulders Display, uppercase, like a poster: `display-xl` (landing hero), `display` (profile name, large wordmark) and `poster` (titles printed under covers, the Agora item, sticker labels). **Interface** is Figtree, sentence case: `h1` page title, `h2` section, `h3` group or card, `lead`, `body`, `body-sm`, `label`, `caption`. A section title is never set in the display face; a cover title is never set in Figtree. Personal notes and the photo caption are Caveat (`note`, `note-lg`), never below 20px, only on `paper` in `paper-ink` or as the single pinned tagline in `brand`.
 - Hierarchy per screen: one `h1` (or one `display` on the profile), then `h2` sections, then `h3` groups. Do not skip a level to get a size; do not add a small label above a title to explain it. Meta text sits below its title in `caption` or `body-sm`, not glued with middle dots: use separate elements or a short sentence.
 - Spacing follows proximity levels (tokens.json `spacing`): L1 4 to 8 inside an element, L2 16 to 24 inside a group, L3 32 between groups of a section, L4 48 (mobile) or 64 between sections, L5 96 at the page end. Each level is about twice the one inside it; never let the space inside a group equal the space around it. A title is always closer to its own content than to the previous section.
-- Common region (a panel or card) means "these belong together and are separate from the rest". Use it for repeated objects (an account, a store item, a list row you can drag) and for the one thing that needs focus (a dialog, a warning). Do not box a section that a heading and space already group.
+- Common region (a panel or card) means "these belong together and are separate from the rest". Use it for repeated objects (an account, a list row you can drag) and for the one thing that needs focus (a dialog, a warning). Do not box a section that a heading and space already group.
 - Alignment: every page sits on one 12-column grid (8 on tablet, 4 on mobile) with the container's gutter. Left-align text; center only short system messages. Media in different sections of the same page share the same column width so edges line up.
 - Art leads. A media card is the cover itself, full bleed and clean. Title and year always sit below it, never on it (title in 2 lines at most, then an ellipsis). The only things on a cover are decorative: the category sticker, the medium's finish variant (see Media finish) and the handwritten slip. While an image loads, show the cover slot at the real aspect ratio.
 - Shapes are paper-like: `radius-sm` (2px) on media, stickers and slips (manga keeps square corners); `radius-md` on buttons and inputs; `radius-lg` on panels. Do not use pills for labels or chips. `radius-pill` is only for round things (the tack, the avatar ring).
 - Things rest on the wall the way they do in a real room: a resting angle derived from the work's id (0.9deg to 2.5deg either way, 60% of that below 480px, see HighlightCard) and `shadow-poster`. Posters are glued from behind, so media never show tape or a tack. Each medium has one clean default and one finish variant that only some items get (see Media finish). Hover straightens the cover and lifts it 4px. Respect `prefers-reduced-motion`.
 - `tape` is only for small, light paper: the polaroid and the handwritten slip. The tack (`mq-pin`) is retired.
 - Category stickers (`mq-tag`) sit on the top-left corner of each item and overlap its edge. No finish variant ever uses the top-left corner.
-- Functional controls are sober: Button, forms, Toast and LimitUpsell use `surface-*`, `brand` and `border-strong`, with no tilt, tape or handwriting.
+- Functional controls are sober: Button, forms and Toast use `surface-*`, `brand` and `border-strong`, with no tilt, tape or handwriting.
 - Focus: 2px solid `focus` ring with 2px offset on every interactive element.
 - Status: `success` and `danger` are close in lightness, so always add a word or icon.
 
@@ -97,4 +97,4 @@ Provider attribution (TMDB and others) goes in the profile footer in `caption` a
 
 ## Components
 
-HighlightCard, HighlightGrid, CategoryTag and ProfileHeader carry the personality; HighlightCard owns the media finish (default and variant). Button, NowCard, Toast and LimitUpsell are the sober functional set (no tilt, tape or handwriting) and document every state: default, hover, focus, disabled and loading for Button; default, pinned, error, empty and loading for NowCard; success and error for Toast. HighlightCard, HighlightSlot, HighlightGrid, CategoryTag, Button, NowCard, Toast, LimitUpsell and Icon are implemented in `components/bundle.js` (`window.Meuquarto`, React 18); props are typed in `components/index.d.ts`. ProfileHeader is markup only (`mq-profile` classes). Include `tokens.css`, then `components/bundle.css`, then React and `bundle.js`; load the three Google Fonts (Big Shoulders Display 700 to 900, Figtree 400 to 700, Caveat 500 to 700) and set the theme on `html`.
+HighlightCard, HighlightGrid, CategoryTag and ProfileHeader carry the personality; HighlightCard owns the media finish (default and variant). Button, NowCard and Toast are the sober functional set (no tilt, tape or handwriting) and document every state: default, hover, focus, disabled and loading for Button; default, pinned, error, empty and loading for NowCard; success and error for Toast. HighlightCard, HighlightSlot, HighlightGrid, CategoryTag, Button, NowCard, Toast and Icon are implemented in `components/bundle.js` (`window.Meuquarto`, React 18); props are typed in `components/index.d.ts`. ProfileHeader is markup only (`mq-profile` classes). Include `tokens.css`, then `components/bundle.css`, then React and `bundle.js`; load the three Google Fonts (Big Shoulders Display 700 to 900, Figtree 400 to 700, Caveat 500 to 700) and set the theme on `html`.

@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Meuquarto","components":[{"name":"HighlightCard"},{"name":"CategoryTag"},{"name":"Button"},{"name":"NowCard"},{"name":"Toast"},{"name":"LimitUpsell"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Meuquarto","components":[{"name":"HighlightCard"},{"name":"CategoryTag"},{"name":"Button"},{"name":"NowCard"},{"name":"Toast"}]} */
 (function () {
   var React = window.React;
   var h = React.createElement;
@@ -168,19 +168,8 @@
       err && props.onClose !== null ? h('button', { type: 'button', className: 'mq-toast__close', 'aria-label': 'Fechar aviso', onClick: props.onClose }, h(Icon, { name: 'x' })) : null);
   }
 
-  /* LimitUpsell: used of limit slots, a title, one sentence on what the pack gives, and the link to the store. */
-  function LimitUpsell(props) {
-    var used = props.used == null ? 4 : props.used, limit = props.limit || 4, bars = [];
-    for (var i = 0; i < limit; i++) bars.push(h('span', { key: i, className: i < used ? '' : 'is-free' }));
-    return h('div', { className: 'mq-upsell' },
-      h('p', { className: 'mq-upsell__text' }, h('strong', null, props.title || 'Lista cheia'), props.children),
-      h('div', { className: 'mq-upsell__side' },
-        h('p', { className: 'mq-slots' }, h('span', { className: 'mq-slots__bar', 'aria-hidden': true }, bars), used + ' de ' + limit),
-        h(Button, { variant: 'primary', href: props.href || '#' }, props.cta || 'Ver o pack')));
-  }
-
   window.Meuquarto = {
-    Button: Button, NowCard: NowCard, Toast: Toast, LimitUpsell: LimitUpsell,
+    Button: Button, NowCard: NowCard, Toast: Toast,
     HighlightCard: HighlightCard, HighlightSlot: HighlightSlot, HighlightGrid: HighlightGrid, CategoryTag: CategoryTag, Icon: Icon,
     CATEGORIES: CATEGORIES, tiltFactor: tiltFactor, finish: finish, hash: hash
   };

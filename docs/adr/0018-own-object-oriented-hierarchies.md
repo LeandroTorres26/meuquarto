@@ -97,3 +97,16 @@ Two consequences for the shared types. (1) `CatalogProvider.id()` was renamed `c
 
 ## As built: the Plan hierarchy was removed (#133, ADR 0024)
 The store and the paid plans are out of the P2, so the `Plan` hierarchy (`Plan`, `FreePlan`, `PackPlan`), `PlanResolver` and `EntitlementPlans` were deleted. Five hierarchies remain: `ActivityProvider`, `CatalogProvider`, `ValidationRule`, `DomainException` and `RoomObject`. The numbering above was closed up (`Plan` was number 3). BR-02 is now a plain domain rule: `HighlightList.LIMIT` (4) and the check inside `HighlightList.highlight`, tested in `BR02HighlightLimitTest`. If a paid plan comes back in the TCC, it would be a new ADR and a new hierarchy designed then; the text of section 3 as it was lives in the git history.
+
+## As built: `JsonActivityProvider` (#161)
+Last.fm and MyAnimeList repeated the same HTTP code (key and name checks, timeout, size limit, spaced requests, failures turned into one answer). It moved to the abstract `JsonActivityProvider` (`media/infra`), the JSON counterpart of `RssActivityProvider`. `checkAccountExists` and `fetchActivity` are `final` template methods; each leaf supplies `isAvailable`, `check`, `readEntries` and `maxEntries`, and may override the hook `authorize`. `SteamProvider` was removed (Steam is link only, ADR 0023).
+```
+                      interface ActivityProvider
+                                 ^
+        +------------------------+----------------------+
+        |                        |                      |
+ abstract RssActivityProvider  abstract JsonActivityProvider  AniListProvider
+     ^              ^              ^              ^       (extends HttpCatalogProvider)
+Letterboxd     Goodreads        LastFm       MyAnimeList
+```
+Four of the five hierarchies are in Java; `RoomObject` is TypeScript.

@@ -40,7 +40,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Monorepo skeleton: Spring Boot (Java 21, Maven), Next.js, `infra/docker-compose`
 - Flyway baseline + Testcontainers test harness
 - GitHub Actions CI (build, test, lint) for backend and frontend
-- VPS provisioning, domain `.com.br`, HTTPS (Caddy), deploy workflow on merge
+- VPS provisioning, domain `.com.br`, HTTPS, deploy workflow on merge
 - Issue/PR templates, labels, Project board and automations
 - `docs/` + ADR 1-4 committed
 - API terms review (TMDB, AniList, IGDB, Deezer, Last.fm, Steam, Open Library) → ADR 10
@@ -73,7 +73,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 - Letterboxd RSS adapter (TMDB id mapping)
 - AniList activity adapter
 - Last.fm adapter (done, #32: now playing for Agora, albums played enough for the collection; provisional rows, see ADR 0005)
-- Steam adapter (recently played; appid → IGDB mapping)
+- Steam: link only (no API key available, ADR 0023); the adapter was built in #33 and removed in #161
 - Goodreads RSS adapter (done, #34; provisional rows, see ADR 0005)
 - Sync upserts collection items per platform rules (BR-10); unlink keeps highlighted/noted items as manual (FR-16)
 - Sync scheduler + manual sync with cooldown (BR-03) + `sync_runs` + backoff

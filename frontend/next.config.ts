@@ -22,7 +22,7 @@ const contentSecurityPolicy = [
 
 const securityHeaders = [
   { key: "Content-Security-Policy", value: contentSecurityPolicy },
-  // Browsers only honor HSTS over HTTPS (Caddy terminates TLS); ignored on http://localhost.
+  // Browsers only honor HSTS over HTTPS; ignored on http://localhost.
   { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" },
   { key: "X-Content-Type-Options", value: "nosniff" },
   { key: "X-Frame-Options", value: "DENY" },

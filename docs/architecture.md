@@ -14,9 +14,9 @@ Browser ── Next.js (TypeScript, SSR for /{slug} + Open Graph)
    └───────────┴────────────┴─────────────┴──────────┘
         │ PostgreSQL (Flyway)      │ S3-compatible storage (R2/MinIO)
         │ cache (Caffeine)         │ external APIs: TMDB, AniList, Letterboxd RSS,
-                                   │ Last.fm, Steam, Goodreads RSS, Open Library, IGDB, Deezer
+                                   │ Last.fm, MyAnimeList, Goodreads RSS, Open Library, IGDB, Deezer
 ```
-Deploy: one VPS, Docker Compose (caddy, web, api, postgres, minio optional), GitHub Actions builds images and deploys on merge to `main`. Production only.
+Runs with Docker Compose (web, api, postgres, storage, mailpit). Deploy is not built (issues #5, #6).
 
 ## Stack
 Java 21, Spring Boot 4.x (3.x left open-source support), Maven, Spring Security, Spring Data JPA, Flyway, springdoc-openapi, Caffeine cache, Testcontainers. Front: Next.js 16 + TypeScript. Monorepo: `backend/`, `frontend/`, `docs/`, `infra/`.
@@ -32,6 +32,7 @@ interface ActivityProvider { Category category(); ProviderId id();
     ActivitySnapshot fetch(String username);  // recent items + "now" candidate
 }
 ```
+- The RSS platforms share `RssActivityProvider` and the JSON ones share `JsonActivityProvider` (both abstract, ADR 0018).
 - One class per platform (Strategy/Adapter), each converts to the common `MediaItem`/`ActivityEntry`.
 - `ProviderRegistry` resolves by id; adding a platform = new class, no other change.
 - Mappers resolve activity items to the canonical catalog item (e.g. Letterboxd RSS carries the TMDB id).
@@ -44,9 +45,6 @@ interface ActivityProvider { Category category(); ProviderId id();
 
 ## Read model
 Public profile is served from a pre-assembled view (profile + highlights + now) cached with Caffeine and evicted on any change; external APIs are never called while rendering.
-
-## Billing (roadmap, out of the P2)
-The P2 has no billing module (ADR 0024). The flow below is only the starting point if the store comes back in the TCC: Checkout Session (Pix + card) → user pays → `checkout.session.completed` / `payment_intent.succeeded` webhook (signature verified, idempotent by event id) → `orders` paid → `entitlements` granted.
 
 ## Decisions
 Recorded in [`docs/adr/`](adr/README.md) (0001 and following). [0013](adr/0013-room-rendering-technology.md) chose CSS 3D in React for the room.

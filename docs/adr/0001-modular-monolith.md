@@ -20,3 +20,6 @@ One Spring Boot application split into modules by package (`identity`, `profile`
 
 ## As built: no billing module (#133, ADR 0024)
 The `billing` module was removed with the store. The modules are `identity`, `profile`, `media` and `room`.
+
+## Amendment (#161)
+The `room` module was removed: it never had any code. The room is a frontend feature (`frontend/src/features/room`) that reads the public profile. The modules are `identity`, `profile` and `media`.

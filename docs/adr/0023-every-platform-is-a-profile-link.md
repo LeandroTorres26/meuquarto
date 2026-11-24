@@ -36,3 +36,6 @@ What each platform allows, checked on 2026-11-02:
 - File import for every platform, integrations only as links: no automatic updates, no "Agora", and Steam and Last.fm have no user export at all.
 - OAuth for AniList and MyAnimeList with proof of ownership: safer, declined for now (ADR 0004 stays).
 - Reading Letterboxd's watched films from the profile pages: scraping, against their terms and ADR 0010.
+
+## Amendment (#161): Steam is link only
+The project has no Steam Web API key (it needs an account that has spent money on the store), so `SteamProvider` could never run. It was removed with its tests and its settings. Steam stays as a link on the profile, like Backloggd, with a vanity name or a SteamID64. Games have no syncing platform, so "Agora" is manual for them, and no item link (IGDB cannot be linked by id).
