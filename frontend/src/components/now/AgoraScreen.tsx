@@ -225,10 +225,7 @@ function Caption({ text, connect }: { text: string; connect?: string }) {
       {connect ? (
         <>
           {" "}
-          <Link href="/painel/contas">
-            Conecte {connect === "STEAM" ? "a" : "o"} {sourceName(connect)}
-          </Link>{" "}
-          para o automático.
+          <Link href="/painel/contas">Conecte o {sourceName(connect)}</Link> para o automático.
         </>
       ) : null}
     </p>

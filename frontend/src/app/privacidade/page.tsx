@@ -65,9 +65,10 @@ export default function PrivacyPage() {
           <li>
             Last.fm: os álbuns que você mais ouviu entre as músicas recentes e o que toca agora;
           </li>
-          <li>Steam: os jogos com tempo de jogo e o último jogado;</li>
           <li>Goodreads: os livros das estantes lidos e lendo;</li>
-          <li>Backloggd, Trakt e StoryGraph: só o nome de usuário, para o link no seu perfil.</li>
+          <li>
+            Steam, Backloggd, Trakt e StoryGraph: só o nome de usuário, para o link no perfil.
+          </li>
         </ul>
         <p className="t-body">
           Ao desvincular uma conta, o que veio só dela sai da sua coleção, exceto as obras que você

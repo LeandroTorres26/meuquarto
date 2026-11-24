@@ -30,7 +30,7 @@ export function ProfileFooter({ ownerSlug }: { ownerSlug?: OwnerSlug }) {
           <p className="t-cap">
             Filmes e séries: TMDB. Este produto usa a API do TMDB, mas não é endossado nem
             certificado pelo TMDB. Anime e mangá: AniList e MyAnimeList. Livros: Open Library e
-            Goodreads. Games: IGDB e Steam. Música: Deezer e Last.fm.
+            Goodreads. Games: IGDB. Música: Deezer e Last.fm.
           </p>
         </div>
       </div>

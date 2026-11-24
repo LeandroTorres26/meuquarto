@@ -116,7 +116,6 @@ const PROVIDER_NAMES: Record<string, string> = {
   LETTERBOXD: "Letterboxd",
   ANILIST: "AniList",
   MYANIMELIST: "MyAnimeList",
-  STEAM: "Steam",
   LASTFM: "Last.fm",
   GOODREADS: "Goodreads",
 };

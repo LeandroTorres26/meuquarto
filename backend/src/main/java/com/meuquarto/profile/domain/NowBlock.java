@@ -5,7 +5,7 @@ import java.util.Optional;
 
 /**
  * BR-06: what the "Agora" block shows for one category. The hidden choice wins, then the item the owner
- * pinned, then the latest synced item. Séries has no platform to sync from, so it only ever shows a pin.
+ * pinned, then the latest synced item. Séries and games have no platform to sync from, so they only show a pin.
  * Plain logic, no framework: the caller passes in what it found in the database.
  */
 public final class NowBlock {
@@ -16,9 +16,9 @@ public final class NowBlock {
     private NowBlock() {
     }
 
-    /** False for the categories no platform feeds (today only Séries). */
+    /** False for the categories no platform feeds (Séries and games). */
     public static boolean hasAutomaticSource(MediaCategory category) {
-        return category != MediaCategory.SERIES;
+        return category != MediaCategory.SERIES && category != MediaCategory.GAME;
     }
 
     /**

@@ -6,7 +6,7 @@ import { isIP } from "node:net";
  * The API only believes X-Forwarded-For from a trusted peer (the web container), so whatever this
  * function puts there becomes the client address behind the per-IP rate limits. A browser can send
  * any X-Forwarded-* it likes, so every incoming value is dropped first and only rebuilt when the
- * deployment says a trusted reverse proxy (Caddy) sits in front and overwrites them.
+ * deployment says a trusted reverse proxy sits in front and overwrites them.
  */
 const FORWARDED = [
   "x-forwarded-for",

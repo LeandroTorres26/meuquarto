@@ -161,7 +161,7 @@ class LinkedAccountsApiTests {
     void aPlatformWhoseProviderHasNoKeyIsUnavailable() throws Exception {
         Cookie session = signUp("a@example.com", "leandro");
 
-        link(session, "STEAM", "leandro").andExpect(status().isServiceUnavailable())
+        link(session, "MYANIMELIST", "leandro").andExpect(status().isServiceUnavailable())
                 .andExpect(jsonPath("$.error").value("PROVIDER_UNAVAILABLE"));
     }
 

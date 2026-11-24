@@ -165,7 +165,7 @@ class NowApiTests {
         Cookie session = signUp("a@example.com", "leandro");
         synced("leandro", MediaCategory.MOVIE, "old", T1);
         long latest = synced("leandro", MediaCategory.MOVIE, "new", T2);
-        synced("leandro", MediaCategory.GAME, "g1", T1);
+        synced("leandro", MediaCategory.BOOK, "b1", T1);
 
         publicProfile("leandro").andExpect(jsonPath("$.now.length()").value(2))
                 .andExpect(jsonPath("$.now[0].category").value("MOVIE"))
@@ -173,7 +173,7 @@ class NowApiTests {
                 .andExpect(jsonPath("$.now[0].ref").value(latest))
                 .andExpect(jsonPath("$.now[0].source").value("LETTERBOXD"))
                 .andExpect(jsonPath("$.now[0].at").exists())
-                .andExpect(jsonPath("$.now[1].category").value("GAME"));
+                .andExpect(jsonPath("$.now[1].category").value("BOOK"));
 
         overview(session).andExpect(jsonPath("$.length()").value(7))
                 .andExpect(jsonPath("$[0].category").value("MOVIE"))
@@ -203,6 +203,15 @@ class NowApiTests {
         overview(session).andExpect(jsonPath("$[1].category").value("SERIES"))
                 .andExpect(jsonPath("$[1].automaticAvailable").value(false))
                 .andExpect(jsonPath("$[1].shown").doesNotExist());
+    }
+
+    @Test
+    void gamesHaveNoAutomaticItemBecauseNoPlatformFeedsThem_BR06() throws Exception {
+        Cookie session = signUp("a@example.com", "leandro");
+        synced("leandro", MediaCategory.GAME, "g1", T1);
+
+        publicProfile("leandro").andExpect(jsonPath("$.now.length()").value(0));
+        overview(session).andExpect(jsonPath("$[?(@.category == 'GAME')].automaticAvailable").value(false));
     }
 
     @Test

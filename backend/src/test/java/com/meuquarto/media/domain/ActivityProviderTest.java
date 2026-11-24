@@ -53,7 +53,7 @@ class ActivityProviderTest {
         ActivityRegistry registry = new ActivityRegistry(List.of(fake));
 
         assertThat(registry.find(ProviderId.LETTERBOXD)).containsSame(fake);
-        assertThat(registry.find(ProviderId.STEAM)).isEmpty();
+        assertThat(registry.find(ProviderId.LASTFM)).isEmpty();
         assertThat(registry.all()).containsExactly(fake);
     }
 

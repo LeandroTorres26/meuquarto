@@ -105,6 +105,7 @@ describe("providers", () => {
 
   it("says which platforms update by themselves and which are only a link", () => {
     expect(PROVIDERS.filter((p) => !p.syncs).map((p) => p.id)).toEqual([
+      "STEAM",
       "BACKLOGGD",
       "TRAKT",
       "STORYGRAPH",
@@ -128,13 +129,13 @@ describe("providers", () => {
     expect(lastfm.hint).toMatch(/atividade recente precisa estar pública/);
   });
 
-  it("describes Steam: games with playtime, a vanity name or a profile number, public game list", () => {
+  it("describes Steam: only the link, by vanity name or profile number", () => {
     const steam = providerInfo("STEAM");
     expect(steam.categories).toEqual(["GAME"]);
-    expect(steam.syncs).toBe(true);
-    expect(steam.label).toBe("Perfil do Steam");
-    expect(steam.hint).toMatch(/lista de jogos também precisa estar pública/);
-    expect(syncNote(steam).text).toBe("Jogos com tempo de jogo.");
+    expect(steam.syncs).toBe(false);
+    expect(steam.label).toBe("Perfil da Steam");
+    expect(steam.hint).toMatch(/steamcommunity\.com\/profiles/);
+    expect(syncNote(steam).lead).toBe("Só o link.");
   });
 
   it("describes MyAnimeList: anime and manga, updates by itself, nothing twice with AniList", () => {
@@ -161,14 +162,10 @@ describe("providers", () => {
 
   it("offers the form only when the screen and the server both say the platform works", () => {
     const mal = providerInfo("MYANIMELIST");
-    const steam = providerInfo("STEAM");
     expect(isLinkable(mal, [{ provider: "MYANIMELIST", available: true }])).toBe(true);
     expect(isLinkable(mal, [{ provider: "MYANIMELIST", available: false }])).toBe(false); // no client id
     expect(isLinkable(mal, [{ provider: "ANILIST", available: true }])).toBe(true); // not listed: screen decides
     expect(isLinkable(mal, null)).toBe(true); // the server could not be asked
-    expect(isLinkable(steam, [{ provider: "STEAM", available: true }])).toBe(true);
-    expect(isLinkable(steam, [{ provider: "STEAM", available: false }])).toBe(false); // no key
-    expect(isLinkable(steam, null)).toBe(true);
   });
 
   it("shows the profile link without the scheme and the trailing slash", () => {

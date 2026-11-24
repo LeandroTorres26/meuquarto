@@ -321,7 +321,6 @@ const SOURCE_NAMES: Record<string, string> = {
   ANILIST: "AniList",
   MYANIMELIST: "MyAnimeList",
   LASTFM: "Last.fm",
-  STEAM: "Steam",
   GOODREADS: "Goodreads",
   TMDB: "TMDB",
   OPENLIBRARY: "Open Library",
@@ -334,9 +333,9 @@ export function sourceName(source: string): string {
 }
 
 /** Platforms whose name takes "na" ("Ver na Open Library"); the others take "no". */
-const FEMININE_LINK_PLATFORMS = new Set(["STEAM", "OPENLIBRARY", "DEEZER"]);
+const FEMININE_LINK_PLATFORMS = new Set(["OPENLIBRARY", "DEEZER"]);
 
-/** Link label: "Ver no TMDB", "Ver na Steam", "Ver na Open Library". */
+/** Link label: "Ver no TMDB", "Ver na Open Library". */
 export function linkLabel(provider: string): string {
   const preposition = FEMININE_LINK_PLATFORMS.has(provider) ? "na" : "no";
   return `Ver ${preposition} ${sourceName(provider)}`;
@@ -374,7 +373,7 @@ export function originCaption(origin: ItemOrigin[]): string {
   const names = platforms.map((o) => sourceName(o.source));
   const from =
     names.length === 1
-      ? `${platforms[0].source === "STEAM" ? "Da" : "Do"} ${names[0]}`
+      ? `Do ${names[0]}`
       : `De ${names.slice(0, -1).join(", ")} e ${names[names.length - 1]}`;
   const earliest = platforms
     .map((o) => o.firstSeenAt)

@@ -29,9 +29,8 @@ class ProfileUrlsTest {
                 .contains("https://steamcommunity.com/profiles/76561198000000001");
         assertThat(ProfileUrls.urlFor(ProviderId.STEAM, "12345678901234567")).contains("https://steamcommunity.com/id/12345678901234567");
         assertThat(ProfileUrls.urlFor(ProviderId.STEAM, "Ana_L-1")).contains("https://steamcommunity.com/id/Ana_L-1");
-        assertThat(ProfileUrls.isSteamId64("76561198000000001")).isTrue();
-        for (String notAnId : new String[] {"7656119800000000", "765611980000000011", "7656119800000000a", "ana", "", null}) {
-            assertThat(ProfileUrls.isSteamId64(notAnId)).isFalse();
+        for (String notAnId : new String[] {"7656119800000000", "765611980000000011", "7656119800000000a"}) {
+            assertThat(ProfileUrls.urlFor(ProviderId.STEAM, notAnId)).contains("https://steamcommunity.com/id/" + notAnId);
         }
     }
 
@@ -70,11 +69,10 @@ class ProfileUrlsTest {
     }
 
     @Test
-    void onlyBackloggdTraktAndStorygraphAreLinkOnly() {
+    void onlySteamBackloggdTraktAndStorygraphAreLinkOnly() {
         assertThat(ProviderId.linkOnlyPlatforms())
-                .containsExactly(ProviderId.BACKLOGGD, ProviderId.TRAKT, ProviderId.STORYGRAPH);
+                .containsExactly(ProviderId.STEAM, ProviderId.BACKLOGGD, ProviderId.TRAKT, ProviderId.STORYGRAPH);
         assertThat(ProviderId.LETTERBOXD.linkOnly()).isFalse();
-        assertThat(ProviderId.STEAM.linkOnly()).isFalse();
     }
 
     @Test

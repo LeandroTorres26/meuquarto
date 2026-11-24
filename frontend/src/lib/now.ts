@@ -1,6 +1,6 @@
 import { relativeTimePtBr } from "./linked-accounts";
 import { collectionMessage } from "./collection";
-import { sourceName, type Category } from "./profile-view";
+import { CATEGORY_META, sourceName, type Category } from "./profile-view";
 
 // "Agora" (S10 and the block on S4): pure helpers. No React, no fetch; unit tested.
 
@@ -21,7 +21,7 @@ export type NowShown = {
 export type NowEntry = {
   category: Category;
   mode: NowMode;
-  /** False where no platform feeds the category (Séries). */
+  /** False where no platform feeds the category (Séries, games). */
   automaticAvailable: boolean;
   /** What the profile shows now, or null (hidden, or nothing synced yet). */
   shown: NowShown | null;
@@ -40,14 +40,14 @@ export const NOW_VERB: Record<Category, string> = {
   MUSIC: "Ouvindo",
 };
 
-/** The platform that feeds a category automatically, for "Conecte o …". Séries has none. */
+/** The platform that feeds a category automatically, for "Conecte o …". Séries and games have none. */
 export const AUTO_PLATFORM: Record<Category, string | null> = {
   MOVIE: "LETTERBOXD",
   SERIES: null,
   ANIME: "ANILIST",
   MANGA: "ANILIST",
   BOOK: "GOODREADS",
-  GAME: "STEAM",
+  GAME: null,
   MUSIC: "LASTFM",
 };
 
@@ -57,11 +57,6 @@ export function nowStatus(source: string, at: string | null, now: number): strin
   const name = sourceName(source);
   const when = at ? relativeTimePtBr(at, now) : "";
   return when ? `${name}, ${when}` : name;
-}
-
-/** "Do Letterboxd" / "Da Steam". */
-function fromPlatform(source: string): string {
-  return `${source === "STEAM" ? "Da" : "Do"} ${sourceName(source)}`;
 }
 
 export type EntryCaption = {
@@ -80,11 +75,12 @@ export function entryCaption(entry: NowEntry): EntryCaption {
       : { text: "Escolhido por você." };
   }
   if (!entry.automaticAvailable) {
-    return { text: "Séries não têm plataforma para sincronizar. Escolha à mão." };
+    const { heading } = CATEGORY_META[entry.category];
+    return { text: `${heading} não têm plataforma para sincronizar. Escolha à mão.` };
   }
   const platform = AUTO_PLATFORM[entry.category];
   if (entry.shown) {
-    return { text: `${fromPlatform(entry.shown.source)}, muda sozinho` };
+    return { text: `Do ${sourceName(entry.shown.source)}, muda sozinho` };
   }
   return {
     text: "Nada sincronizado ainda.",

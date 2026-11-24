@@ -8,7 +8,7 @@ import java.util.Set;
 
 /**
  * A platform whose public activity we read by username (Letterboxd, AniList, MyAnimeList,
- * Last.fm, Steam, Goodreads), seen only through this contract (ADR 0018, hierarchy 1). The sync and the linking code
+ * Last.fm, Goodreads), seen only through this contract (ADR 0018, hierarchy 1). The sync and the linking code
  * hold an {@code ActivityProvider} and never ask which class it really is.
  * <p>
  * Features of the course used here: an interface, {@code default} methods ({@link #normalizeUsername},

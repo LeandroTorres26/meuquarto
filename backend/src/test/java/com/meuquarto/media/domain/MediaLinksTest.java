@@ -70,24 +70,8 @@ class MediaLinksTest {
     }
 
     @Test
-    void aGameFromSteamLinksItsStorePageByAppId() {
-        assertThat(links(key(MediaCategory.GAME, "STEAM", "1245620"), LinkHints.NONE, "STEAM"))
-                .containsExactly(link(LinkPlatform.STEAM, "https://store.steampowered.com/app/1245620/"));
-        assertThat(links(key(MediaCategory.GAME, "STEAM", "730"), LinkHints.NONE))
-                .containsExactly(link(LinkPlatform.STEAM, "https://store.steampowered.com/app/730/"));
-    }
-
-    @Test
-    void aGameFromIgdbHasNoLinkBecauseIgdbCannotBeLinkedById() {
-        assertThat(links(key(MediaCategory.GAME, "IGDB", "1942"), LinkHints.NONE, "STEAM")).isEmpty();
-    }
-
-    @org.junit.jupiter.params.ParameterizedTest
-    @org.junit.jupiter.params.provider.ValueSource(strings = {"../admin", "12/../34", "12?x=1", "12#f", "12@evil.example",
-            "abc", "12 34", "12\r\n", "\uff11\uff12\uff13", "-1", "12345678901", "12.5", "%2e%2e"})
-    void aSteamKeyThatIsNotPlainDigitsNeverBecomesALink(String id) {
-        assertThat(MediaLinks.forWork(new MediaKey(MediaCategory.GAME, "STEAM", id), LinkHints.NONE, List.of("STEAM")))
-                .isEmpty();
+    void aGameHasNoLinkBecauseIgdbCannotBeLinkedById() {
+        assertThat(links(key(MediaCategory.GAME, "IGDB", "1942"), LinkHints.NONE)).isEmpty();
     }
 
     @Test
@@ -150,8 +134,8 @@ class MediaLinksTest {
         MediaKey film = key(MediaCategory.MOVIE, "TMDB", "976893");
         assertThat(links(film, LinkHints.NONE, "LETTERBOXD")).extracting(ItemLink::platform)
                 .containsExactly(LinkPlatform.LETTERBOXD, LinkPlatform.TMDB);
-        // Goodreads, Steam and anything unknown do not lead or add a link to a film
-        assertThat(links(film, LinkHints.NONE, "GOODREADS", "STEAM", "nonsense", "")).extracting(ItemLink::platform)
+        // Goodreads and anything unknown do not lead or add a link to a film
+        assertThat(links(film, LinkHints.NONE, "GOODREADS", "nonsense", "")).extracting(ItemLink::platform)
                 .containsExactly(LinkPlatform.LETTERBOXD, LinkPlatform.TMDB);
     }
 

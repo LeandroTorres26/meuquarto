@@ -8,11 +8,11 @@ import java.util.List;
  * {@code linked_accounts.provider} and in {@code collection_item_sources.source}, so it never changes.
  * <p>
  * The declaration order is the fixed order in which the public profile lists the links (FR-12a).
- * A <b>link-only</b> platform (Backloggd, Trakt, StoryGraph) is only a link on the profile: its lists are
+ * A <b>link-only</b> platform (Steam, Backloggd, Trakt, StoryGraph) is only a link on the profile: its lists are
  * never read, so it has no {@code ActivityProvider} and the sync never touches it (ADR 0023, decision 5).
  */
 public enum ProviderId {
-    LETTERBOXD(false), ANILIST(false), MYANIMELIST(false), LASTFM(false), STEAM(false), GOODREADS(false),
+    LETTERBOXD(false), ANILIST(false), MYANIMELIST(false), LASTFM(false), STEAM(true), GOODREADS(false),
     BACKLOGGD(true), TRAKT(true), STORYGRAPH(true);
 
     private final boolean linkOnly;
