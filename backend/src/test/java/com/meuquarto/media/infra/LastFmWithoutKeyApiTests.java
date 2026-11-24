@@ -45,7 +45,7 @@ class LastFmWithoutKeyApiTests {
     void theProductionBeanIsRegisteredButNotConfigured() {
         LastFmProvider provider = (LastFmProvider) registry.find(ProviderId.LASTFM).orElseThrow();
 
-        assertThat(provider.isConfigured()).isFalse();
+        assertThat(provider.isAvailable()).isFalse();
     }
 
     @Test

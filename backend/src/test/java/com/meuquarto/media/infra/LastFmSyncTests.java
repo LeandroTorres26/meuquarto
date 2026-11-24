@@ -57,7 +57,7 @@ class LastFmSyncTests {
         @Order(Ordered.HIGHEST_PRECEDENCE)
         ActivityProvider stubbedLastFm() {
             return new LastFmProvider(HttpCatalogProvider.newClient(), STUB.uri(), KEY, Clock.systemUTC(),
-                    Duration.ofSeconds(2), Duration.ZERO, LastFmProvider.MIN_SCROBBLES);
+                    Duration.ofSeconds(2), Duration.ZERO);
         }
     }
 

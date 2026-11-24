@@ -28,28 +28,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 /**
- * Letterboxd, the first concrete leaf of {@link RssActivityProvider} (ADR 0018, hierarchy 1). It inherits
- * the whole algorithm (safe URL, download with limits, XML without trust, the per-item error isolation)
- * and only says <b>where</b> the feed is ({@link #baseUri}, {@link #feedPath}) and <b>how</b> one
- * {@code <item>} becomes an {@link ActivityEntry} ({@link #toEntry}). The class is {@code final}: nothing
- * extends a leaf.
+ * Letterboxd, the first leaf of {@link RssActivityProvider} (ADR 0018, hierarchy 1). It inherits the whole
+ * algorithm and only says <b>where</b> the feed is ({@link #baseUri}, {@link #feedPath}) and <b>how</b> one
+ * {@code <item>} becomes an {@link ActivityEntry} ({@link #toEntry}). {@code final}: nothing extends a leaf.
  * <p>
- * The public feed {@code https://letterboxd.com/{user}/rss/} lists the latest diary entries (about 50).
- * Each film entry carries the {@code letterboxd:} elements ({@code filmTitle}, {@code filmYear},
- * {@code watchedDate}, {@code rewatch}, {@code memberRating}) and the {@code tmdb:} element
- * ({@code movieId}, or {@code tvId} for a series). Elements are matched by local name in any namespace,
- * so a change of prefix or namespace URI by Letterboxd does not break the parser.
- * <p>
- * Mapping (BR-04, BR-10): the work is the canonical TMDB movie {@code tmdb:movieId} (ADR 0005), so a film
- * added by hand from TMDB and the same film from the diary are one item. Skipped, never an error: lists
- * and anything else that is not a diary entry, series ({@code tvId} only), entries without a TMDB id or
- * title. A watch and a rewatch are both {@link ActivityType#FINISHED}; they differ by date, and the
- * activity key includes the date, so each viewing is its own activity. {@code adult} is false: the feed
- * does not say, so BR-08 is enforced where the data exists (the TMDB catalog when adding by hand).
- * <p>
- * Everything read from the feed is untrusted text: titles are kept as plain text (the UI never renders
- * HTML from a provider), the poster URL is accepted only from a fixed list of image hosts, and the TMDB
- * id must be digits.
+ * The feed lists the latest diary entries (about 50). The work is the TMDB movie of {@code tmdb:movieId}, so
+ * a film added by hand and the same film from the diary are one item (BR-04, ADR 0005). Lists, series and
+ * entries without a TMDB id are skipped. A rewatch is another activity, because the date is part of its key.
  */
 public final class LetterboxdProvider extends RssActivityProvider {
 

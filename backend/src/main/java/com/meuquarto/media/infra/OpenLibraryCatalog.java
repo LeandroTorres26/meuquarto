@@ -18,16 +18,10 @@ import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
- * Open Library, the canonical catalog of books (ADR 0005). Needs no key, so it is always available.
- * Open Library asks every client to identify itself, so {@link #authorize} adds a descriptive
- * {@code User-Agent} (project name and repository, no personal data).
- * <p>
- * Choices: the work is the Open Library <em>work</em> (not an edition), so the external id is the work key
- * without its path ({@code OL45804W}); the year is {@code first_publish_year} in a search and the year in
- * {@code first_publish_date} in a detail; the cover is built here from the numeric {@code cover_i} on
- * {@code covers.openlibrary.org}, so no URL from the response is ever used. Nothing in Open Library is
- * flagged adult, so {@code adult} is always false (BR-08 filters whatever a catalog flags; there is no
- * signal to map). The query goes only as an encoded parameter of a fixed host.
+ * Open Library, the canonical catalog of books (ADR 0005). No key, but it asks clients to identify
+ * themselves, so {@link #authorize} adds a descriptive {@code User-Agent}. The work is the Open Library
+ * <em>work</em>, not an edition. The cover is built here from the numeric {@code cover_i}. Nothing there is
+ * flagged adult, so {@code adult} is false.
  */
 public final class OpenLibraryCatalog extends HttpCatalogProvider {
 
