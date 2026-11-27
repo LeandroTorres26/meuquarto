@@ -54,11 +54,11 @@
 (function () {
   var C = function (n) { return 'covers/c' + String(n).padStart(2, '0') + '.svg'; };
   var groups = {
-    parede: { label: 'Pôsteres', title: 'Pôsteres na parede', sub: 'Filmes e séries', at: [-168, 250, -20], items: ['perfect-days', 'paris-texas', 'twin-peaks', 'cidade-de-deus'] },
-    mural: { label: 'Mural', title: 'Mural', sub: 'Animes', at: [-40, 230, -190], items: ['frieren', 'cowboy-bebop', 'mob-psycho-100'] },
-    estante: { label: 'Estante', title: 'Estante', sub: 'Livros e mangás', at: [-150, 186, -170], items: ['torto-arado', 'grande-sertao-veredas', 'vagabond', 'oyasumi-punpun'] },
-    vitrola: { label: 'Vitrola', title: 'Vitrola e discos', sub: 'Música', at: [-150, 128, 0], items: ['clube-da-esquina', 'elis-e-tom', 'sobrevivendo-no-inferno'] },
-    tv: { label: 'TV', title: 'TV e console', sub: 'Games', at: [150, 168, -165], items: ['outer-wilds', 'hollow-knight', 'celeste'] }
+    parede: { label: 'Pôsteres', title: 'Pôsteres na parede', sub: 'Filmes e séries', at: [-168, 250, -20], items: ['perfect-days', 'o-iluminado', 'breaking-bad', 'o-poderoso-chefao'] },
+    mural: { label: 'Mural', title: 'Mural', sub: 'Animes', at: [-40, 230, -190], items: ['vinland-saga', 'steins-gate', 'mob-psycho-100'] },
+    estante: { label: 'Estante', title: 'Estante', sub: 'Livros e mangás', at: [-150, 186, -170], items: ['a-guerra-dos-tronos', 'o-hobbit', 'attack-on-titan', 'kaguya-sama-love-is-war'] },
+    vitrola: { label: 'Vitrola', title: 'Vitrola e discos', sub: 'Música', at: [-150, 128, 0], items: ['clube-da-esquina', 'meteora', 'nada-como-um-dia-apos-o-outro-dia'] },
+    tv: { label: 'TV', title: 'TV e console', sub: 'Games', at: [150, 168, -165], items: ['portal-2', 'ori-and-the-will-of-the-wisps', 'chrono-trigger'] }
   };
   var keys = Object.keys(groups);
   var q = new URLSearchParams(location.search);

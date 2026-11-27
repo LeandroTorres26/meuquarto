@@ -1,6 +1,7 @@
 /* S17 Detalhes do item. Data and markup shared by perfil.html (dialog) and quarto.html (room panel).
    In the app the item comes from the API and the links are built from the stored ids; here the data is a fixed
-   table and the ids below are real (checked on each platform on 2026-11-02). A link always opens the work's own page,
+   table of works the owner has finished (in-progress ones only where the page means "now"), and the ids below are real
+   (checked on each platform on 2026-11-27). A link always opens the work's own page,
    never a search: a platform without an id for the work simply has no link. State lives in the URL: ?item=<id>, plus &estado=carregando to see
    the loading slot. An id that is not in the table shows the "saiu do quarto" state. */
 (function () {
@@ -22,49 +23,53 @@
   /* platforms linked per category, the activity platform first */
   var LINKS = { movie: ['Letterboxd', 'TMDB'], series: ['TMDB'], anime: ['AniList', 'MyAnimeList'], manga: ['AniList', 'MyAnimeList'], book: ['Open Library'], game: ['Steam'], music: ['Last.fm'] };
   var EXT = {
-    'perfect-days': { tmdb: 976893 }, 'paris-texas': { tmdb: 655 }, 'central-do-brasil': { tmdb: 666 }, 'aftersun': { tmdb: 965150 }, 'cidade-de-deus': { tmdb: 598 },
-    'twin-peaks': { tmdb: 1920 }, 'familia-soprano': { tmdb: 1398 }, 'fleabag': { tmdb: 67070 },
-    'frieren': { anilist: 154587, mal: 52991 }, 'cowboy-bebop': { anilist: 1, mal: 1 }, 'mob-psycho-100': { anilist: 21507, mal: 32182 },
-    'neon-genesis-evangelion': { anilist: 30, mal: 30 }, 'mushishi': { anilist: 457, mal: 457 },
-    'vagabond': { anilist: 30656, mal: 656 }, 'oyasumi-punpun': { anilist: 34632, mal: 4632 }, 'monster': { anilist: 30001, mal: 1 }, 'yotsuba': { anilist: 30104, mal: 104 },
-    'outer-wilds': { steam: 753640 }, 'hollow-knight': { steam: 367520 }, 'celeste': { steam: 504230 }, 'disco-elysium': { steam: 632470 }, 'hades': { steam: 1145360 },
-    'torto-arado': { ol: 'OL24141556W' }, 'grande-sertao-veredas': { ol: 'OL1756937W' }, 'dom-casmurro': { ol: 'OL1003040W' }, 'a-hora-da-estrela': { ol: 'OL1002120W' },
+    'perfect-days': { tmdb: 976893 }, 'o-iluminado': { tmdb: 694 }, 'um-sonho-de-liberdade': { tmdb: 278 }, 'vidas-ao-vento': { tmdb: 149870 }, 'o-poderoso-chefao': { tmdb: 238 },
+    'breaking-bad': { tmdb: 1396 }, 'dark': { tmdb: 70523 }, 'the-office': { tmdb: 2316 }, 'arcane': { tmdb: 94605 },
+    'frieren': { anilist: 154587, mal: 52991 }, 'vinland-saga': { anilist: 101348, mal: 37521 }, 'steins-gate': { anilist: 9253, mal: 9253 }, 'mob-psycho-100': { anilist: 21507, mal: 32182 },
+    'hunter-x-hunter': { anilist: 11061, mal: 11061 }, 'delicious-in-dungeon': { anilist: 153518, mal: 52701 },
+    'attack-on-titan': { anilist: 53390, mal: 23390 }, 'kaguya-sama-love-is-war': { anilist: 86635, mal: 90125 }, 'horimiya': { anilist: 72451, mal: 42451 }, 'bloom-into-you': { anilist: 86218, mal: 88660 },
+    'stardew-valley': { steam: 413150 }, 'portal-2': { steam: 620 }, 'ori-and-the-will-of-the-wisps': { steam: 1057090 }, 'chrono-trigger': { steam: 613830 }, 'the-elder-scrolls-v-skyrim': { steam: 489830 }, 'hades': { steam: 1145360 },
+    'dracula': { ol: 'OL85892W' }, 'a-guerra-dos-tronos': { ol: 'OL257943W' }, 'o-hobbit': { ol: 'OL27482W' }, 'o-genio-do-crime': { ol: 'OL4587854W' }, 'aprendiz-de-assassino': { ol: 'OL2707183W' },
     'clube-da-esquina': { lastfm: ['Milton Nascimento', 'Clube da Esquina'] }, 'acabou-chorare': { lastfm: ['Novos Baianos', 'Acabou Chorare'] },
-    'elis-e-tom': { lastfm: ['Elis Regina', 'Elis & Tom'] }, 'da-lama-ao-caos': { lastfm: ['Chico Science & Nação Zumbi', 'Da Lama ao Caos'] }
+    'meteora': { lastfm: ['Linkin Park', 'Meteora'] }, 'nada-como-um-dia-apos-o-outro-dia': { lastfm: ['Racionais MC\'s', 'Nada Como um Dia Após o Outro Dia'] },
+    'imunidade-musical': { lastfm: ['Charlie Brown Jr.', 'Imunidade Musical'] }
   };
   /* id: [category, title, year, subtitle, cover, tilt factor, former tape or pin (unused), owner note, origin ('' = chosen by hand)] */
   var ROWS = {
     'perfect-days': ['movie', 'Perfect Days', 2023, 'de Wim Wenders', 1, 0.883, 't', 'assisti 3 vezes. o final no carro me pega toda vez', 'Assistido em 11 out. 2026 no Letterboxd'],
-    'frieren': ['anime', 'Frieren', 2023, 'estúdio Madhouse', 12, 0.516, 'p', '', 'Assistindo agora no AniList'],
+    'vinland-saga': ['anime', 'Vinland Saga', 2019, 'estúdio Wit', 7, 0.426, 't', '', 'Assistido em 30 jul. 2026 no AniList'],
     'clube-da-esquina': ['music', 'Clube da Esquina', 1972, 'de Milton Nascimento e Lô Borges', 11, -0.88, 'p', 'repeat o mês todo', 'Ouvindo agora no Last.fm'],
-    'outer-wilds': ['game', 'Outer Wilds', 2019, 'da Mobius Digital', 3, -0.844, 't', '', ''],
-    'paris-texas': ['movie', 'Paris, Texas', 1984, 'de Wim Wenders', 9, -0.373, 't', '', 'Assistido em 20 set. 2026 no Letterboxd'],
-    'central-do-brasil': ['movie', 'Central do Brasil', 1998, 'de Walter Salles', 2, -0.618, 'p', 'chorei no final', ''],
-    'aftersun': ['movie', 'Aftersun', 2022, 'de Charlotte Wells', 5, -0.987, 'p', '', 'Assistido em 2 ago. 2026 no Letterboxd'],
-    'cidade-de-deus': ['movie', 'Cidade de Deus', 2002, 'de Fernando Meirelles e Kátia Lund', 4, -0.682, 't', '', ''],
-    'twin-peaks': ['series', 'Twin Peaks', 1990, 'de David Lynch e Mark Frost', 7, -0.603, 'p', '', ''],
-    'sintonia': ['series', 'Sintonia', 2019, 'de KondZilla', 3, 0.592, 't', '', ''],
-    'familia-soprano': ['series', 'Família Soprano', 1999, 'de David Chase', 6, 0.545, 'p', '', ''],
-    'fleabag': ['series', 'Fleabag', 2016, 'de Phoebe Waller-Bridge', 9, -0.833, 'p', 'temporada 2', ''],
-    'cowboy-bebop': ['anime', 'Cowboy Bebop', 1998, 'estúdio Sunrise', 7, 0.426, 't', 'see you space cowboy', 'Assistido em 14 jul. 2026 no AniList'],
+    'portal-2': ['game', 'Portal 2', 2011, 'da Valve', 3, -0.844, 't', '', ''],
+    'frieren': ['anime', 'Frieren', 2023, 'estúdio Madhouse', 12, 0.516, 'p', '', 'Assistindo agora no AniList'],
+    'dracula': ['book', 'Drácula', 1897, 'de Bram Stoker', 10, -0.996, 'p', '', 'Lendo agora no Goodreads'],
+    'stardew-valley': ['game', 'Stardew Valley', 2016, 'da ConcernedApe', 4, 0.47, 'p', '', ''],
+    'o-iluminado': ['movie', 'O Iluminado', 1980, 'de Stanley Kubrick', 9, -0.373, 't', '', 'Assistido em 20 set. 2026 no Letterboxd'],
+    'um-sonho-de-liberdade': ['movie', 'Um Sonho de Liberdade', 1994, 'de Frank Darabont', 2, -0.618, 'p', 'nota 10', ''],
+    'vidas-ao-vento': ['movie', 'Vidas ao Vento', 2013, 'de Hayao Miyazaki', 5, -0.987, 'p', '', 'Assistido em 2 ago. 2026 no Letterboxd'],
+    'o-poderoso-chefao': ['movie', 'O Poderoso Chefão', 1972, 'de Francis Ford Coppola', 4, -0.682, 't', '', ''],
+    'breaking-bad': ['series', 'Breaking Bad', 2008, 'de Vince Gilligan', 7, -0.603, 'p', '', ''],
+    'dark': ['series', 'Dark', 2017, 'de Baran bo Odar e Jantje Friese', 3, 0.592, 't', '', ''],
+    'the-office': ['series', 'The Office', 2005, 'de Greg Daniels', 6, 0.545, 'p', '', ''],
+    'arcane': ['series', 'Arcane', 2021, 'de Christian Linke e Alex Yee', 9, -0.833, 'p', 'temporada 2', ''],
+    'steins-gate': ['anime', 'Steins;Gate', 2011, 'estúdio White Fox', 1, 0.44, 't', 'El Psy Kongroo', 'Assistido em 14 jul. 2026 no AniList'],
     'mob-psycho-100': ['anime', 'Mob Psycho 100', 2016, 'estúdio Bones', 10, -0.381, 'p', '', ''],
-    'neon-genesis-evangelion': ['anime', 'Neon Genesis Evangelion', 1995, 'estúdio Gainax', 4, 0.657, 'p', '', 'Assistido em 5 mar. 2026 no AniList'],
-    'mushishi': ['anime', 'Mushishi', 2005, 'estúdio Artland', 5, 0.36, 'p', '', ''],
-    'vagabond': ['manga', 'Vagabond', 1998, 'vol. 12, de Takehiko Inoue', 5, -0.597, 't', '', 'Lido em 9 out. 2026 no AniList'],
-    'oyasumi-punpun': ['manga', 'Oyasumi Punpun', 2007, 'vol. 1, de Inio Asano', 2, -0.491, 't', '', ''],
-    'monster': ['manga', 'Monster', 1994, 'vol. 3, de Naoki Urasawa', 3, -0.637, 'p', '', 'Lido em 1 set. 2026 no AniList'],
-    'yotsuba': ['manga', 'Yotsuba&!', 2003, 'vol. 5, de Kiyohiko Azuma', 9, 0.691, 'p', '', ''],
-    'torto-arado': ['book', 'Torto Arado', 2019, 'de Itamar Vieira Junior', 10, -0.996, 'p', '', 'Lendo agora no Goodreads'],
-    'grande-sertao-veredas': ['book', 'Grande Sertão: Veredas', 1956, 'de João Guimarães Rosa', 9, -0.804, 't', 'nonada', ''],
-    'dom-casmurro': ['book', 'Dom Casmurro', 1899, 'de Machado de Assis', 6, -0.953, 'p', '', 'Lido em 18 jun. 2026 no Goodreads'],
-    'a-hora-da-estrela': ['book', 'A Hora da Estrela', 1977, 'de Clarice Lispector', 12, -0.533, 'p', '', ''],
-    'elis-e-tom': ['music', 'Elis & Tom', 1974, 'de Elis Regina e Tom Jobim', 6, 0.619, 'p', '', 'Ouvido em 12 out. 2026 no Last.fm'],
-    'sobrevivendo-no-inferno': ['music', 'Sobrevivendo no Inferno', 1997, 'dos Racionais MC\'s', 4, -0.532, 'p', '', ''],
+    'hunter-x-hunter': ['anime', 'Hunter x Hunter', 2011, 'estúdio Madhouse', 4, 0.657, 'p', '', 'Assistido em 5 mar. 2026 no AniList'],
+    'delicious-in-dungeon': ['anime', 'Delicious in Dungeon', 2024, 'estúdio Trigger', 5, 0.36, 'p', '', ''],
+    'attack-on-titan': ['manga', 'Attack on Titan', 2009, 'vol. 34, de Hajime Isayama', 5, -0.597, 't', '', 'Lido em 9 out. 2026 no AniList'],
+    'kaguya-sama-love-is-war': ['manga', 'Kaguya-sama: Love Is War', 2015, 'vol. 1, de Aka Akasaka', 2, -0.491, 't', '', ''],
+    'horimiya': ['manga', 'Horimiya', 2011, 'vol. 3, de Hero e Daisuke Hagiwara', 3, -0.637, 'p', '', 'Lido em 1 set. 2026 no AniList'],
+    'bloom-into-you': ['manga', 'Bloom Into You', 2015, 'vol. 5, de Nio Nakatani', 9, 0.691, 'p', '', ''],
+    'a-guerra-dos-tronos': ['book', 'A Guerra dos Tronos', 1996, 'de George R. R. Martin', 10, -0.62, 'p', '', ''],
+    'o-hobbit': ['book', 'O Hobbit', 1937, 'de J. R. R. Tolkien', 9, -0.804, 't', 'nota 10', ''],
+    'o-genio-do-crime': ['book', 'O Gênio do Crime', 1969, 'de João Carlos Marinho', 6, -0.953, 'p', '', 'Lido em 18 jun. 2026 no Goodreads'],
+    'aprendiz-de-assassino': ['book', 'Aprendiz de Assassino', 1995, 'de Robin Hobb', 12, -0.533, 'p', '', ''],
+    'meteora': ['music', 'Meteora', 2003, 'do Linkin Park', 6, 0.619, 'p', '', 'Ouvido em 12 out. 2026 no Last.fm'],
+    'nada-como-um-dia-apos-o-outro-dia': ['music', 'Nada Como um Dia Após o Outro Dia', 2002, 'dos Racionais MC\'s', 4, -0.532, 'p', '', ''],
     'acabou-chorare': ['music', 'Acabou Chorare', 1972, 'dos Novos Baianos', 2, -0.521, 'p', '', 'Ouvido em 30 set. 2026 no Last.fm'],
-    'da-lama-ao-caos': ['music', 'Da Lama ao Caos', 1994, 'de Chico Science & Nação Zumbi', 10, -0.832, 't', '', ''],
-    'hollow-knight': ['game', 'Hollow Knight', 2017, 'da Team Cherry', 5, -0.374, 't', '', 'Jogado em 22 ago. 2026 na Steam'],
-    'celeste': ['game', 'Celeste', 2018, 'da Maddy Makes Games', 1, 0.685, 't', 'todos os morangos', 'Jogado em 4 out. 2026 na Steam'],
-    'disco-elysium': ['game', 'Disco Elysium', 2019, 'da ZA/UM', 7, -0.518, 'p', '', ''],
+    'imunidade-musical': ['music', 'Imunidade Musical', 2005, 'do Charlie Brown Jr.', 10, -0.832, 't', '', ''],
+    'ori-and-the-will-of-the-wisps': ['game', 'Ori and the Will of the Wisps', 2020, 'da Moon Studios', 5, -0.374, 't', '', ''],
+    'chrono-trigger': ['game', 'Chrono Trigger', 1995, 'da Square', 1, 0.685, 't', 'nota 10', ''],
+    'the-elder-scrolls-v-skyrim': ['game', 'The Elder Scrolls V: Skyrim', 2011, 'da Bethesda Game Studios', 7, -0.518, 'p', '', ''],
     'hades': ['game', 'Hades', 2020, 'da Supergiant Games', 12, -0.366, 'p', '', '']
   };
 
@@ -76,25 +81,25 @@
   var MONTHS = ['jan.', 'fev.', 'mar.', 'abr.', 'maio', 'jun.', 'jul.', 'ago.', 'set.', 'out.', 'nov.', 'dez.'];
   var VERB = { movie: 'Assistido', anime: 'Assistido', manga: 'Lido', book: 'Lido', game: 'Jogado', music: 'Ouvido' };
   var EXTRA = {
-    movie: [['Ainda Estou Aqui', 2024, 'de Walter Salles'], ['Retratos Fantasmas', 2023, 'de Kleber Mendonça Filho'], ['Past Lives', 2023, 'de Celine Song'], ['Bacurau', 2019, 'de Kleber Mendonça Filho e Juliano Dornelles'], ['Drive My Car', 2021, 'de Ryusuke Hamaguchi'], ['Asteroid City', 2023, 'de Wes Anderson'], ['Parasita', 2019, 'de Bong Joon-ho'], ['Moonlight', 2016, 'de Barry Jenkins'], ['Que Horas Ela Volta?', 2015, 'de Anna Muylaert'], ['O Som ao Redor', 2012, 'de Kleber Mendonça Filho'], ['Amor à Flor da Pele', 2000, 'de Wong Kar-wai']],
-    series: [['The Bear', 2022, 'de Christopher Storer'], ['Severance', 2022, 'de Dan Erickson'], ['Succession', 2018, 'de Jesse Armstrong'], ['Cidade Invisível', 2021, 'de Carlos Saldanha']],
-    anime: [['Dandadan', 2024, 'estúdio Science SARU'], ['Bocchi the Rock!', 2022, 'estúdio CloverWorks'], ['Chainsaw Man', 2022, 'estúdio MAPPA'], ['Odd Taxi', 2021, 'estúdio OLM'], ['Sonny Boy', 2021, 'estúdio Madhouse'], ['Spy x Family', 2022, 'estúdio Wit e CloverWorks'], ['Vinland Saga', 2019, 'estúdio Wit'], ['Made in Abyss', 2017, 'estúdio Kinema Citrus'], ['March Comes in Like a Lion', 2016, 'estúdio Shaft'], ['Erased', 2016, 'estúdio A-1 Pictures'], ['Haikyu!!', 2014, 'estúdio Production I.G'], ['Ping Pong the Animation', 2014, 'estúdio Tatsunoko'], ['Hunter x Hunter', 2011, 'estúdio Madhouse'], ['Steins;Gate', 2011, 'estúdio White Fox'], ['The Tatami Galaxy', 2010, 'estúdio Madhouse'], ['Fullmetal Alchemist: Brotherhood', 2009, 'estúdio Bones'], ['Monogatari', 2009, 'estúdio Shaft'], ['Kaiji', 2007, 'estúdio Madhouse'], ['Samurai Champloo', 2004, 'estúdio Manglobe']],
+    movie: [['Valor Sentimental', 2025, 'de Joachim Trier'], ['Duna: Parte Dois', 2024, 'de Denis Villeneuve'], ['Robô Selvagem', 2024, 'de Chris Sanders'], ['A Vida Secreta de Walter Mitty', 2013, 'de Ben Stiller'], ['Onde os Fracos Não Têm Vez', 2007, 'de Joel Coen e Ethan Coen'], ['O Castelo Animado', 2004, 'de Hayao Miyazaki'], ['O Senhor dos Anéis: A Sociedade do Anel', 2001, 'de Peter Jackson'], ['Gênio Indomável', 1997, 'de Gus Van Sant'], ['A Lista de Schindler', 1993, 'de Steven Spielberg'], ['O Silêncio dos Inocentes', 1991, 'de Jonathan Demme'], ['Casablanca', 1942, 'de Michael Curtiz']],
+    series: [['The Pitt', 2025, 'de R. Scott Gemmill'], ['A Maldição da Residência Hill', 2018, 'de Mike Flanagan'], ['Demolidor', 2015, 'de Drew Goddard'], ['Avatar: A Lenda de Aang', 2005, 'de Michael Dante DiMartino e Bryan Konietzko']],
+    anime: [['Witch Hat Atelier', 2026, 'estúdio Bug Films'], ['You and I Are Polar Opposites', 2026, 'estúdio Lapin Track'], ['The Summer Hikaru Died', 2025, 'estúdio CygamesPictures'], ['Heavenly Delusion', 2023, 'estúdio Production I.G'], ['Summer Time Rendering', 2022, 'estúdio OLM'], ['Mushoku Tensei', 2021, 'estúdio Bind'], ['To Your Eternity', 2021, 'estúdio Brain\'s Base'], ['Jujutsu Kaisen', 2020, 'estúdio MAPPA'], ['Demon Slayer', 2019, 'estúdio ufotable'], ['Erased', 2016, 'estúdio A-1 Pictures'], ['Re:Zero', 2016, 'estúdio White Fox'], ['Yuri!!! on Ice', 2016, 'estúdio MAPPA'], ['Your Lie in April', 2014, 'estúdio A-1 Pictures'], ['Terror in Resonance', 2014, 'estúdio MAPPA'], ['Anohana', 2011, 'estúdio A-1 Pictures'], ['Durarara!!', 2010, 'estúdio Brain\'s Base'], ['Code Geass', 2006, 'estúdio Sunrise'], ['Death Note', 2006, 'estúdio Madhouse'], ['Fullmetal Alchemist', 2003, 'estúdio Bones']],
     manga: [],
-    book: [['O Avesso da Pele', 2020, 'de Jeferson Tenório'], ['Ensaio sobre a Cegueira', 1995, 'de José Saramago'], ['Cem Anos de Solidão', 1967, 'de Gabriel García Márquez'], ['A Paixão segundo G.H.', 1964, 'de Clarice Lispector'], ['Quarto de Despejo', 1960, 'de Carolina Maria de Jesus'], ['Vidas Secas', 1938, 'de Graciliano Ramos'], ['Capitães da Areia', 1937, 'de Jorge Amado'], ['Memórias Póstumas de Brás Cubas', 1881, 'de Machado de Assis']],
-    music: [['AmarElo', 2019, 'de Emicida'], ['Bluesman', 2018, 'de Baco Exu do Blues'], ['Cartola', 1976, 'de Cartola'], ['Racional', 1975, 'de Tim Maia'], ['A Tábua de Esmeralda', 1974, 'de Jorge Ben'], ['Loki?', 1974, 'de Arnaldo Baptista'], ['Krig-ha, Bandolo!', 1973, 'de Raul Seixas'], ['Secos & Molhados', 1973, 'dos Secos & Molhados'], ['Transa', 1972, 'de Caetano Veloso'], ['Construção', 1971, 'de Chico Buarque'], ['Tropicália ou Panis et Circencis', 1968, 'de vários artistas']],
-    game: [['Baldur\'s Gate 3', 2023, 'da Larian Studios'], ['Tunic', 2022, 'de Andrew Shouldice'], ['Inscryption', 2021, 'da Daniel Mullins Games'], ['Return of the Obra Dinn', 2018, 'de Lucas Pope'], ['The Legend of Zelda: Breath of the Wild', 2017, 'da Nintendo'], ['Stardew Valley', 2016, 'da ConcernedApe'], ['Undertale', 2015, 'de Toby Fox']]
+    book: [['Guerra Civil', 2012, 'de Stuart Moore'], ['A Dança dos Dragões', 2011, 'de George R. R. Martin'], ['O Festim dos Corvos', 2005, 'de George R. R. Martin'], ['A Tormenta de Espadas', 2000, 'de George R. R. Martin'], ['A Fúria dos Reis', 1998, 'de George R. R. Martin'], ['A Fúria do Assassino', 1997, 'de Robin Hobb'], ['O Assassino do Rei', 1996, 'de Robin Hobb'], ['O Peregrino', 1678, 'de John Bunyan']],
+    music: [['Diamantes, Lágrimas e Rostos para Esquecer', 2025, 'de BK'], ['The Gods We Can Touch', 2022, 'de AURORA'], ['O Líder em Movimento', 2020, 'de BK e JXNV$'], ['A Different Kind of Human (Step 2)', 2019, 'de AURORA'], ['Bluesman', 2018, 'de Baco Exu do Blues'], ['All My Demons Greeting Me as a Friend', 2015, 'de AURORA'], ['Minutes to Midnight', 2007, 'do Linkin Park'], ['Abalando a Sua Fábrica', 2001, 'do Charlie Brown Jr.'], ['Clube da Esquina 2', 1978, 'de Milton Nascimento'], ['Alucinação', 1976, 'de Belchior'], ['Cartola', 1976, 'de Cartola']],
+    game: [['Hades II', 2025, 'da Supergiant Games'], ['Baldur\'s Gate 3', 2023, 'da Larian Studios'], ['Cyberpunk 2077', 2020, 'da CD Projekt Red'], ['Divinity: Original Sin 2', 2017, 'da Larian Studios'], ['Civilization VI', 2016, 'da Firaxis Games'], ['Portal', 2007, 'da Valve'], ['Age of Empires II', 1999, 'da Ensemble Studios']]
   };
   /* category pages: slug, category, plural label, unit for counts ("24 animes"), profile highlights in wall order */
   var CATS = [
-    { slug: 'filmes', cat: 'movie', label: 'Filmes', unit: ['filme', 'filmes'], hl: ['paris-texas', 'central-do-brasil', 'aftersun', 'cidade-de-deus'] },
-    { slug: 'series', cat: 'series', label: 'Séries', unit: ['série', 'séries'], hl: ['twin-peaks', 'sintonia', 'familia-soprano', 'fleabag'] },
-    { slug: 'animes', cat: 'anime', label: 'Animes', unit: ['anime', 'animes'], hl: ['cowboy-bebop', 'mob-psycho-100', 'neon-genesis-evangelion', 'mushishi'] },
-    { slug: 'mangas', cat: 'manga', label: 'Mangás', unit: ['mangá', 'mangás'], hl: ['vagabond', 'oyasumi-punpun', 'monster', 'yotsuba'] },
-    { slug: 'livros', cat: 'book', label: 'Livros', unit: ['livro', 'livros'], hl: ['torto-arado', 'grande-sertao-veredas', 'dom-casmurro', 'a-hora-da-estrela'] },
-    { slug: 'musica', cat: 'music', label: 'Música', unit: ['álbum', 'álbuns'], hl: ['elis-e-tom', 'sobrevivendo-no-inferno', 'acabou-chorare', 'da-lama-ao-caos'] },
-    { slug: 'games', cat: 'game', label: 'Games', unit: ['game', 'games'], hl: ['hollow-knight', 'celeste', 'disco-elysium', 'hades'] }
+    { slug: 'filmes', cat: 'movie', label: 'Filmes', unit: ['filme', 'filmes'], hl: ['o-iluminado', 'um-sonho-de-liberdade', 'vidas-ao-vento', 'o-poderoso-chefao'] },
+    { slug: 'series', cat: 'series', label: 'Séries', unit: ['série', 'séries'], hl: ['breaking-bad', 'dark', 'the-office', 'arcane'] },
+    { slug: 'animes', cat: 'anime', label: 'Animes', unit: ['anime', 'animes'], hl: ['steins-gate', 'mob-psycho-100', 'hunter-x-hunter', 'delicious-in-dungeon'] },
+    { slug: 'mangas', cat: 'manga', label: 'Mangás', unit: ['mangá', 'mangás'], hl: ['attack-on-titan', 'kaguya-sama-love-is-war', 'horimiya', 'bloom-into-you'] },
+    { slug: 'livros', cat: 'book', label: 'Livros', unit: ['livro', 'livros'], hl: ['a-guerra-dos-tronos', 'o-hobbit', 'o-genio-do-crime', 'aprendiz-de-assassino'] },
+    { slug: 'musica', cat: 'music', label: 'Música', unit: ['álbum', 'álbuns'], hl: ['meteora', 'nada-como-um-dia-apos-o-outro-dia', 'acabou-chorare', 'imunidade-musical'] },
+    { slug: 'games', cat: 'game', label: 'Games', unit: ['game', 'games'], hl: ['ori-and-the-will-of-the-wisps', 'chrono-trigger', 'the-elder-scrolls-v-skyrim', 'hades'] }
   ];
-  var FAVORITES = ['perfect-days', 'frieren', 'clube-da-esquina', 'outer-wilds'];
+  var FAVORITES = ['perfect-days', 'vinland-saga', 'clube-da-esquina', 'portal-2'];
   var COLL = {};
   (function () {
     var today = new Date(2026, 9, 13);
