@@ -3,8 +3,9 @@ package com.meuquarto.shared.storage;
 import java.util.Optional;
 
 /**
- * A private bucket of immutable objects (ADR 0009). The rest of the code talks to this interface, so
- * switching from R2 to a local server is configuration and tests can use an in-memory copy.
+ * A private place for small files (avatars). The rest of the code talks to this interface, so where the
+ * bytes live can change and tests can use an in-memory copy. Today they live in PostgreSQL
+ * ({@link DatabaseObjectStorage}).
  * <p>
  * Keys are chosen by the caller and must never come from a user. Nothing here is public: objects
  * reach the browser only through an endpoint of ours.

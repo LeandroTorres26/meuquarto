@@ -12,7 +12,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.jayway.jsonpath.JsonPath;
 import com.meuquarto.shared.storage.ObjectStorage;
 import com.meuquarto.support.RealCsrf;
-import com.meuquarto.support.StorageTestcontainersConfiguration;
 import com.meuquarto.support.TestImages;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
@@ -33,12 +32,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 /**
- * The avatar (S6, FR-05) against a real PostgreSQL and a real S3-compatible server: upload, replace, remove,
+ * The avatar (S6, FR-05) against a real PostgreSQL (avatars are stored in it): upload, replace, remove,
  * serve, account deletion, and what is refused.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import({TestcontainersConfiguration.class, StorageTestcontainersConfiguration.class})
+@Import(TestcontainersConfiguration.class)
 class AvatarApiTests {
 
     private static final String PASSWORD = "cavalo bateria grampo";

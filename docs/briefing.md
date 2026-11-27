@@ -138,7 +138,7 @@ Objetivo: crescer sem reescrever. Sugestões a validar no refinamento (não são
 - Integrações isoladas atrás de uma interface comum (`MediaProvider`), adicionando plataformas sem mexer no resto
 - Sincronização assíncrona: começar com jobs agendados (`@Scheduled`), com caminho para fila se o volume crescer
 - Cache das respostas das APIs externas e respeito aos limites de cada uma
-- Imagens (texturas, uploads, cards) em object storage, não no banco
+- Imagens de perfil (avatares) guardadas no PostgreSQL, não em um serviço de arquivos (emenda de 2026-11-27)
 - Migrations versionadas (Flyway ou Liquibase)
 - Documentação da API (OpenAPI/Swagger)
 - Docker para ambiente e deploy; CI com testes automatizados

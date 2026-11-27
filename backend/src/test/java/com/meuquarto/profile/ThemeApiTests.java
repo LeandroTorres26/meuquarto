@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.meuquarto.support.RealCsrf;
-import com.meuquarto.support.StorageTestcontainersConfiguration;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
 import java.util.UUID;
@@ -25,7 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 /** Themes in the editor (FR-05, ADR 0022): the four are free, anyone applies any, an unknown id is refused. */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import({TestcontainersConfiguration.class, StorageTestcontainersConfiguration.class})
+@Import(TestcontainersConfiguration.class)
 class ThemeApiTests {
 
     // Random per run: a fixed password in the source would trip the secret scanner.

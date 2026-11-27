@@ -18,7 +18,7 @@ Um formato que funciona para qualquer tecnologia: **o que é, por que está aqui
 | Nível | O que significa | Tecnologias |
 |---|---|---|
 | 1. Saber bem | Vai ser perguntado. Explicar, mostrar no código, responder o "por quê". | Java e POO (ver `poo-no-projeto.md`), Spring Boot, JPA/Hibernate, PostgreSQL, Flyway, Docker e Docker Compose, API REST + frontend separado (Next.js) |
-| 2. Duas ou três frases | O que é, por que está, onde fica. | Spring Security (login, sessão, CSRF, Argon2), Spring Session JDBC, Bean Validation, testes (JUnit e Testcontainers), cache (Caffeine), tarefa agendada (`@Scheduled`), e-mail (Mailpit), armazenamento S3 (RustFS), chamadas HTTP às plataformas, GitHub Actions |
+| 2. Duas ou três frases | O que é, por que está, onde fica. | Spring Security (login, sessão, CSRF, Argon2), Spring Session JDBC, Bean Validation, testes (JUnit e Testcontainers), cache (Caffeine), tarefa agendada (`@Scheduled`), e-mail (Mailpit), chamadas HTTP às plataformas, GitHub Actions |
 | 3. Uma frase pronta | Infraestrutura que quase ninguém pergunta. | ArchUnit, gitleaks, CodeQL, limite de requisições, cabeçalhos de segurança, IP real atrás do proxy, virtual threads, Actuator, Cache Components do Next.js |
 
 ---
@@ -164,7 +164,6 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
 - **Os serviços do compose**:
   - `postgres`: o banco. Os dados ficam no volume `pgdata`, que sobrevive quando o container é recriado.
   - `mailpit`: um servidor de e-mail de mentira. Os e-mails (recuperação de senha) aparecem em http://localhost:8025 em vez de ir para alguém.
-  - `storage`: um armazenamento compatível com o S3 da Amazon (RustFS), para a foto do perfil. Os arquivos ficam no volume `storagedata`.
   - `api`: o backend Java, construído pelo `backend/Dockerfile`.
   - `web`: o frontend Next.js, construído pelo `frontend/Dockerfile`.
 - **Detalhes que mostram que você entende**:
@@ -212,7 +211,7 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
 
 **E-mail** (`identity/infra/SmtpPasswordResetMailer.java`, `spring.mail` no `application.yml`). Só para a recuperação de senha. Localmente vai para o Mailpit; em produção, o mesmo código usará um provedor real, trocando só as variáveis `MAIL_*`.
 
-**Armazenamento compatível com S3** (`shared/storage/S3ObjectStorage.java`, ADR 0009 e 0021). A foto do perfil não vai para o banco, vai para um armazenamento de arquivos. Localmente é o RustFS (no compose); em produção será o Cloudflare R2. O código fala a mesma língua (a API do S3) com os dois.
+**Foto do perfil no banco** (`shared/storage/DatabaseObjectStorage.java`, tabela `stored_objects`, migração V20). A foto fica numa linha do PostgreSQL (coluna `bytea`), e o perfil guarda só a chave dela. A interface `ObjectStorage` (guardar, ler, apagar) esconde onde os bytes ficam; a foto já chega pequena, porque é redimensionada e limitada a 2 MB antes de ser guardada.
 
 **Chamadas às plataformas** (as classes em `media/infra/`, como `LetterboxdProvider` e `AniListProvider`). Usam o cliente HTTP do Java com tempo limite e sem seguir redirecionamentos. Uma plataforma fora do ar não derruba as outras. Os nomes de usuário são validados e codificados antes de ir na URL.
 

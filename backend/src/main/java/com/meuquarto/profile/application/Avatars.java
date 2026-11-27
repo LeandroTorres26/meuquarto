@@ -8,7 +8,6 @@ import com.meuquarto.profile.domain.Profile;
 import com.meuquarto.profile.domain.ProfileException;
 import com.meuquarto.profile.infra.ProfileRepository;
 import com.meuquarto.shared.storage.ObjectStorage;
-import com.meuquarto.shared.storage.StorageUnavailableException;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +51,7 @@ public class Avatars {
     public String upload(long userId, byte[] upload) {
         AvatarProcessor.Result avatar = processor.process(upload);
         AvatarKey key = AvatarKey.generate();
-        try {
-            storage.put(key.value(), avatar.content(), avatar.contentType());
-        } catch (StorageUnavailableException e) {
-            log.warn("avatar not stored: storage unavailable");
-            throw new AvatarException(Problem.STORAGE_UNAVAILABLE);
-        }
+        storage.put(key.value(), avatar.content(), avatar.contentType());
         try {
             transaction.executeWithoutResult(status -> {
                 Profile profile = lockedProfileOf(userId);
@@ -91,12 +85,7 @@ public class Avatars {
     public ObjectStorage.StoredObject serve(String publicName) {
         AvatarKey key = AvatarKey.fromPublicName(publicName)
                 .orElseThrow(() -> new AvatarException(Problem.AVATAR_NOT_FOUND));
-        try {
-            return storage.get(key.value()).orElseThrow(() -> new AvatarException(Problem.AVATAR_NOT_FOUND));
-        } catch (StorageUnavailableException e) {
-            log.warn("avatar not read: storage unavailable");
-            throw new AvatarException(Problem.STORAGE_UNAVAILABLE);
-        }
+        return storage.get(key.value()).orElseThrow(() -> new AvatarException(Problem.AVATAR_NOT_FOUND));
     }
 
     /** Deletes the object once the surrounding transaction commits; used when a profile loses its avatar or goes away. */

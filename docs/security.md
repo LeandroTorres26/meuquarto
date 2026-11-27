@@ -5,7 +5,7 @@ Security is part of every issue, not a phase. This file is the baseline: what we
 ## What we protect
 - User credentials and sessions.
 - Personal data: e-mail, profile, linked usernames (LGPD).
-- Secrets: API keys (TMDB, IGDB, Last.fm, MyAnimeList), database and storage credentials, SSH keys.
+- Secrets: API keys (TMDB, IGDB, Last.fm, MyAnimeList), database credentials, SSH keys.
 - Availability of public profiles.
 
 ## Cryptography and authentication (ADR 0012)
@@ -41,7 +41,7 @@ Rule: only ready-made, maintained components; no hand-written cryptography, toke
 | Vulnerable dependencies | backend, frontend, images | pinned versions, `npm audit` of production dependencies in CI, GitHub's security alerts, CodeQL, pinned base images; versions are updated by hand when an alert or a need appears (no automatic update PRs) |
 | Abuse of public endpoints | search, sync, profile | rate limits per IP/user, manual sync cooldown (BR-03), pagination caps |
 | Server compromise | VPS | SSH keys only, no root login, firewall (only 80/443/SSH), unattended security updates, fail2ban, database and MinIO not exposed publicly |
-| Data loss | database, storage | daily encrypted backups off the server, restore tested |
+| Data loss | database | daily encrypted backups off the server, restore tested |
 
 ## Controls by layer
 

@@ -15,7 +15,7 @@ describe("profileMessage", () => {
   });
 
   it("keeps the specific message of a known code even on a 5xx", () => {
-    expect(profileMessage("STORAGE_UNAVAILABLE", 503).field).toBe("avatar");
+    expect(profileMessage("AVATAR_UNREADABLE", 503).field).toBe("avatar");
   });
 
   it("offers a retry for a 5xx without a known code", () => {

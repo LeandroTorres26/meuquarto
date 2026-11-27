@@ -85,14 +85,6 @@ meuquarto:
   site-url: ${SITE_URL:}
   mail:
     from: ${MAIL_FROM:meuquarto <no-reply@meuquarto.local>}
-  # Private S3-compatible bucket (ADR 0009, 0021). Endpoint, region and bucket have local defaults;
-  # the keys come only from the environment.
-  storage:
-    endpoint: ${STORAGE_ENDPOINT:http://localhost:9000}
-    region: ${STORAGE_REGION:us-east-1}
-    bucket: ${STORAGE_BUCKET:meuquarto}
-    access-key: ${STORAGE_ACCESS_KEY:}
-    secret-key: ${STORAGE_SECRET_KEY:}
 
   catalog:
     tmdb:

@@ -88,10 +88,6 @@ const BY_CODE: Record<string, EditorError> = {
     field: "avatar",
     message: "Não conseguimos ler essa imagem. Ela pode estar corrompida; tente outra foto.",
   },
-  STORAGE_UNAVAILABLE: {
-    field: "avatar",
-    message: "Não foi possível guardar a foto agora. Tente de novo em instantes.",
-  },
 };
 
 /** Maps an API error code (plus status and Retry-After) to the field and the pt-BR text. */

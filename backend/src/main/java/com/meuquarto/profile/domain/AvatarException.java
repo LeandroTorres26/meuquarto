@@ -18,9 +18,7 @@ public final class AvatarException extends DomainException {
         /** Truncated, corrupt or in a variant the decoder cannot read. */
         AVATAR_UNREADABLE(ErrorKind.INVALID),
         /** No avatar under that key. */
-        AVATAR_NOT_FOUND(ErrorKind.NOT_FOUND),
-        /** The file storage cannot be reached right now. */
-        STORAGE_UNAVAILABLE(ErrorKind.UNAVAILABLE);
+        AVATAR_NOT_FOUND(ErrorKind.NOT_FOUND);
 
         private final ErrorKind kind;
 
