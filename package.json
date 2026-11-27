@@ -2,6 +2,7 @@
   "name": "meuquarto",
   "private": true,
   "scripts": {
+    "dev": "docker compose -f infra/docker-compose.yml --env-file .env up --build -d api mailpit && docker compose -f infra/docker-compose.yml --env-file .env stop web && npm --prefix frontend run dev",
     "stack": "docker compose -f infra/docker-compose.yml --env-file .env up --build -d",
     "stack:ps": "docker compose -f infra/docker-compose.yml --env-file .env ps",
     "stack:logs": "docker compose -f infra/docker-compose.yml --env-file .env logs -f",
