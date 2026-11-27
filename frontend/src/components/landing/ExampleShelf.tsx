@@ -1,7 +1,7 @@
 import { ItemCover } from "@/components/profile/ItemCover";
 import { byline, itemClasses, itemStyle, type PublicItem } from "@/lib/profile-view";
 
-// Example highlights for the hero (docs/design/telas/landing.html). Same markup as a profile
+// Example highlights for the hero (docs/design/telas/landing.html): works the owner has finished. Same markup as a profile
 // HighlightCard but not a link: there is no profile behind it. Covers are the abstract placeholders
 // in /public/covers, never real posters.
 type Example = Pick<PublicItem, "ref" | "category" | "title" | "artist" | "year" | "note"> & {
@@ -21,18 +21,18 @@ const EXAMPLES: Example[] = [
   {
     ref: 2,
     category: "ANIME",
-    title: "Cowboy Bebop",
+    title: "Vinland Saga",
     artist: null,
-    year: 1998,
+    year: 2019,
     note: null,
     cover: "c07",
   },
   {
     ref: 3,
     category: "BOOK",
-    title: "Torto Arado",
+    title: "A Guerra dos Tronos",
     artist: null,
-    year: 2019,
+    year: 1996,
     note: null,
     cover: "c10",
   },

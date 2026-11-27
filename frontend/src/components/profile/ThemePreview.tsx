@@ -20,9 +20,9 @@ const SAMPLES: { item: PublicItem; cover: string }[] = [
     item: {
       ref: 2,
       category: "BOOK",
-      title: "Torto Arado",
+      title: "A Guerra dos Tronos",
       artist: null,
-      year: 2019,
+      year: 1996,
       imageUrl: null,
       note: null,
     },
@@ -32,9 +32,9 @@ const SAMPLES: { item: PublicItem; cover: string }[] = [
     item: {
       ref: 3,
       category: "MANGA",
-      title: "Vagabond",
+      title: "Attack on Titan",
       artist: null,
-      year: 1998,
+      year: 2009,
       imageUrl: null,
       note: null,
     },

@@ -54,17 +54,17 @@ export function SignUpArt() {
         kind="poster"
         tilt={-0.618}
         src="/covers/c02.svg"
-        title="Central do Brasil"
-        year="1998"
-        slip="chorei no final"
+        title="Um Sonho de Liberdade"
+        year="1994"
+        slip="nota 10"
       />
-      <ArtCard kind="poster" tilt={0.516} src="/covers/c12.svg" title="Frieren" year="2023" />
+      <ArtCard kind="poster" tilt={0.516} src="/covers/c12.svg" title="Vinland Saga" year="2019" />
       <ArtCard
         kind="vinyl"
         tilt={0.619}
         src="/covers/c06.svg"
-        title="Elis &amp; Tom"
-        year="Elis Regina, 1974"
+        title="Meteora"
+        year="Linkin Park, 2003"
       />
     </>
   );
@@ -73,17 +73,17 @@ export function SignUpArt() {
 export function SignInArt() {
   return (
     <>
-      <ArtCard kind="game" tilt={0.685} src="/covers/c01.svg" title="Celeste" year="2018" />
+      <ArtCard kind="game" tilt={0.685} src="/covers/c01.svg" title="Portal 2" year="2011" />
       <ArtCard
         kind="book"
         tilt={-0.804}
         src="/covers/c09.svg"
-        title="Grande Sertão"
-        year="1956"
-        slip="nonada"
+        title="O Hobbit"
+        year="1937"
+        slip="nota 10"
         variant="ribbon"
       />
-      <ArtCard kind="poster" tilt={-0.603} src="/covers/c07.svg" title="Twin Peaks" year="1990" />
+      <ArtCard kind="poster" tilt={-0.603} src="/covers/c07.svg" title="Breaking Bad" year="2008" />
     </>
   );
 }
