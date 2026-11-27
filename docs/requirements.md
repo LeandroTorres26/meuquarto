@@ -12,7 +12,7 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 
 ### Profile
 - FR-04 Public profile at `/{slug}`; slug unique (BR-01).
-- FR-05 Edit display name, bio, avatar (upload to object storage), chosen theme: four themes (noite, dia, locadora, estufa), all free for everyone, applied and saved on click (ADR 0022, 0024).
+- FR-05 Edit display name, bio, avatar (upload, kept in PostgreSQL), chosen theme: four themes (noite, dia, locadora, estufa), all free for everyone, applied and saved on click (ADR 0022, 0024).
 - FR-06 Open Graph preview (title, description, image) when the link is shared. The image is generated per profile (display name, address and brand, no covers or avatar) and a default one covers pages without an owner; `twitter:card` is `summary_large_image`.
 - FR-07 Adult-content filter: items flagged adult by providers are hidden (BR-08).
 
@@ -64,7 +64,7 @@ The store and paid plans are not part of the P2. These requirements and rules ar
 - NFR-05 Unit tests for business rules; integration tests with Testcontainers (PostgreSQL); providers mocked. CI required on every PR.
 - NFR-06 Docker Compose deploy on a single VPS with HTTPS; auto-deploy on merge to `main`.
 - NFR-07 Security: only ready-made, maintained components (Spring Security, Argon2id passwords, Spring Session JDBC, TLS by the reverse proxy); no hand-written cryptography or auth. CSRF protection, secrets only in environment and never exposed to the browser. Details in `docs/security.md` and ADR 0012.
-- NFR-08 Images in S3-compatible storage (R2 or MinIO), never in the database.
+- NFR-08 Avatars are kept in PostgreSQL (`stored_objects`), re-encoded and limited to 2 MB; no separate file storage service (2026-11-27 amendment).
 - NFR-09 LGPD basics: consent via terms, data deletion, minimal data collected.
 - NFR-10 UI language pt-BR; code, repo and technical docs in English.
 - NFR-11 API terms review (TMDB attribution and commercial license, others) recorded in an ADR before real monetization.

@@ -21,3 +21,6 @@ ADR 0009 chose "R2 or MinIO" behind an S3-compatible interface. When the profile
 - Build MinIO from source: slow CI and our own image to maintain.
 - Garage, SeaweedFS: more moving parts (layout/config files) for the same S3 surface.
 - Public bucket or presigned URLs: exposes the storage host to the browser and the CSP, and loses the strict key check.
+
+## Amendment (2026-11-27, #172): no S3 server any more
+RustFS and the S3 bucket were removed (see the amendment on ADR 0009). Avatars are read from the `stored_objects` table. Point 2 still holds in spirit: nothing is public, and avatars reach the browser through `GET /api/public/avatars/{uuid}.jpg` on the API behind the Next.js `/api` proxy, with the strict key check. Points 1 and 3 (S3 API, bucket creation) and the `STORAGE_UNAVAILABLE` error code no longer exist; a database failure is an ordinary server error. The text above is kept as history.

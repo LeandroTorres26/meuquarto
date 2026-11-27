@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.meuquarto.support.RealCsrf;
-import com.meuquarto.support.StorageTestcontainersConfiguration;
 import com.meuquarto.support.TestcontainersConfiguration;
 import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.AfterEach;
@@ -25,7 +24,7 @@ import org.springframework.test.web.servlet.ResultActions;
 /** The profile editor (S6, FR-05): name, bio, slug and theme, who may change what, and what the public profile shows. */
 @SpringBootTest
 @AutoConfigureMockMvc
-@Import({TestcontainersConfiguration.class, StorageTestcontainersConfiguration.class})
+@Import(TestcontainersConfiguration.class)
 class ProfileEditorApiTests {
 
     private static final String PASSWORD = "cavalo bateria grampo";

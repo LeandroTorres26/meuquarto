@@ -53,7 +53,7 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 
 ### E2 Profile (M1)
 - Profile entity + slug rule (BR-01) + reserved words
-- Edit profile; avatar upload to S3-compatible storage
+- Edit profile; avatar upload (kept in PostgreSQL)
 - Public profile page with cached read model (NFR-02)
 - Open Graph metadata and image
 - Item details modal (S17) with `?item=` URL state and external links

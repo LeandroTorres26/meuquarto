@@ -23,9 +23,9 @@ The GitHub issue being worked on is the spec for the task. If an issue conflicts
 
 - `backend/`: Java 21, Spring Boot 4, Maven, Spring Security (session cookie, CSRF), Spring Data JPA, PostgreSQL, Flyway, Caffeine, Testcontainers.
 - `frontend/`: Next.js 16 + TypeScript (Cache Components). Public profile pages are server-rendered (SEO and Open Graph). Calls the backend REST API; never holds secrets.
-- `infra/`: Docker Compose (web, api, postgres, storage, mailpit).
+- `infra/`: Docker Compose (web, api, postgres, mailpit).
 - Payments: none in the P2 (no store, no Stripe, no paid plans; ADR 0024). The store is roadmap for the TCC.
-- Object storage: S3-compatible (R2 or MinIO).
+- Avatars (profile photos): stored in PostgreSQL (`stored_objects` table) behind the `ObjectStorage` interface; there is no object storage service.
 
 ## Security (every issue)
 

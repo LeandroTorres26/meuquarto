@@ -12,11 +12,11 @@ Browser ── Next.js (TypeScript, SSR for /{slug} + Open Graph)
    │           │  now, theme│ providers,  │          │
    │           │  slug)     │ sync jobs)  │          │
    └───────────┴────────────┴─────────────┴──────────┘
-        │ PostgreSQL (Flyway)      │ S3-compatible storage (R2/MinIO)
+        │ PostgreSQL (Flyway)      │ avatars: `stored_objects` table
         │ cache (Caffeine)         │ external APIs: TMDB, AniList, Letterboxd RSS,
                                    │ Last.fm, MyAnimeList, Goodreads RSS, Open Library, IGDB, Deezer
 ```
-Runs with Docker Compose (web, api, postgres, storage, mailpit). Deploy is not built (issues #5, #6).
+Runs with Docker Compose (web, api, postgres, mailpit). Deploy is not built (issues #5, #6).
 
 ## Stack
 Java 21, Spring Boot 4.x (3.x left open-source support), Maven, Spring Security, Spring Data JPA, Flyway, springdoc-openapi, Caffeine cache, Testcontainers. Front: Next.js 16 + TypeScript. Monorepo: `backend/`, `frontend/`, `docs/`, `infra/`.

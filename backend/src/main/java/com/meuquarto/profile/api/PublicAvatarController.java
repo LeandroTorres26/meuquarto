@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Serves avatars to anyone (they are on public profiles). The bucket itself stays private: the browser
+ * Serves avatars to anyone (they are on public profiles). The stored object itself is never public: the browser
  * only ever asks this endpoint, through the Next.js proxy, so the CSP needs no new host. The name in the
  * path must be exactly one we generated; anything else is a 404 and storage is not touched. A name never
  * changes content (a new upload gets a new name), so the response may be cached for a year.
