@@ -20,6 +20,8 @@ docker compose -f infra/docker-compose.yml --env-file .env up --build
 
 Or, with Node installed, `yarn stack` (same build, in the background), `yarn stack:ps`, `yarn stack:logs` and `yarn stack:down`; nothing to install first.
 
+To work on the frontend, `yarn dev` instead (needs `npm ci` in `frontend/` once): the database, storage, Mailpit and the API run in Docker, the web container is stopped, and Next runs on http://localhost:3000 in development mode, so a saved change shows up without a rebuild. Ctrl+C stops Next; the rest keeps running until `yarn stack:down`. A backend change still needs `yarn dev` again (it rebuilds the API image).
+
 Web: http://localhost:3000 · API health: http://localhost:8080/api/health · Mailpit (e-mails sent by the API, such as the password reset link): http://localhost:8025
 
 Catalog keys are optional: without `TMDB_API_KEY` film and series search is unavailable, and without `TWITCH_CLIENT_ID` and `TWITCH_CLIENT_SECRET` (a Twitch app, used for IGDB) game search is unavailable; the other categories keep working. See `.env.example`.
