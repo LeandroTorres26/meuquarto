@@ -28,6 +28,9 @@ ADR 0003 chose server sessions over JWT but left the password hash open and kept
 - **Code:** `identity.domain.ResetToken` (generation, parsing, SHA-256), `PasswordResetToken` (entity, 30-minute lifetime), `identity.application.PasswordReset` (request and confirm) with the `PasswordResetMailer` port implemented by `identity.infra.SmtpPasswordResetMailer` (asynchronous send, pt-BR text and HTML in `PasswordResetEmail`). Table `password_reset_tokens` (V13). Failures use `AccountRuleException.Rule.INVALID_RESET_TOKEN` (one code for every unusable token).
 - **Limits:** per IP on both endpoints (`meuquarto.rate-limit.password-reset`, `.password-reset-confirm`) and per e-mail (`.password-reset-email`, 3/hour, dropped silently so the answer never changes).
 
+## Amendment (2026-11-27): password reset and e-mail removed
+The "Esqueci minha senha" flow was dropped from the P2 scope (fewer technologies to explain and operate). Removed: the reset endpoints, `PasswordReset` and its token classes, the SMTP mailer and `spring-boot-starter-mail`, the `MAIL_*` variables and `SITE_URL` in the API, the Mailpit compose service, the S19 and S20 pages, and the rate limits `password-reset*`. Flyway V21 drops `password_reset_tokens`. Everything in this ADR about the reset token, the e-mail provider and the "As built (issue #53)" section is historical. Authentication, Argon2id, Spring Session JDBC and CSRF are unchanged; a signed-in user can still change the password (S14). A forgotten password has no self-service recovery in the P2; e-mail (reset or confirmation) is a possible TCC item.
+
 ## Alternatives considered
 - Keycloak: complete and ready, but a heavy extra server on a small VPS and one more system to secure.
 - Managed auth (Auth0, Clerk, Supabase Auth): no auth code at all, but third-party dependency, pricing limits, and moves the security work the course evaluates out of the Java backend.
