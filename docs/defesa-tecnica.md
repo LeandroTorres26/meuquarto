@@ -18,7 +18,7 @@ Um formato que funciona para qualquer tecnologia: **o que é, por que está aqui
 | Nível | O que significa | Tecnologias |
 |---|---|---|
 | 1. Saber bem | Vai ser perguntado. Explicar, mostrar no código, responder o "por quê". | Java e POO (ver `poo-no-projeto.md`), Spring Boot, JPA/Hibernate, PostgreSQL, Flyway, Docker e Docker Compose, API REST + frontend separado (Next.js) |
-| 2. Duas ou três frases | O que é, por que está, onde fica. | Spring Security (login, sessão, CSRF, Argon2), Spring Session JDBC, Bean Validation, testes (JUnit e Testcontainers), cache (Caffeine), tarefa agendada (`@Scheduled`), e-mail (Mailpit), armazenamento S3 (RustFS), chamadas HTTP às plataformas, GitHub Actions |
+| 2. Duas ou três frases | O que é, por que está, onde fica. | Spring Security (login, sessão, CSRF, Argon2), Spring Session JDBC, Bean Validation, testes (JUnit e Testcontainers), cache (Caffeine), tarefa agendada (`@Scheduled`), armazenamento S3 (RustFS), chamadas HTTP às plataformas, GitHub Actions |
 | 3. Uma frase pronta | Infraestrutura que quase ninguém pergunta. | ArchUnit, gitleaks, CodeQL, limite de requisições, cabeçalhos de segurança, IP real atrás do proxy, virtual threads, Actuator, Cache Components do Next.js |
 
 ---
@@ -163,7 +163,6 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
   ```
 - **Os serviços do compose**:
   - `postgres`: o banco. Os dados ficam no volume `pgdata`, que sobrevive quando o container é recriado.
-  - `mailpit`: um servidor de e-mail de mentira. Os e-mails (recuperação de senha) aparecem em http://localhost:8025 em vez de ir para alguém.
   - `storage`: um armazenamento compatível com o S3 da Amazon (RustFS), para a foto do perfil. Os arquivos ficam no volume `storagedata`.
   - `api`: o backend Java, construído pelo `backend/Dockerfile`.
   - `web`: o frontend Next.js, construído pelo `frontend/Dockerfile`.
@@ -177,7 +176,7 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
 - **Perguntas**:
   - "Qual a diferença entre imagem e container?" A imagem é o molde (programa e dependências, só leitura); o container é uma execução dessa imagem.
   - "O que é um volume?" Uma pasta gerenciada pelo Docker que guarda os dados fora do container. Apagar o container não apaga o volume.
-  - "O que o Docker faz que o PostgreSQL instalado não faria?" Sobe o banco, o e-mail de teste, o armazenamento, a API e o site juntos, com as mesmas versões em qualquer computador, com um comando só.
+  - "O que o Docker faz que o PostgreSQL instalado não faria?" Sobe o banco, o armazenamento, a API e o site juntos, com as mesmas versões em qualquer computador, com um comando só.
   - "Como a API acha o banco?" Pelo nome do serviço. Dentro da rede do compose, o endereço do banco é o host `postgres`, passado para a API como variável de ambiente.
 
 ### API REST + frontend separado (Next.js)
@@ -208,9 +207,7 @@ Pergunta provável: "por que a regra está no domínio e não no controller?" Re
 
 **Cache em memória (Caffeine)** (`profile/application/PublicProfileCache.java`). Guarda o perfil público montado por 60 segundos, para não remontar a cada visita. É apagado na hora quando o dono muda algo.
 
-**Tarefa agendada (`@Scheduled`)** (`media/application/SyncScheduler.java`). O Spring roda o método a cada 15 minutos para sincronizar as contas vinculadas (ADR 0007). Outro agendamento apaga os pedidos de troca de senha vencidos (`identity/application/PasswordReset.java`).
-
-**E-mail** (`identity/infra/SmtpPasswordResetMailer.java`, `spring.mail` no `application.yml`). Só para a recuperação de senha. Localmente vai para o Mailpit; em produção, o mesmo código usará um provedor real, trocando só as variáveis `MAIL_*`.
+**Tarefa agendada (`@Scheduled`)** (`media/application/SyncScheduler.java`). O Spring roda o método a cada 15 minutos para sincronizar as contas vinculadas (ADR 0007).
 
 **Armazenamento compatível com S3** (`shared/storage/S3ObjectStorage.java`, ADR 0009 e 0021). A foto do perfil não vai para o banco, vai para um armazenamento de arquivos. Localmente é o RustFS (no compose); em produção será o Cloudflare R2. O código fala a mesma língua (a API do S3) com os dois.
 

@@ -48,7 +48,6 @@ Labels: `feature bug chore docs`, `backend frontend infra`, `P0 P1 P2`. Project 
 ### E1 Identity (M1)
 - Sign up / sign in / sign out (session cookie, CSRF)
 - Password change; account deletion (FR-02)
-- Forgot password by e-mail (FR-01a, S19, S20)
 - Terms, privacy and cookie banner
 
 ### E2 Profile (M1)
@@ -101,5 +100,4 @@ The owner chose not to take the monetization challenge in the P2. The epic is ro
 - Confirm with professor all P2 requirements are met (hosting, individual work)
 - Check domain `meuquarto.com.br`, social handles, INPI
 - Create Twitch app for IGDB, TMDB and Last.fm API keys
-- Create transactional e-mail account (Resend or Brevo) and add SPF, DKIM, DMARC records
 - Choose VPS provider

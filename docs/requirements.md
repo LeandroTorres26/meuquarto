@@ -6,7 +6,6 @@ Source: `docs/briefing.md` + planning session (2026-10-12). Deadline: end of Nov
 
 ### Accounts
 - FR-01 Sign up / sign in with e-mail + password; session via HttpOnly cookie.
-- FR-01a "Esqueci minha senha": request a reset link by e-mail (single-use, 30 min), set a new password; all other sessions end (ADR 0012).
 - FR-02 Delete account (hard delete of all user data).
 - FR-03 Terms, privacy policy and minimal cookie banner.
 

@@ -18,8 +18,6 @@ UI language pt-BR. Mobile-first (profile is mostly opened from social links).
 | S14 | Account | `/painel/conta` | yes | Change password, delete account (confirmation) |
 | S15 | Terms / Privacy | `/termos` `/privacidade` | no | Static legal text (`LegalLayout`), dated via `src/lib/legal.ts`; revise the texts whenever stored data, cookies or providers change. Linked from sign-up, landing, profile footer and the cookie notice (to `/privacidade`) |
 | S16 | 404 / profile not found | | no | |
-| S19 | Forgot password | `/esqueci-senha` | no | E-mail field; same confirmation message whether or not the account exists ("Se existir uma conta com esse e-mail, enviamos um link."). Linked from S3. |
-| S20 | Reset password | `/redefinir-senha?token=…` | no | New password + confirmation; states: valid, expired/used link (offer to request again), success (go to S3). |
 | S18 | Category listing | `/{slug}/{categoria}` (`filmes`, `series`, `animes`, `mangas`, `livros`, `musica`, `games`) | no | "Ver todos" target. Whole visible collection of one category: cover grid, search by title, sort (recentes, título, ano), infinite scroll or pages, highlight badge, empty and no-result states. Click opens S17. |
 | S17 | Item details | modal in S4/S5, `?item={mediaItemId}` | no | Opened by clicking any highlight or "Agora" card. Cover, title, year, category sticker, personal note, origin ("assistido em 3 out. no Letterboxd" when synced), external links ("Ver no Letterboxd", "Ver no TMDB"...). Centered dialog from 600px, bottom sheet on mobile. URL param makes it shareable; back button and Esc close it. In S5 it is the existing info panel. |
 
@@ -36,16 +34,16 @@ Public screens are built for three viewers, and every new screen must say what c
 | Profile footer "Crie o seu" (S4, S18, S16) | shown | hidden | hidden |
 | Landing S1 hero | pitch + "Crie o seu" | "Ir para o painel", "Meu perfil" | n/a |
 | S16 (404) sign-up button | "Usar esse endereço" / "Crie o seu" | "Ir para o painel" | n/a |
-| S2 Cadastro, S3 Entrar, S19 Esqueci a senha | form | redirect to `/painel` | n/a |
+| S2 Cadastro, S3 Entrar | form | redirect to `/painel` | n/a |
 | Room S5 panel "Crie o seu quarto" | shown | hidden | hidden (the room has its own share button) |
 | Empty states on the owner's own profile (S4, S18) | neutral text | neutral text | text + link to `/painel/destaques` |
 | Platform links in the S4 header (ADR 0023) | shown | shown | shown; with no linked account, "Vincule seus perfis" to `/painel/contas` instead (visitors see nothing) |
 | Theme (ADR 0022) | `noite` (or the last theme kept on that browser) | their own theme, except S4, S18 and S5, which show the owner's | their own theme |
 
 Notes:
-- S5 is full screen and has no top bar; only its panel call to action follows the table. S20 (`/redefinir-senha`) is not redirected: the link comes from an e-mail and works whoever is signed in.
+- S5 is full screen and has no top bar; only its panel call to action follows the table.
 - "Painel" is `/painel`, "Destaques" is `/painel/destaques`; "Meu perfil" is `/{slug}` of the session; "Editar perfil" is `/painel` (S6).
-- Implementation (issue #118): the pages stay prerendered (Partial Prerender, `cacheComponents`). Everything that depends on the session is a small server component that reads the cookie inside its own `<Suspense>` (`components/SessionActions.tsx`, `components/SessionSlots.tsx`), so the cached HTML holds only an invisible, inert placeholder of the same size (no layout shift, never a wrong call to action) and nothing user-specific. The decision is the pure `viewerState(pageSlug, session)` in `lib/viewer-state.ts`. The room panel receives its call to action as a server element prop (`invite`). Redirects of S2, S3 and S19 are real HTTP redirects in `proxy.ts`.
+- Implementation (issue #118): the pages stay prerendered (Partial Prerender, `cacheComponents`). Everything that depends on the session is a small server component that reads the cookie inside its own `<Suspense>` (`components/SessionActions.tsx`, `components/SessionSlots.tsx`), so the cached HTML holds only an invisible, inert placeholder of the same size (no layout shift, never a wrong call to action) and nothing user-specific. The decision is the pure `viewerState(pageSlug, session)` in `lib/viewer-state.ts`. The room panel receives its call to action as a server element prop (`invite`). Redirects of S2 and S3 are real HTTP redirects in `proxy.ts`.
 
 Implementation notes for S4 and S17 (issues #16 and #17):
 - `/{slug}` is the dynamic segment `frontend/src/app/[slug]`. Static routes (`/painel`, `/entrar`, `/cadastro`) win over it and `/api/*` is rewritten by `proxy.ts` before routing, so no reserved word is shadowed. An unknown, reserved or malformed slug renders S16 (the API answers all of them with the same 404). The page streams inside Suspense, so that response is a 200 with `noindex`, not an HTTP 404 (Next.js cannot change the status after streaming starts).
@@ -73,9 +71,6 @@ Implementation notes for S18 (issue #26):
 - Search, order and page live in the URL: `?q=`, `?ordem=recentes|titulo|ano`, `?pagina=N` (defaults omitted). Pages are previous/next links instead of infinite scroll, so every page has its own address and works without JavaScript. Searches are `noindex`.
 - Cards are the S4 `HighlightCard` with the "Destaque" seal; clicking one opens S17 over the listing (`?item=` is added to the current query).
 
-Implementation notes for S19 and S20 (issue #53, no prototype: built from the S3 layout and classes):
-- S19 `/esqueci-senha`: one e-mail field, `POST /api/auth/password-reset`. After sending, the page shows "Se existir uma conta com esse e-mail, enviamos um link." plus "O link vale por 30 minutos e só funciona uma vez" whatever the answer was (the API answers 202 for known, unknown and malformed e-mails). Linked from S3 ("Esqueci minha senha", under the password field). Rate-limited answers show the usual "Tente de novo em X minutos".
-- S20 `/redefinir-senha?token=…`: the client reads the token from the address once and rewrites the address without it (`history.replaceState`); the page is `noindex` and sent with `Referrer-Policy: no-referrer` (`next.config.ts`) and `<meta name="referrer">`. States: valid (new password + repetition, "Pelo menos 8 caracteres"; password-rule errors under the field, the link stays usable), expired/used/tampered/missing token ("Link inválido ou expirado", button "Pedir um novo link" to S19; the API gives one generic `INVALID_RESET_TOKEN` for all of them), success ("Senha alterada", button "Entrar" to S3; every session was ended). A reload after the first load also lands on the invalid state, by design, because the token is no longer in the address.
 
 Cross-cutting components: cookie banner, toasts, empty states (no highlights yet), limit-reached note, loading skeletons, error states for failed sync.
 

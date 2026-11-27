@@ -6,7 +6,7 @@ import { fetchSession } from "@/lib/session-core";
 // Runtime API address (read on every request, so one Docker image works in any environment).
 const apiUrl = () => process.env.API_URL ?? "http://localhost:8080";
 
-const AUTH_PAGES = new Set(["/entrar", "/cadastro", "/esqueci-senha"]);
+const AUTH_PAGES = new Set(["/entrar", "/cadastro"]);
 
 export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
@@ -42,5 +42,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/api/:path*", "/entrar", "/cadastro", "/esqueci-senha", "/painel/:path*"],
+  matcher: ["/api/:path*", "/entrar", "/cadastro", "/painel/:path*"],
 };
